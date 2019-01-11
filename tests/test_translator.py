@@ -35,8 +35,10 @@ class TestTranslator(unittest.TestCase):
         translated_string = 'Some string to translate'
 
         class ResponseMock:
+            ok = True
+
             def json(self):
-                return {'data': [translated_string]}
+                return {'data': [translated_string, ]}
 
         mocked_post.return_value = ResponseMock()
         translate_result = Translator().request_translation(string_to_translate)
