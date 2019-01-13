@@ -20,6 +20,8 @@ fi
 PIP=venv/bin/pip
 LOC_PYTHON=venv/bin/python
 
+echo "TEMP_API_KEY" > "TRANSLATE_API_KEY"
+
 ${PYTHON3} -m venv venv
 ${PIP} install pip --upgrade
 ${PIP} install setuptools --upgrade

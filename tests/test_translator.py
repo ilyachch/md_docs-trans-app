@@ -18,7 +18,7 @@ class TestTranslator(unittest.TestCase):
     def setUp(self):
         self.api_key = 'TEST_API_KEY'
         dir_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-        self.api_key_path = os.path.join(dir_path, 'data', 'test_data', 'API_KEY')
+        self.api_key_path = os.path.join(dir_path, 'data', 'test_data', 'TRANSLATE_API_KEY')
         self.api_key_backup = Translator.api_key_filename
         Translator.api_key_filename = self.api_key_path
 

@@ -14,10 +14,8 @@ class TestFilesWorker(unittest.TestCase):
         with self.assertRaises(NotADirectoryError):
             FilesWorker(os.path.join(self.test_data_folder, 'not_a_folder'))
         with self.assertRaises(FileNotFoundError):
-            FilesWorker(os.path.join(self.test_data_folder, 'empty_folder'))
-        with self.assertRaises(FileNotFoundError):
             FilesWorker(os.path.join(self.test_data_folder, 'folder_without_md_files'))
         self.assertListEqual(
-            ['first_file.md', 'second_file.md'],
-            FilesWorker(os.path.join(self.test_data_folder, 'md_files_folder')).md_files_list
+            sorted(['first_file.md', 'second_file.md']),
+            sorted(FilesWorker(os.path.join(self.test_data_folder, 'md_files_folder')).md_files_list)
         )
