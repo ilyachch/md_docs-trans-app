@@ -31,7 +31,7 @@ class Translator:
         response = requests.post(self.request_url, {'text': string_to_translate})
         if response.ok:
             response_data = response.json()
-            translated_data = response_data['data']
+            translated_data = response_data['text']
             return '\n'.join(translated_data)
         else:
             raise requests.exceptions.ConnectionError('Something web wrong with translation requesting.')

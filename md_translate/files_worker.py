@@ -29,3 +29,4 @@ class FilesWorker:
         for file_name in self.md_files_list:
             with FileTranslator(os.path.join(self.__folder_to_process, file_name)) as processing_file:
                 processing_file.translate()
+            print('Processed: {file_name}'.format(file_name=file_name))

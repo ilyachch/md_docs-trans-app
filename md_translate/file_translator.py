@@ -16,13 +16,16 @@ class FileTranslator:
         self.code_block = False
 
     def translate(self):
-        for counter, line in enumerate(self.__translating_file.readlines()):
+        lines = self.__translating_file.readlines()
+        for counter, line in enumerate(lines):
             self.file_contents_with_translation.append(line)
             self.__check_line_for_code_mark(line)
             if self.line_should_be_translated(line):
                 translated = self.__translator.request_translation(line)
                 self.file_contents_with_translation.append('\n')
                 self.file_contents_with_translation.append(translated)
+
+                print('Processed: {percent}% ({counter} of {lines})'.format(percent=(counter/len(lines)*100), counter=counter, lines=len(lines)))
 
         self.__write_translated_data_to_file()
 
@@ -36,7 +39,7 @@ class FileTranslator:
                     self.code_block)
 
     def __check_line_for_code_mark(self, line):
-        if line.startswith(self.code_mark) and len(line) == 3:
+        if line.startswith(self.code_mark) and not line.endswith(self.code_mark):
             self.code_block = not self.code_block
 
     def __is_single_line_code(self, line):
