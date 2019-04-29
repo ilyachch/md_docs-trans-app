@@ -1,7 +1,8 @@
 import re
 
 from md_translate.line_processor import LineProcessor
-from md_translate.translator import Translator
+from md_translate.translator import get_translator_by_name
+from arguments_processor import settings
 
 
 class FileTranslator:
@@ -11,7 +12,7 @@ class FileTranslator:
     paragraph_regexp = re.compile(r'^[a-zA-Z]+.*')
 
     def __init__(self, file_path):
-        self.__translator = Translator()
+        self.__translator = get_translator_by_name(settings.service)
         self.__file_path = file_path
         self.__line_processor = None
         self.file_contents_with_translation = []

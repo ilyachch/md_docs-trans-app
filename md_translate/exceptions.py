@@ -4,3 +4,7 @@ class ConfigurationError(RuntimeError):
 
 class DirectoryNotFoundException(OSError):
     pass
+
+
+class NoApiKeyFileError(RuntimeError):
+    pass
