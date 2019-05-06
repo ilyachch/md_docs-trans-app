@@ -18,13 +18,20 @@ class FileTranslator:
         self.file_contents_with_translation = []
         self.code_block = False
 
+    def __enter__(self):
+        self.__translating_file = open(self.__file_path, self.default_open_mode)
+        return self
+
+    def __exit__(self, *args, **kwargs):
+        self.__translating_file.close()
+
     def translate(self):
         lines = self.__translating_file.readlines()
         for counter, line in enumerate(lines):
             self.file_contents_with_translation.append(line)
             self.__line_processor = LineProcessor(line)
             self.code_block = not self.code_block if self.__line_processor.is_code_block_border() else self.code_block
-            if self.line_have_to_be_translated():
+            if self.__line_processor.line_can_be_translated() and not self.code_block:
                 translated = self.__translator.request_translation(line)
                 self.file_contents_with_translation.append('\n')
                 self.file_contents_with_translation.append(translated)
@@ -34,16 +41,6 @@ class FileTranslator:
 
         self.__write_translated_data_to_file()
 
-    def line_have_to_be_translated(self):
-        return self.__line_processor.line_can_be_translated and not self.code_block
-
     def __write_translated_data_to_file(self):
         self.__translating_file.seek(0)
         self.__translating_file.writelines(self.file_contents_with_translation)
-
-    def __enter__(self):
-        self.__translating_file = open(self.__file_path, self.default_open_mode)
-        return self
-
-    def __exit__(self, *args, **kwargs):
-        self.__translating_file.close()
