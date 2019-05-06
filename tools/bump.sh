@@ -2,4 +2,4 @@
 
 cd "$(dirname "$0")/.."
 
-bumpversion $1 VERSION
+bumpversion $1
