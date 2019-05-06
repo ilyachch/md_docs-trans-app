@@ -1,12 +1,6 @@
 import setuptools
 
 
-def get_version():
-    with open("VERSION", "r") as fh:
-        version = fh.read()
-    return version
-
-
 def get_long_description():
     with open("README.md", "r") as fh:
         long_description = fh.read()
@@ -16,7 +10,7 @@ def get_long_description():
 setuptools.setup(
     # Common data
     name="md_translate",
-    version=get_version(),
+    version='0.0.2',
     author="Ilya Chichak",
     author_email="ilyachch@gmail.com",
     description="CLI tool to translate markdown files",
