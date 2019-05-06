@@ -22,6 +22,9 @@ class App:
         FilesWorker(self.settings.path).process()
 
 
+def main():
+    App().process()
+
+
 if __name__ == "__main__":
-    app = App()
-    app.process()
+    main()

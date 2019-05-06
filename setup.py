@@ -58,6 +58,6 @@ setuptools.setup(
         "Topic :: Utilities",
     ],
     entry_points={
-        'console_scripts': ['gs_extensions=gs_extensions.app:main'],
+        'console_scripts': ['md-translate=md_translate.app:main'],
     }
 )
