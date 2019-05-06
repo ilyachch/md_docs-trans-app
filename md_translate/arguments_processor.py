@@ -38,7 +38,7 @@ class ArgumentsProcessor:
         self.arg_parser.add_argument(
             '-s', '--service',
             help='Translating service',
-            default='Yandex', choices=('Yandex',)
+            default='Yandex', choices=('Yandex', 'Google')
         )
         self.arg_parser.add_argument(
             '-S', '--source_lang',

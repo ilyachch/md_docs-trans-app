@@ -1,29 +1,34 @@
 # MD Translate
 
-CLI to translate `.md` files from English to Russian.
+CLI tool to translate `.md` files from English to Russian.
 
-Uses Yandex Translation API.
+
+Can use Yandex Translation API and Google Cloud translation.
 
 ## Installation
 
-Get project and install by: 
+Install project:
 
 ```bash
-$ git clone git@github.com:ilyachch/docs-trans-app.git
-$ cd docs-trans-app
-$ ./install.sh
+$ pip install md-translate
 ```
 
-It will check installed Python version, install venv, create venv, load requirements and create file `TRANSLATE_API_KEY` with some dummy. There you should put your API Key, you got from [Yandex Translate](https://translate.yandex.ru/developers/keys).
+Create a file, named `.md_translate_api_key` in your home folder or wherever you want put your API key into it.
+
 
 ## Using
 
-To start translation, you should activate venv, by `source venv/bin/activate` and then you can use run it by `python md_translate.py -p <PATH TO FOLDER>`.
+To run translation:
+
+```bash
+$ md-translate path_to_folder_with_md_files
+```
+
+Arguments:
+
+* `-k (--api_key) path_to_api_key_file` (if you put api key file not to home folder)
+* `-s (--service) [Yandex, Google]` service to be used for translation
+* `-S (--source_lang) land_code` language code of source document (default: 'en')
+* `-T (--target_lang) lang_code` language code to translate in (default: 'ru')
 
 It will find all `.md` files in folder you set and line by line, will translate. It will translate only paragraphs, not lists or any other markdown constructions.
-
-## Plans to extend
-
-* Make it translate all needed text blocks, not only paragraphs;
-* Make it translate not only "English" -> "Russian";
-* Make it translate using not only Yandex Translation API;
