@@ -8,3 +8,7 @@ class DirectoryNotFoundException(OSError):
 
 class NoApiKeyFileError(RuntimeError):
     pass
+
+
+class NoConfigFileError(RuntimeError):
+    pass

@@ -15,7 +15,7 @@ class App:
             print('API_KEY file in location "{}" not found'.format(self.settings.api_key))
             print('Provide API_KEY file path or create it, if not exist')
             print()
-            self.settings.arg_parser.print_help()
+            # self.settings.arg_parser.print_usage()
             exit(1)
 
     def process(self):
