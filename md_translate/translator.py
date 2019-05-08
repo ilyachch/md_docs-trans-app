@@ -1,13 +1,6 @@
 import requests
-
+from typing import Type
 from md_translate.arguments_processor import settings
-
-
-def get_translator_by_name(name):
-    if name == 'Yandex':
-        return YandexTranslator
-    elif name == 'Google':
-        return GoogleTranslator
 
 
 class Translator:
@@ -21,11 +14,18 @@ class Translator:
         else:
             raise requests.exceptions.ConnectionError('Something web wrong with translation requesting.')
 
-    def request_for_translation(self, string_to_translate):
+    def request_for_translation(self, string_to_translate: str):
         raise NotImplementedError()
 
-    def process_response(self, response):
+    def process_response(self, response: requests.Response):
         raise NotImplementedError()
+
+
+def get_translator_by_name(name) -> Type[Translator]:
+    if name == 'Yandex':
+        return YandexTranslator
+    elif name == 'Google':
+        return GoogleTranslator
 
 
 class YandexTranslator(Translator):
