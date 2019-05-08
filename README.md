@@ -34,10 +34,16 @@ target_lang = ru
 
 ## Using
 
-To run translation:
+To translate some folder:
 
 ```bash
 $ md-translate path_to_folder_with_md_files
+```
+
+To translate current folder:
+
+```bash
+$ md-translate
 ```
 
 Arguments:
