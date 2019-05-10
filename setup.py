@@ -20,7 +20,7 @@ setuptools.setup(
     license="MIT License",
     url="https://github.com/ilyachch/md_docs-trans-app",
     # Technical data
-    python_requires=">=3.4",
+    python_requires=">=3.5",
     packages=setuptools.find_packages(exclude=['tests*', ]),
     install_requires=[
         "requests",
@@ -43,7 +43,6 @@ setuptools.setup(
         "Operating System :: Microsoft :: Windows",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
