@@ -30,9 +30,9 @@ deploy:
     on:
       repo: ilyachch/md_docs-trans-app
       branch: master
-      tags: true
+#      tags: true
       python: '3.6'
-      condition: $(git branch | grep \* | cut -d ' ' -f2) == $(cat VERSION)
+#      condition: $(git branch | grep \* | cut -d ' ' -f2) == $(cat VERSION)
 
   - provider: releases
     skip_cleanup: true
@@ -44,6 +44,6 @@ deploy:
     on:
       repo: ilyachch/md_docs-trans-app
       branch: master
-      tags: true
+#      tags: true
       python: '3.6'
-      condition: $(git branch | grep \* | cut -d ' ' -f2) == $(cat VERSION)
+#      condition: $(git branch | grep \* | cut -d ' ' -f2) == $(cat VERSION)
