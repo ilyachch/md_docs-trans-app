@@ -2,48 +2,41 @@ sudo: false
 dist: xenial
 language: python
 python:
-  - '3.6'
-  - '3.7'
+- '3.6'
+- '3.7'
 install:
-  - python setup.py install
+- python setup.py install
 script:
-  - python setup.py test
+- python setup.py test
 notifications:
   email:
     on_success: never
     on_failure: change
-
 before_deploy:
-  - git config --local user.name "Ilya Chichak"
-  - git config --local user.email "ilyachch@gmail.com"
-  - export TRAVIS_TAG=$(cat VERSION)
-  - git tag $TRAVIS_TAG
-
+- git config --local user.name "Ilya Chichak"
+- git config --local user.email "ilyachch@gmail.com"
+- export TRAVIS_TAG=$(cat VERSION)
+- git tag $TRAVIS_TAG
 deploy:
   - provider: pypi
     user: ilyachch
     password:
-      secure: CStRk2wWtGo43bypB9QbZQiX8iCe2/+JQsX8VEUiirKk53uOF6Q1kAxXGW/4KYs4S9YtbpztL76Cfpk7Nhh//Q1EmF/r5I2b0GbzKGp8QLYH43U0oULdRYgZNY8y9OOLtREDUyo1Rfot98rQFgU+GLOXeQvM3v42swZpFRehT/p3sXSQ55CvWW4KKixj14XFvhptlirMd8fYlFR/0RvuKo8r7+2TQWEDvkALn6Wntvg9E86xwnsvFFaSGxCgACSNfFbYZwd5PxwQA8J2Yqd66jv8xb1Ik4/sFEp6uC+NHcqszFDbZHeG9emaxUR6tQ0CdOwUqhFfrWXZzG99QlfyLVb817QY0GcA4ZT/KZFng4pABPNBz5FDSSZYFFGz2zUvxLQYQEV2erBf+XzDwyz22vmxvXUuPV9lQ4EKNIeHwBbymis31+MUUeOdNy/qTkZhN1AJ7guM1KRpVCs+9/J9qaiSBw5P0NS9i/HtLq64mLJf/GMvxodkUkXHlMCemrgDLBdHseOLH3u49oCUkG8He2s3Q6Uh1lkQ6oC4WOQNd+pZv71dTccegDsTGENzDILXyeG+H+pcbNiZAi1VwWaCbBJqDz1T6AT3jot2L4JIl5btNW4xtNuG0SjrAJAn/hNE1QpH+vdfeNDUDEeC8fJQI2ujXu0G2gEi+BFH+Grz4Cw=
-    distributions: "sdist bdist_wheel"
+      secure: wwAT837Q+wiPE5GGaO8/9I4OF//Si5Ogku/uoWnuVXRRAo8z2RG6tytPNyo3usi5Tv+g7EzqGJPNfiqPRmd2M6QPRZcWHLNCR6kb1dmHEvDEafR0Rkf994ik91KrHtA4TiykaHKU/lyG4SNZhtDynWeEm+b7X1KNhq1cAMj2Bp43vGsrcIeg3Vbv04iOSH1+i+lUIZSFrD28cDPT4UWCQ/GDK0JfH+8ghcc8G2Y1DsGdLXtWnRFyjMrSga5jmhKFuMwGygT8w65+0nXW3wJyVR1L13AoScWEyFzy2EsPqRklmWcfDaN4ms2uwJ5QIKLk5L/aoFTu/0zc85+W4I+vO2nGe2ChHDurvMjRmbXL8T6zC8vazyRUHt4GKLczSFw2e1CRsAKbCCIL3BpiNTafujAXDyt7/DrVTT3xNlH1XYDn1s8Kmi7lQrgVoR+FUaOqHFoeeVXk5fJcq+olERx9m0A6wYqA56j0KZigIpVbqDusKj05+OdaXznrIvJFFK0k0FP2qFWIrxzQz8S6YQ4mjRojQRZW3t3wyIRN/1poCNmtxxx4/gwMCe7XPoOHvmMVjocSZOTsAophpDCKowyRYVOPZR6CwZGd0xfNtEvfY7teUEpRxg30P5StXqJYjI0o9Fybj+6qjOqRQ8aSh1r3cPzGgVKDe/88wBDYQQfX3sw=
+    distributions: sdist bdist_wheel
     skip_cleanup: true
     skip_existing: true
     on:
       repo: ilyachch/md_docs-trans-app
       branch: master
-#      tags: true
       python: '3.6'
-#      condition: $(git branch | grep \* | cut -d ' ' -f2) == $(cat VERSION)
-
   - provider: releases
     skip_cleanup: true
     api_key:
       secure: mLbq3UU3SGjc0LDAnMnljbB7BxPBEylIkPoCuuYbN0EnwAwbyA4biTbTl91qINkQbUTMNJus0RuKXdM2I7irH/K559Gzd+E7lbu1olCc5MH0txPLFBi3bAiqTG64KkLxl9dmo2Ko0GZP8GZBWh5K5J1O69A2PEv7YILZO9MxeYb51yUQNcnAalhyGPdsDkOYB4r0HRLWoYQjdhM1E2iL5wMf7sdaDTpbnOLXUWrElRugc3kxuvMUbfzteMukJA/IbF6WzPMzX3mZAnQySGJZrBau4kOH8InT/aMy9F9+TuJsWVrfZ6J09qWeix/TNVqBC2O+Ow1NJLW0KI17KM/XODCf5skOu7hEoz16WUKC2xEwIkQmHgOhRJ3s1/t3+SIYyCwkJwtwN2R1TcCG07U5Z8PC9FOvjHCqOQrioNJAXIqUlJBb0b+yQTM/m9ov/GooNySPhvoXujsINSOe3GTWVGzEB13VjCeG0f65sO1QqDT4hCNQuqi0uyckava7hTnvnhbjH1w/OBeyvSh3azZMbaxZenR+UO1OV3jZ1VC66Z4yPrZhF+fGMTgzCc8ubA/XrSu+kPhZZGKNQSMLoh4z8H1zU7noCCkr+bY29eXJFRSvAxP7Y0CWq/J6TgDFKGfd+p6XeO/yBrsegOqyvrLKtrNuqwh6wop/WT21NNDTEUg=
     file:
-      - dist/*.whl
-      - dist/*.tar.gz
+    - dist/*.whl
+    - dist/*.tar.gz
     on:
       repo: ilyachch/md_docs-trans-app
       branch: master
-#      tags: true
       python: '3.6'
-#      condition: $(git branch | grep \* | cut -d ' ' -f2) == $(cat VERSION)
