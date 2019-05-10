@@ -1,10 +1,9 @@
 sudo: false
 language: python
+dist: xenial
 
 matrix:
   include:
-    - python: 3.5
-      env: TOXENV=py35
     - python: 3.6
       env: TOXENV=py36
     - python: 3.7
@@ -14,7 +13,7 @@ install:
   - python setup.py install
 
 script:
-  - unittest
+  - python -m unittest
 
 deploy:
   provider: pypi
