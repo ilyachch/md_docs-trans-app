@@ -21,10 +21,10 @@ before_deploy:
 
 deploy:
   - provider: pypi
-    user: "ilyachch"
+    user: ilyachch
     password:
-      secure: "rVobou96hgoLzxE0qrPbFlWxl4XSMZ+LxsHKDbC1qKBVm2NDgS0Mit4pZhO1arsAvT+7g6xh8l9reTFz2YC6eBMJXtjKQ5Mev4BaQBtAckcFaSNeZFQ7iik0X21OGhCfRF74jdyu2eAQMKSdU2/RaBc6GQ2XU09kZ936Lv27L8hxawLm12i3QSDr8spQ/qtsujFRu0UgfdxJKsqBsJ0IxVvybnLmG1aHmOW8cD3TuGj7ipBMnea05dd3NTS7tc+m6S3ojkvzVB1jHhJ/R7vuEIs9qa5shM7yZ5lmw5z7hUh2+VaDa8+zvwCadkRFKEYT4uEY7uUDNeHw15Y2RcwzsmvLJfIZydwdslH8a5i7B56sCNyfjQvxPIS8qFS6c4Wt+fADFebJmE95V22A1U52ZLWOWaytGZcKslT0mbQez87chPf4Y6LJ1/aEDZIy2DA+oXQUEs6FclMXMhtPRziftzYwvCwQDkAgCRIKNj0U//Nr2cO8BZXaqaz4/tkgW9byQ77Wz8VK8yRGaiQMZz1kppf2fUIjRKM0jl5NRAz77J85usVvcoJO3ni329rG8eZu7T3HnS184KgbbjhMZMxzl2Lrw/LxZhtF4HTQasxgvN4JztTkX8odZ9xO7Wsmw3yqlm5jGT2vy/scIO/E4dPpreiP39iEx6zng6M6DTGQjpI="
-    distributions: sdist bdist_wheel
+      secure: CStRk2wWtGo43bypB9QbZQiX8iCe2/+JQsX8VEUiirKk53uOF6Q1kAxXGW/4KYs4S9YtbpztL76Cfpk7Nhh//Q1EmF/r5I2b0GbzKGp8QLYH43U0oULdRYgZNY8y9OOLtREDUyo1Rfot98rQFgU+GLOXeQvM3v42swZpFRehT/p3sXSQ55CvWW4KKixj14XFvhptlirMd8fYlFR/0RvuKo8r7+2TQWEDvkALn6Wntvg9E86xwnsvFFaSGxCgACSNfFbYZwd5PxwQA8J2Yqd66jv8xb1Ik4/sFEp6uC+NHcqszFDbZHeG9emaxUR6tQ0CdOwUqhFfrWXZzG99QlfyLVb817QY0GcA4ZT/KZFng4pABPNBz5FDSSZYFFGz2zUvxLQYQEV2erBf+XzDwyz22vmxvXUuPV9lQ4EKNIeHwBbymis31+MUUeOdNy/qTkZhN1AJ7guM1KRpVCs+9/J9qaiSBw5P0NS9i/HtLq64mLJf/GMvxodkUkXHlMCemrgDLBdHseOLH3u49oCUkG8He2s3Q6Uh1lkQ6oC4WOQNd+pZv71dTccegDsTGENzDILXyeG+H+pcbNiZAi1VwWaCbBJqDz1T6AT3jot2L4JIl5btNW4xtNuG0SjrAJAn/hNE1QpH+vdfeNDUDEeC8fJQI2ujXu0G2gEi+BFH+Grz4Cw=
+    distributions: "sdist bdist_wheel"
     skip_cleanup: true
     skip_existing: true
     on:
@@ -37,10 +37,10 @@ deploy:
   - provider: releases
     skip_cleanup: true
     api_key:
-      secure: "mLbq3UU3SGjc0LDAnMnljbB7BxPBEylIkPoCuuYbN0EnwAwbyA4biTbTl91qINkQbUTMNJus0RuKXdM2I7irH/K559Gzd+E7lbu1olCc5MH0txPLFBi3bAiqTG64KkLxl9dmo2Ko0GZP8GZBWh5K5J1O69A2PEv7YILZO9MxeYb51yUQNcnAalhyGPdsDkOYB4r0HRLWoYQjdhM1E2iL5wMf7sdaDTpbnOLXUWrElRugc3kxuvMUbfzteMukJA/IbF6WzPMzX3mZAnQySGJZrBau4kOH8InT/aMy9F9+TuJsWVrfZ6J09qWeix/TNVqBC2O+Ow1NJLW0KI17KM/XODCf5skOu7hEoz16WUKC2xEwIkQmHgOhRJ3s1/t3+SIYyCwkJwtwN2R1TcCG07U5Z8PC9FOvjHCqOQrioNJAXIqUlJBb0b+yQTM/m9ov/GooNySPhvoXujsINSOe3GTWVGzEB13VjCeG0f65sO1QqDT4hCNQuqi0uyckava7hTnvnhbjH1w/OBeyvSh3azZMbaxZenR+UO1OV3jZ1VC66Z4yPrZhF+fGMTgzCc8ubA/XrSu+kPhZZGKNQSMLoh4z8H1zU7noCCkr+bY29eXJFRSvAxP7Y0CWq/J6TgDFKGfd+p6XeO/yBrsegOqyvrLKtrNuqwh6wop/WT21NNDTEUg="
+      secure: mLbq3UU3SGjc0LDAnMnljbB7BxPBEylIkPoCuuYbN0EnwAwbyA4biTbTl91qINkQbUTMNJus0RuKXdM2I7irH/K559Gzd+E7lbu1olCc5MH0txPLFBi3bAiqTG64KkLxl9dmo2Ko0GZP8GZBWh5K5J1O69A2PEv7YILZO9MxeYb51yUQNcnAalhyGPdsDkOYB4r0HRLWoYQjdhM1E2iL5wMf7sdaDTpbnOLXUWrElRugc3kxuvMUbfzteMukJA/IbF6WzPMzX3mZAnQySGJZrBau4kOH8InT/aMy9F9+TuJsWVrfZ6J09qWeix/TNVqBC2O+Ow1NJLW0KI17KM/XODCf5skOu7hEoz16WUKC2xEwIkQmHgOhRJ3s1/t3+SIYyCwkJwtwN2R1TcCG07U5Z8PC9FOvjHCqOQrioNJAXIqUlJBb0b+yQTM/m9ov/GooNySPhvoXujsINSOe3GTWVGzEB13VjCeG0f65sO1QqDT4hCNQuqi0uyckava7hTnvnhbjH1w/OBeyvSh3azZMbaxZenR+UO1OV3jZ1VC66Z4yPrZhF+fGMTgzCc8ubA/XrSu+kPhZZGKNQSMLoh4z8H1zU7noCCkr+bY29eXJFRSvAxP7Y0CWq/J6TgDFKGfd+p6XeO/yBrsegOqyvrLKtrNuqwh6wop/WT21NNDTEUg=
     file:
-      - "dist/*.whl"
-      - "dist/*.tar.gz"
+      - dist/*.whl
+      - dist/*.tar.gz
     on:
       repo: ilyachch/md_docs-trans-app
       branch: master
