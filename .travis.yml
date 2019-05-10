@@ -1,0 +1,28 @@
+sudo: false
+language: python
+
+matrix:
+  include:
+    - python: 3.5
+      env: TOXENV=py35
+    - python: 3.6
+      env: TOXENV=py36
+    - python: 3.7
+      env: TOXENV=py37
+
+install:
+  - python setup.py install
+
+script:
+  - unittest
+
+deploy:
+  provider: pypi
+  user: ilyachch
+  password:
+    secure: K3ASEd1W9sHLqs7BgcldMXC1s8kWPcc1n0mtA9DUyGjDtQTD7O6tIWeF+dpOh+BgjsQwvK3VKqCrEoh/yrLNBcqd3OfFRnnHQpakT2aWrBkjXQ64KjsQcBtyRJMcYFd8AgaaiMkkYmzfFpQNiqoAWNuHFJ7AhXRoKoP0bIjCx8lqrq+dIqJfcCvpYvJuDxzaxjXwzjz/BGGT2HIXOB38oejrTKQ54GbdS8xF2lTDic3EnDGWE2+yQyBgIcn2sYvDAWfYZsE4hDg6LTxyCDynGNRHmDk3YDUBd08u9GDirjTIaJTRz933xnGshUv36C6cWqWSI6f3quy1a6n2/b9XJlT+LBIaiqoRoIwmwNjLZHk6jONGLMBA+U63P8oi7qHA2KW/y1/ij+bLo8+uWexDQra8aGCMHjYF7eavqJHNVwZAMukLjOe8sX9cJbiW6X/5m2rsCEpuL+Sv1TvhvijVYtIlX6WGA1rqvKYc/WNPoj5i3whaE/XQqYLKIlrb5THR/iGcM4KTKWbtrR9uX0G5QZXTkDLp852LE3rkyLNm9PAsH2GcU/J15ePy1rnT8r2e09eN+GKK0jwPSSmVMxWVqf/egbBBKPMNZVRkUfGmlXdJBIRIbjgaYn+ObPODdYtqw2mahiT9Bt4889HTfpFBxcFFD5avJbuuKjJJLO1Ql/I=
+  distributions: sdist bdist_wheel
+  skip_existing: true
+  on:
+    branch: master
+    tags: true

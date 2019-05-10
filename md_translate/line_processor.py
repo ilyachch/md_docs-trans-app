@@ -2,15 +2,11 @@ import re
 
 
 class LineProcessor:
-    code_mark = '```'
+    code_mark: str = '```'
     paragraph_regexp = re.compile(r'^[a-zA-Z]+.*')
 
-    def __init__(self, line):
-        """
-
-        :param line: str
-        """
-        self._line = line
+    def __init__(self, line: str):
+        self._line: str = line
 
     def is_code_block_border(self):
         if self._line == self.code_mark:

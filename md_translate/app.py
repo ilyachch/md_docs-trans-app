@@ -11,11 +11,8 @@ class App:
     def __validate_setup(self):
         try:
             self.settings.validate_arguments()
-        except NoApiKeyFileError:
-            print('API_KEY file in location "{}" not found'.format(self.settings.api_key))
-            print('Provide API_KEY file path or create it, if not exist')
-            print()
-            self.settings.arg_parser.print_help()
+        except NoApiKeyFileError as err:
+            print(err.get_message())
             exit(1)
 
     def process(self):
@@ -23,7 +20,12 @@ class App:
 
 
 def main():
-    App().process()
+    try:
+        App().process()
+        exit(0)
+    except Exception as err:
+        print(err)
+        exit(1)
 
 
 if __name__ == "__main__":

@@ -1,22 +1,31 @@
+import pathlib
 import re
+from typing import Type, Union, IO
 
+from md_translate.arguments_processor import settings
 from md_translate.line_processor import LineProcessor
-from md_translate.translator import get_translator_by_name
-from arguments_processor import settings
+from md_translate.translator import get_translator_by_name, Translator
 
 
 class FileTranslator:
-    default_open_mode = 'r+'
+    default_open_mode: str = 'r+'
 
-    code_mark = '```'
+    code_mark: str = '```'
     paragraph_regexp = re.compile(r'^[a-zA-Z]+.*')
 
-    def __init__(self, file_path):
-        self.__translator = get_translator_by_name(settings.service)
-        self.__file_path = file_path
-        self.__line_processor = None
-        self.file_contents_with_translation = []
-        self.code_block = False
+    def __init__(self, file_path: pathlib.Path):
+        self.__translator: Type[Translator] = get_translator_by_name(settings.service)
+        self.__file_path: pathlib.Path = file_path
+        self.__line_processor: Union[LineProcessor, None] = None
+        self.file_contents_with_translation: list = []
+        self.code_block: bool = False
+
+    def __enter__(self):
+        self.__translating_file: IO = self.__file_path.open(self.default_open_mode)
+        return self
+
+    def __exit__(self, *args, **kwargs):
+        self.__translating_file.close()
 
     def translate(self):
         lines = self.__translating_file.readlines()
@@ -24,7 +33,7 @@ class FileTranslator:
             self.file_contents_with_translation.append(line)
             self.__line_processor = LineProcessor(line)
             self.code_block = not self.code_block if self.__line_processor.is_code_block_border() else self.code_block
-            if self.line_have_to_be_translated():
+            if self.__line_processor.line_can_be_translated() and not self.code_block:
                 translated = self.__translator.request_translation(line)
                 self.file_contents_with_translation.append('\n')
                 self.file_contents_with_translation.append(translated)
@@ -34,16 +43,6 @@ class FileTranslator:
 
         self.__write_translated_data_to_file()
 
-    def line_have_to_be_translated(self):
-        return self.__line_processor.line_can_be_translated and not self.code_block
-
     def __write_translated_data_to_file(self):
         self.__translating_file.seek(0)
         self.__translating_file.writelines(self.file_contents_with_translation)
-
-    def __enter__(self):
-        self.__translating_file = open(self.__file_path, self.default_open_mode)
-        return self
-
-    def __exit__(self, *args, **kwargs):
-        self.__translating_file.close()
