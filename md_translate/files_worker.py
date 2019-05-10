@@ -20,7 +20,7 @@ class FilesWorker:
         md_files_list = []
         for link in self.__folder_to_process.iterdir():
             if link.suffix == '.md':
-                md_files_list.append(link)
+                md_files_list.append(link.name)
         if len(md_files_list) == 0:
             raise FileNotFoundError('There are no MD files found with provided path!')
         return md_files_list

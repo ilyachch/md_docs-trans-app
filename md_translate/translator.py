@@ -1,5 +1,7 @@
-import requests
 from typing import Type
+
+import requests
+
 from md_translate.arguments_processor import settings
 
 

@@ -2,7 +2,7 @@ import pathlib
 import re
 from typing import Type, Union, IO
 
-from arguments_processor import settings
+from md_translate.arguments_processor import settings
 from md_translate.line_processor import LineProcessor
 from md_translate.translator import get_translator_by_name, Translator
 
