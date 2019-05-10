@@ -32,30 +32,25 @@ target_lang = ru
 
 ```
 
-## Using
-
-To translate some folder:
+## Usage
 
 ```bash
-$ md-translate path_to_folder_with_md_files
+$ app.py [-h] [-c CONFIG_PATH] [-k API_KEY_FILE | -K API_KEY]
+              [-s {Yandex,Google}] [-S SOURCE_LANG] [-T TARGET_LANG]
+              [path]
 ```
 
-To translate current folder:
+If you set config file, you can override any of settings by arguments
 
-```bash
-$ md-translate
-```
+### Positional arguments:
+* `path` Path to folder to process. If not set, uses current folder
 
-Arguments:
+### Optional arguments:
+* `-h, --help`, show this help message and exit
+* `-c CONFIG_PATH, --config_path CONFIG_PATH`, Path to config_file
+* `-k API_KEY_FILE, --api_key_file API_KEY_FILE`, Path to Translation Service API key file
+* `-K API_KEY, --api_key API_KEY`, API key to use Translation API
+* `-s {Yandex,Google}, --service {Yandex,Google}`, Translating service
+* `-S SOURCE_LANG, --source_lang SOURCE_LANG`, Source language
+* `-T TARGET_LANG, --target_lang TARGET_LANG`, Target language
 
-* `-k (--api_key) path_to_api_key_file` (if you put api key file not to home folder)
-* `-s (--service) [Yandex, Google]` service to be used for translation
-* `-S (--source_lang) land_code` language code of source document (default: 'en')
-* `-T (--target_lang) lang_code` language code to translate in (default: 'ru')
-
-If you made settings file, run it with this arguments:
-
-* `-c (--config_path) path_to_config_file` (If it is not in your home directory)
-* `-C (--use_config)` (Yes, it's boolean. Use it if file is named `.md_translate_config.ini` and it placed in your home dir)
-
-It will find all `.md` files in folder you set and line by line, will translate. It will translate only paragraphs, not lists or any other markdown constructions.

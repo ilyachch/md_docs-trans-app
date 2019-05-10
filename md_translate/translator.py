@@ -32,7 +32,7 @@ class YandexTranslator(Translator):
     BASE_API_URL = 'https://translate.yandex.net/api/v1.5/tr.json/translate'
 
     def request_for_translation(self, string_to_translate):
-        params = {'key': settings.api_key_value,
+        params = {'key': settings.api_key,
                   'lang': '-'.join([settings.source_lang, settings.target_lang]),
                   }
         data = {'text': string_to_translate}
@@ -48,7 +48,7 @@ class GoogleTranslator(Translator):
     BASE_API_URL = 'https://translation.googleapis.com/language/translate/v2'
 
     def request_for_translation(self, string_to_translate):
-        headers = {'Authorization': 'Bearer "{}"'.format(settings.api_key_value)}
+        headers = {'Authorization': 'Bearer "{}"'.format(settings.api_key)}
         data = {'q': string_to_translate,
                 'source': settings.source_lang,
                 'target': settings.target_lang,
