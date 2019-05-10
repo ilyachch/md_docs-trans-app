@@ -52,5 +52,6 @@ setuptools.setup(
     ],
     entry_points={
         'console_scripts': ['md-translate=md_translate.app:main'],
-    }
+    },
+    test_suite="tests",
 )
