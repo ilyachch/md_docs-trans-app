@@ -8,7 +8,7 @@ from md_translate.arguments_processor import settings
 class Translator:
     BASE_API_URL = None
 
-    def request_translation(self, string_to_translate):
+    def request_translation(self, string_to_translate: str):
         response = self.request_for_translation(string_to_translate)
         if response.ok:
             translated_data = self.process_response(response)
