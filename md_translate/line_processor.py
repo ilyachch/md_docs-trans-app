@@ -7,7 +7,7 @@ class LineProcessor:
 
     def __init__(self, line: str):
         self._line: str = line
-        self.paragraph_regexp = re.compile(self.get_regexp(settings.source_lang))
+        self.pattern = self.get_regexp(settings.source_lang)
 
     def is_code_block_border(self):
         if self._line == self.code_mark:
@@ -18,7 +18,7 @@ class LineProcessor:
         return not self.__is_single_code_line() and self.__is_untranslated_paragraph()
 
     def __is_untranslated_paragraph(self):
-        return self.paragraph_regexp.match(self._line) is not None
+        return re.match(self.pattern, self._line) is not None
 
     def __is_single_code_line(self):
         return self._line.startswith(self.code_mark) and self._line.endswith(self.code_mark) and len(self._line) > 3
