@@ -29,3 +29,5 @@ class LineProcessor:
             return r'^[а-яА-Я]+.*'
         elif source_lang == 'en':
             return r'^[a-zA-Z]+.*'
+        else:
+            return r'^\d+.*'
