@@ -8,16 +8,16 @@ install:
   - python setup.py install
 script:
   - python setup.py test
+  - export COMMIT_HEADER=$(git log --oneline --format=%B -n 1 HEAD | head -n 1)
 notifications:
   email:
     on_success: never
     on_failure: change
 
-before_deploy:
-  - git config --local user.name "Ilya Chichak"
-  - git config --local user.email "ilyachch@gmail.com"
-  - export TRAVIS_TAG=$(cat VERSION)
-  - git tag $TRAVIS_TAG
+before_deploy: |-
+  log=$(git log $TRAVIS_COMMIT_RANGE --oneline)
+  export TAG=$COMMIT_HEADER
+  export BODY=$'**Change log:**<br/>'${log//$'\n'/<br/>}
 
 deploy:
   - provider: pypi
@@ -30,20 +30,21 @@ deploy:
     on:
       repo: ilyachch/md_docs-trans-app
       branch: master
-      tags: true
       python: '3.6'
-      condition: $(git branch | grep \* | cut -d ' ' -f2) == $(cat VERSION)
+      condition: $COMMIT_HEADER =~ ^v([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3})$
 
   - provider: releases
     skip_cleanup: true
+    name: Release $COMMIT_HEADER
+    tag_name: $TAG
+    body: $BODY
     api_key:
-      secure: mLbq3UU3SGjc0LDAnMnljbB7BxPBEylIkPoCuuYbN0EnwAwbyA4biTbTl91qINkQbUTMNJus0RuKXdM2I7irH/K559Gzd+E7lbu1olCc5MH0txPLFBi3bAiqTG64KkLxl9dmo2Ko0GZP8GZBWh5K5J1O69A2PEv7YILZO9MxeYb51yUQNcnAalhyGPdsDkOYB4r0HRLWoYQjdhM1E2iL5wMf7sdaDTpbnOLXUWrElRugc3kxuvMUbfzteMukJA/IbF6WzPMzX3mZAnQySGJZrBau4kOH8InT/aMy9F9+TuJsWVrfZ6J09qWeix/TNVqBC2O+Ow1NJLW0KI17KM/XODCf5skOu7hEoz16WUKC2xEwIkQmHgOhRJ3s1/t3+SIYyCwkJwtwN2R1TcCG07U5Z8PC9FOvjHCqOQrioNJAXIqUlJBb0b+yQTM/m9ov/GooNySPhvoXujsINSOe3GTWVGzEB13VjCeG0f65sO1QqDT4hCNQuqi0uyckava7hTnvnhbjH1w/OBeyvSh3azZMbaxZenR+UO1OV3jZ1VC66Z4yPrZhF+fGMTgzCc8ubA/XrSu+kPhZZGKNQSMLoh4z8H1zU7noCCkr+bY29eXJFRSvAxP7Y0CWq/J6TgDFKGfd+p6XeO/yBrsegOqyvrLKtrNuqwh6wop/WT21NNDTEUg=
+      secure: m7eZSbvYg3pvsHLIGly5jsfTnFzS4KXB7kEaORd+Shgg6Sy4f3Eu/ZBe+n2buwqCgvN4XVXHVVxW3vE0nsIKSb9sI6+uO8DihtMP0ExnO9+tyfaVf4PDaEmoUegbaMh+YaeJu/Ht723Zxueh2cNgbA1J5tykLcOwB2flBXqOPQUV3GG58jxVngPTL++a5n/KWBO08WjzlgXs5w6eLhqyNpuImHHwQNPe4Ba3bKPICUDpJH+wFjGugSrxaksArH9++j9M88S5hq12hfJzole1ywy2pjElbKwkg6KXBsQov/66OqNCniWdcMX45VSKXoKTrSrqtpRoozvJDj9h8EeGKPKE9jYB+zY7t11zbHIXtnBkwg//0wIawTnb4BjT6lyUiFW66KtzhStOgkVLn/9x8eM0RGIPSDljD91z7+WdyOBSM+70XwQjU6M+f6UETWAHZgQ145XdCvbiyFuznjllWctGVgiJ1TVgbkDaFS49A16fAgX8eZzDS/cNvDSyxMC7S2kykH0xTgCM0eliBJ9LMi3hR/IYjEE3JuEzVMKXhWOic4Q6AxMFmYK9cG2EMDMVmp2ssxKdCWHld0gBkHS5So9VZb4y65fdvqv0cjPwcGMKZBSkMtnvqD0whc82f3qiJBsml5hOaXcZPU53cox8pofV5h8aWo0brXbyeW1psgo=
     file:
       - dist/*.whl
       - dist/*.tar.gz
     on:
       repo: ilyachch/md_docs-trans-app
       branch: master
-      tags: true
       python: '3.6'
-      condition: $(git branch | grep \* | cut -d ' ' -f2) == $(cat VERSION)
+      condition: $COMMIT_HEADER =~ ^v([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3})$
