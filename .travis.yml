@@ -18,25 +18,11 @@ before_deploy:
 - export TRAVIS_TAG=$(cat VERSION)
 - git tag $TRAVIS_TAG
 deploy:
-#  - provider: pypi
-#    user: ilyachch
-#    password:
-#      secure: Kn6wEHC2eA1dkUFbarVVHSmtopsHCurvr6fGix7/n+R2/u0FuJsayC0apSl2yaYAv++INqXn3CopSUwXxk5BeNNKDHVW9ULd4VmyXjU/p+Ogop3MXK9ygP38Arti2CrtILynPRwf3k9Bz0FvQ+CZaHqHO/HjLBIdU9oYKqgNkwROo3rlEU10WNEi32zEMta91EEtgefDXavyXCuYDsAkP59gp8f1DZCHkL9PTVFaGrWVZbBYvRAOxcEvVQLazrH5vL4yWA3vfGpTHjX/yIXM/TcrmcxSiZesc7T76qbv3CvpyS6lxAsCSTZDC3Tq/GrVhMG+HMefxa/2DGhQhWmdUfok9hOIsWHE7n7EpU2nRjvxqSvuw78zq40fIcX+2eXtT5/kIHPREfPxZ+dy6Qd4PTxljvzGXCMaJ7V2EX3pxuxhztdZzSmXdhHWTNI5SjL6Nm7fsw2auq/iEwwBrjCRU9zh2ZKpsjQ5ngsnqHJfMK6hswXS8QWH3nvFhfTTNyNZTrIljmSZ1eqhEqoh1VZ7hCpJsrBXDm4YPQpKrhtMB+1Z+wIDhwLHVt3Y6SwPFOh+I3lmUSRSeIldX5eqISvl7pbJEWGWurybDTmT7XNLC9nb1CVTXOY/Um9cpOSZ9utySOQlKXoMxOWCwr91C1UYBFILtKsj4PPgmah+LvNks0Q=
-#    distributions: sdist bdist_wheel
-#    skip_cleanup: true
-#    skip_existing: true
-#    on:
-#      repo: ilyachch/md_docs-trans-app
-#      branch: master
-#      python: '3.6'
   provider: releases
-  skip_cleanup: true
   api_key:
-    secure: mLbq3UU3SGjc0LDAnMnljbB7BxPBEylIkPoCuuYbN0EnwAwbyA4biTbTl91qINkQbUTMNJus0RuKXdM2I7irH/K559Gzd+E7lbu1olCc5MH0txPLFBi3bAiqTG64KkLxl9dmo2Ko0GZP8GZBWh5K5J1O69A2PEv7YILZO9MxeYb51yUQNcnAalhyGPdsDkOYB4r0HRLWoYQjdhM1E2iL5wMf7sdaDTpbnOLXUWrElRugc3kxuvMUbfzteMukJA/IbF6WzPMzX3mZAnQySGJZrBau4kOH8InT/aMy9F9+TuJsWVrfZ6J09qWeix/TNVqBC2O+Ow1NJLW0KI17KM/XODCf5skOu7hEoz16WUKC2xEwIkQmHgOhRJ3s1/t3+SIYyCwkJwtwN2R1TcCG07U5Z8PC9FOvjHCqOQrioNJAXIqUlJBb0b+yQTM/m9ov/GooNySPhvoXujsINSOe3GTWVGzEB13VjCeG0f65sO1QqDT4hCNQuqi0uyckava7hTnvnhbjH1w/OBeyvSh3azZMbaxZenR+UO1OV3jZ1VC66Z4yPrZhF+fGMTgzCc8ubA/XrSu+kPhZZGKNQSMLoh4z8H1zU7noCCkr+bY29eXJFRSvAxP7Y0CWq/J6TgDFKGfd+p6XeO/yBrsegOqyvrLKtrNuqwh6wop/WT21NNDTEUg=
+    secure: wiRboxT8sh2pfVgL4AlebUrK9sZ3vzQmooDVGANeHZakV7Oo2YTISjD7E/q0ZCjHU/Q5AUR3oEWtYLyw168VQCpUzfhH5yNR+8T7NaToIdb/qmKegjpvAYsKlQwYqDS3cGYWdbYZSCUg6X1tEg1S6ntWd55t85cv9gtuokSGtndHPTfzBMqLmWJYDy4o0DFIHiazM6hInnSV4QDkakXrapbiEj7ytzhjKY2kPSMS5vrfDZvpBTiS5QJzNfBMDiiyWyQz5WDaJYMjsTvwsH1clhaYuzIYuYIbTN3UJeG7ClhpQRZAK8a4+Qic8JJXHFkajGWGUV8ywhsEjYa76qch9PsN3EQRejTmJy9u+YD9XHWTVIJ89DoMHnbwvsPJcKqOvUoj8lbnND2PAGQjMPGKAQYTOMuTENH/PvXw8NXpPOdGlzT6BDo8oO6mqdL5JjJ+BoriWDuye0q5dogyL/OmJ3XWPIy76j+45cnct9KWRAG0qQkTsoeQOnMSA0S+ATn8z55XyIOLjY5KLHNgJbTOd2pG0dTKBVGoq+eFdLXoIRGFeeRS32wyOtbkGnpa9k+vGxG3D7oTPTx1rmx5jDBF2Qr9kDpJV/8m4ATVvFC5ClgnXBn/p/8S2sBFzuF+/mvdmEqcX1BZdMEQvB5uA7S0si1HPiGmalWZCPJpLrN45Jk=
   file:
-  - dist/*.whl
-  - dist/*.tar.gz
+    - dist/*.whl
+    - dist/*.tar.gz
   on:
     repo: ilyachch/md_docs-trans-app
-    branch: master
-    python: '3.6'
