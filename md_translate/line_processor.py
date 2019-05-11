@@ -2,19 +2,12 @@ import re
 from md_translate.arguments_processor import settings
 
 
-def get_regexp(source_lang):
-    if source_lang == 'ru':
-        return r'^[а-яА-Я]+.*'
-    elif source_lang == 'en':
-        return r'^[a-zA-Z]+.*'
-
-
 class LineProcessor:
     code_mark: str = '```'
-    paragraph_regexp = re.compile(get_regexp(settings.source_lang))
 
     def __init__(self, line: str):
         self._line: str = line
+        self.paragraph_regexp = re.compile(self.get_regexp(settings.source_lang))
 
     def is_code_block_border(self):
         if self._line == self.code_mark:
@@ -29,3 +22,10 @@ class LineProcessor:
 
     def __is_single_code_line(self):
         return self._line.startswith(self.code_mark) and self._line.endswith(self.code_mark) and len(self._line) > 3
+
+    @staticmethod
+    def get_regexp(source_lang):
+        if source_lang == 'ru':
+            return r'^[а-яА-Я]+.*'
+        elif source_lang == 'en':
+            return r'^[a-zA-Z]+.*'
