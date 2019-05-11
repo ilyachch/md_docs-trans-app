@@ -13,10 +13,12 @@ notifications:
     on_success: never
     on_failure: change
 before_deploy:
-  - git config --local user.name "Ilya Chichak"
-  - git config --local user.email "ilyachch@gmail.com"
-  - export TRAVIS_TAG=$(cat VERSION)
-  - git tag $TRAVIS_TAG
+  - if ! [[ $TRAVIS_TAG ]]; then
+    export TRAVIS_TAG=$(cat VERSION) &&
+    git config --local user.name "$USER_NAME" &&
+    git config --local user.email "$USER_EMAIL" &&
+    git tag "$TRAVIS_TAG" "$TRAVIS_COMMIT";
+    fi
 deploy:
   - provider: pypi
     user: ilyachch
