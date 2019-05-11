@@ -1,5 +1,5 @@
 import re
-from arguments_processor import settings
+from md_translate.arguments_processor import settings
 
 
 def get_regexp(source_lang):
