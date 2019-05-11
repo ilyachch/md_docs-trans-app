@@ -10,7 +10,7 @@ def get_long_description():
 setuptools.setup(
     # Common data
     name="md_translate",
-    version='0.0.8',
+    version='0.0.9',
     author="Ilya Chichak",
     author_email="ilyachch@gmail.com",
     description="CLI tool to translate markdown files",
