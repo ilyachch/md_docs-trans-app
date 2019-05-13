@@ -13,7 +13,7 @@ class Translator:
         response = self.request_for_translation(string_to_translate)
         if response.ok:
             translated_data = self.process_response(response)
-            return '\n'.join(translated_data)
+            return translated_data
         else:
             raise requests.exceptions.ConnectionError('Something web wrong with translation requesting.')
 
@@ -44,7 +44,7 @@ class YandexTranslator(Translator):
                              )
 
     def process_response(self, response):
-        return response.json()['text']
+        return response.json()['text'][0]
 
 
 class GoogleTranslator(Translator):
