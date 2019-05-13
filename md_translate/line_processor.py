@@ -1,13 +1,13 @@
 import re
-from md_translate.arguments_processor import settings
 
 
 class LineProcessor:
     code_mark: str = '```'
 
-    def __init__(self, line: str):
+    def __init__(self, settings, line: str):
+        self.settings = settings
         self._line: str = line
-        self.pattern = self.get_regexp(settings.source_lang)
+        self.pattern = self.get_regexp(self.settings.source_lang)
 
     def is_code_block_border(self):
         if self._line == self.code_mark:
