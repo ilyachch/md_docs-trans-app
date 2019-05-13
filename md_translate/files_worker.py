@@ -1,12 +1,12 @@
 import pathlib
 
 from md_translate.exceptions import DirectoryNotFoundException
-from md_translate.file_translator import FileTranslator
 
 
 class FilesWorker:
-    def __init__(self, folder_to_process):
-        self.__folder_to_process: pathlib.Path = pathlib.Path(folder_to_process)
+    def __init__(self, settings):
+        self.settings = settings
+        self.__folder_to_process: pathlib.Path = pathlib.Path(self.settings.path)
         self.__validate_folder()
         self.md_files_list: list = self.__get_md_files_list()
 
@@ -25,9 +25,6 @@ class FilesWorker:
             raise FileNotFoundError('There are no MD files found with provided path!')
         return md_files_list
 
-    def process(self):
-        for file_name in self.md_files_list:
-            md_file_abs_path = self.__folder_to_process.joinpath(file_name)
-            with FileTranslator(md_file_abs_path) as processing_file:
-                processing_file.translate()
-            print('Processed: {file_name}'.format(file_name=file_name))
+    def get_files_to_translate(self):
+        files_to_translate = [self.__folder_to_process.joinpath(file_name) for file_name in self.md_files_list]
+        return files_to_translate

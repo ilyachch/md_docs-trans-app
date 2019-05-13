@@ -2,7 +2,6 @@ import pathlib
 import re
 from typing import Type, Union, IO
 
-from md_translate.arguments_processor import settings
 from md_translate.line_processor import LineProcessor
 from md_translate.translator import get_translator_by_name, Translator
 
@@ -13,8 +12,9 @@ class FileTranslator:
     code_mark: str = '```'
     paragraph_regexp = re.compile(r'^[a-zA-Z]+.*')
 
-    def __init__(self, file_path: pathlib.Path):
+    def __init__(self, settings, file_path: pathlib.Path):
         translator_class: Type[Translator] = get_translator_by_name(settings.service)
+        self.settings = settings
         self.__translator = translator_class()
         self.__file_path: pathlib.Path = file_path
         self.line_processor: Union[LineProcessor, None] = None
@@ -32,7 +32,7 @@ class FileTranslator:
         lines = self.__translating_file.readlines()
         for counter, line in enumerate(lines):
             self.file_contents_with_translation.append(line)
-            self.line_processor = LineProcessor(line)
+            self.line_processor = LineProcessor(self.settings, line)
             self.code_block = not self.code_block if self.line_processor.is_code_block_border() else self.code_block
             if self.line_processor.line_can_be_translated() and not self.code_block:
                 translated = self.__translator.request_translation(line)

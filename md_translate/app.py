@@ -1,6 +1,7 @@
 from md_translate.arguments_processor import settings
 from md_translate.exceptions import NoApiKeyFileError
 from md_translate.files_worker import FilesWorker
+from md_translate.file_translator import FileTranslator
 
 
 class App:
@@ -16,7 +17,11 @@ class App:
             exit(1)
 
     def process(self):
-        FilesWorker(self.settings.path).process()
+        files_to_process = FilesWorker(self.settings.path).get_files_to_translate()
+        for file_name in files_to_process:
+            with FileTranslator(self.settings, file_name) as processing_file:
+                processing_file.translate()
+            print('Processed: {file_name}'.format(file_name=file_name))
 
 
 def main():
