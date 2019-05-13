@@ -16,7 +16,7 @@ notifications:
 
 before_deploy: |-
   log=$(git log $TRAVIS_COMMIT_RANGE --oneline)
-  export TAG=$COMMIT_HEADER
+  export TAG=v$COMMIT_HEADER
   export BODY=$'**Change log:**<br/>'${log//$'\n'/<br/>}
 
 deploy:
@@ -31,7 +31,7 @@ deploy:
       repo: ilyachch/md_docs-trans-app
       branch: master
       python: '3.6'
-      condition: $COMMIT_HEADER =~ ^v([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3})$
+      condition: $COMMIT_HEADER =~ ^([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3})$
 
   - provider: releases
     skip_cleanup: true
@@ -47,4 +47,4 @@ deploy:
       repo: ilyachch/md_docs-trans-app
       branch: master
       python: '3.6'
-      condition: $COMMIT_HEADER =~ ^v([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3})$
+      condition: $COMMIT_HEADER =~ ^([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3})$
