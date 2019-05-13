@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from md_translate.exceptions import DirectoryNotFoundException
+from md_translate.exceptions import ObjectNotFoundException
 from md_translate.files_worker import FilesWorker
 
 
@@ -13,7 +13,7 @@ class TestFilesWorker(unittest.TestCase):
             self.path = self._path.joinpath(path)
 
     def test_folder_errors(self):
-        with self.assertRaises(DirectoryNotFoundException):
+        with self.assertRaises(ObjectNotFoundException):
             FilesWorker(self.SettingsMock('not existing folder'))
         with self.assertRaises(NotADirectoryError):
             FilesWorker(self.SettingsMock('not_a_folder'))

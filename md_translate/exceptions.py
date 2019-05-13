@@ -2,7 +2,7 @@ class ConfigurationError(RuntimeError):
     pass
 
 
-class DirectoryNotFoundException(OSError):
+class ObjectNotFoundException(OSError):
     pass
 
 
