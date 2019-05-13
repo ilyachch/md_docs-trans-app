@@ -8,7 +8,7 @@ install:
   - python setup.py install
 script:
   - python setup.py test
-  - export COMMIT_HEADER=$(git log --oneline --format=%B -n 1 HEAD | head -n 1)
+  - export COMMIT_HEADER=$(git log --oneline --format=%B -n 1 HEAD | head -n 1 | cut -d ' ' -f 1)
 notifications:
   email:
     on_success: never
