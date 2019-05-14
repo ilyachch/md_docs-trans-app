@@ -36,7 +36,7 @@ class FileTranslator:
             self.code_block = not self.code_block if self.line_processor.is_code_block_border() else self.code_block
             if self.line_processor.line_can_be_translated() and not self.code_block:
                 translated = self.__translator.request_translation(line)
-                self.file_contents_with_translation.append('\n\n')
+                self.file_contents_with_translation.append('\n')
                 self.file_contents_with_translation.append(translated)
 
                 print('Processed: {percent}% ({counter} of {lines})'.format(percent=(counter / len(lines) * 100),
