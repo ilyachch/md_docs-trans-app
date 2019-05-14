@@ -170,17 +170,3 @@ class TestGoogleTranslator(unittest.TestCase):
             data={'q': self.en_string_to_translate, 'source': 'en', 'target': 'ru', 'format': 'text'},
         )
         self.assertEqual(translate_result, self.ru_translated_string)
-
-
-class TestAbstractTranslatorFails(unittest.TestCase):
-    class MockedSettings:
-        api_key = 'TEST_API_KEY'
-        source_lang = 'ru'
-        target_lang = 'en'
-
-    def test_abstract_method_usage_fails(self):
-        abstract_translator_object = AbstractTranslator(self.MockedSettings())
-        with self.assertRaises(NotImplementedError):
-            abstract_translator_object.request_for_translation('some_string')
-        with self.assertRaises(NotImplementedError):
-            abstract_translator_object.process_response(Response())

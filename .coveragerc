@@ -1,0 +1,13 @@
+[coverage:run]
+branch = True
+
+[coverage:paths]
+source =
+    md_translate
+
+[coverage:report]
+ignore_errors = True
+exclude_lines =
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
