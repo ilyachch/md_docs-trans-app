@@ -17,7 +17,7 @@ class App:
             exit(1)
 
     def process(self):
-        files_to_process = FilesWorker(self.settings.path).get_files_to_translate()
+        files_to_process = FilesWorker(self.settings.path).md_files_list
         for file_name in files_to_process:
             with FileTranslator(self.settings, file_name) as processing_file:
                 processing_file.translate()

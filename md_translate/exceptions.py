@@ -17,3 +17,7 @@ class NoApiKeyFileError(RuntimeError):
 
 class NoConfigFileError(RuntimeError):
     pass
+
+
+class FileIsNotMarkdown(RuntimeError):
+    pass

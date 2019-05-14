@@ -1,25 +1,46 @@
 import unittest
 from pathlib import Path
 
-from md_translate.exceptions import ObjectNotFoundException
+from md_translate.exceptions import ObjectNotFoundException, FileIsNotMarkdown
 from md_translate.files_worker import FilesWorker
 
 
 class TestFilesWorker(unittest.TestCase):
-    class SettingsMock:
-        _path = Path('tests/test_data')
-
-        def __init__(self, path):
-            self.path = self._path.joinpath(path)
-
     def test_folder_errors(self):
+        class SettingsMock:
+            def __init__(self, path):
+                self.path = Path('tests/test_data').joinpath(path)
+
         with self.assertRaises(ObjectNotFoundException):
-            FilesWorker(self.SettingsMock('not existing folder'))
-        with self.assertRaises(NotADirectoryError):
-            FilesWorker(self.SettingsMock('not_a_folder'))
+            FilesWorker(SettingsMock('not existing folder'))
         with self.assertRaises(FileNotFoundError):
-            FilesWorker(self.SettingsMock('folder_without_md_files'))
+            FilesWorker(SettingsMock('folder_without_md_files'))
+        with self.assertRaises(FileIsNotMarkdown):
+            FilesWorker(SettingsMock('not_a_folder'))
+        with self.assertRaises(FileIsNotMarkdown):
+            FilesWorker(SettingsMock('not_markdown_file.txt'))
+
+    def test_multiple_objects(self):
+        class MockedSettings:
+            path = Path('tests/test_data/md_files_folder')
+
+        file_worker_object = FilesWorker(MockedSettings())
+        self.assertFalse(file_worker_object.single_file)
         self.assertListEqual(
-            sorted(['first_file.md', 'second_file.md']),
-            sorted(FilesWorker(self.SettingsMock('md_files_folder')).md_files_list)
+            sorted(file_worker_object.md_files_list),
+            sorted([
+                Path('tests/test_data/md_files_folder/first_file.md'),
+                Path('tests/test_data/md_files_folder/second_file.md')
+            ]),
+        )
+
+    def test_single_object(self):
+        class MockedSettings:
+            path = Path('tests/test_data/md_files_folder/first_file.md')
+
+        file_worker_object = FilesWorker(MockedSettings())
+        self.assertTrue(file_worker_object)
+        self.assertEqual(
+            file_worker_object.md_files_list,
+            [Path('tests/test_data/md_files_folder/first_file.md')]
         )
