@@ -1,9 +1,10 @@
 from typing import Type
 
 import requests
+from requests.exceptions import ConnectionError
 
 
-class Translator:
+class AbstractTranslator:
     BASE_API_URL = None
 
     def __init__(self, settings):
@@ -15,7 +16,7 @@ class Translator:
             translated_data = self.process_response(response)
             return translated_data
         else:
-            raise requests.exceptions.ConnectionError('Something web wrong with translation requesting.')
+            raise ConnectionError('Something web wrong with translation requesting.')
 
     def request_for_translation(self, string_to_translate: str):
         raise NotImplementedError()
@@ -24,14 +25,14 @@ class Translator:
         raise NotImplementedError()
 
 
-def get_translator_by_name(name) -> Type[Translator]:
+def get_translator_by_name(name) -> Type[AbstractTranslator]:
     if name == 'Yandex':
         return YandexTranslator
     elif name == 'Google':
         return GoogleTranslator
 
 
-class YandexTranslator(Translator):
+class YandexTranslator(AbstractTranslator):
     BASE_API_URL = 'https://translate.yandex.net/api/v1.5/tr.json/translate'
 
     def request_for_translation(self, string_to_translate):
@@ -47,7 +48,7 @@ class YandexTranslator(Translator):
         return response.json()['text'][0]
 
 
-class GoogleTranslator(Translator):
+class GoogleTranslator(AbstractTranslator):
     BASE_API_URL = 'https://translation.googleapis.com/language/translate/v2'
 
     def request_for_translation(self, string_to_translate):

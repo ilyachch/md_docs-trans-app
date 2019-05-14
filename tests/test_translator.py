@@ -1,7 +1,10 @@
 import unittest
 from unittest import mock
 
-from md_translate.translator import YandexTranslator, get_translator_by_name, GoogleTranslator
+from requests.exceptions import ConnectionError
+from requests import Response
+from md_translate.translator import YandexTranslator, get_translator_by_name, GoogleTranslator, \
+    AbstractTranslator
 
 
 class TestGetTranslator(unittest.TestCase):
@@ -18,131 +21,166 @@ class TestGetTranslator(unittest.TestCase):
         self.assertNotEqual(service_parser, YandexTranslator)
 
 
-class TestTranslatorYandexEnRu(unittest.TestCase):
-    class MockedSettings:
+class TestTranslatorFails(unittest.TestCase):
+    string_to_translate = 'Some string'
+
+    class MockedSettingsYandex:
         api_key = 'TEST_API_KEY'
         source_lang = 'en'
         target_lang = 'ru'
         service = 'Yandex'
 
-    class MockedResponseEnRu:
-        translated_string = 'Переведенная строка'
-        ok = True
-
-        def json(self):
-            return {'text': [self.translated_string, ]}
-
-    def setUp(self):
-        self.string_to_translate = 'Some string to translate'
-        self.translated_string = 'Переведенная строка'
-
-        self.mocked_settings = self.MockedSettings()
-        self.mocked_response = self.MockedResponseEnRu()
-
-    @mock.patch('md_translate.translator.requests.post')
-    def test_translation_requesting(self, mocked_post):
-        mocked_post.return_value = self.mocked_response
-        translate_result = YandexTranslator(self.mocked_settings).request_translation(self.string_to_translate)
-        mocked_post.assert_called_with(
-            'https://translate.yandex.net/api/v1.5/tr.json/translate',
-            data={'text': self.string_to_translate}, params={'key': 'TEST_API_KEY', 'lang': 'en-ru'}
-        )
-        self.assertEqual(translate_result, self.translated_string)
-
-
-class TestTranslatorYandexRuEn(unittest.TestCase):
-    class MockedSettings:
-        api_key = 'TEST_API_KEY'
-        source_lang = 'ru'
-        target_lang = 'en'
-        service = 'Yandex'
-
-    class MockedResponseRuEn:
-        translated_string = 'Some string to translate'
-        ok = True
-
-        def json(self):
-            return {'text': [self.translated_string, ]}
-
-    def setUp(self):
-        self.string_to_translate = 'Переведенная строка'
-        self.translated_string = 'Some string to translate'
-
-        self.mocked_settings = self.MockedSettings()
-        self.mocked_response = self.MockedResponseRuEn()
-
-    @mock.patch('md_translate.translator.requests.post')
-    def test_translation_requesting(self, mocked_post):
-        mocked_post.return_value = self.mocked_response
-        translate_result = YandexTranslator(self.mocked_settings).request_translation(self.string_to_translate)
-        mocked_post.assert_called_with(
-            'https://translate.yandex.net/api/v1.5/tr.json/translate',
-            data={'text': self.string_to_translate}, params={'key': 'TEST_API_KEY', 'lang': 'ru-en'}
-        )
-        self.assertEqual(translate_result, self.translated_string)
-
-
-class TestTranslatorGoogleEnRu(unittest.TestCase):
-    class MockedSettings:
+    class MockedSettingsGoogle:
         api_key = 'TEST_API_KEY'
         source_lang = 'en'
         target_lang = 'ru'
         service = 'Google'
 
-    class MockedResponseEnRu:
-        translated_string = 'Переведенная строка'
-        ok = True
-
-        def json(self):
-            return {'data': {'translations': [{'translatedText': self.translated_string}]}}
-
-    def setUp(self):
-        self.string_to_translate = 'Some string to translate'
-        self.translated_string = 'Переведенная строка'
-
-        self.mocked_settings = self.MockedSettings()
-        self.mocked_response = self.MockedResponseEnRu()
+    class MockedResponseEnRuFailed:
+        ok = False
 
     @mock.patch('md_translate.translator.requests.post')
-    def test_translation_requesting(self, mocked_post):
-        mocked_post.return_value = self.mocked_response
-        translate_result = GoogleTranslator(self.mocked_settings).request_translation(self.string_to_translate)
-        mocked_post.assert_called_with(
+    def test_yandex_translation_requesting_fails(self, mocked_post):
+        mocked_post.return_value = self.MockedResponseEnRuFailed
+        with self.assertRaises(ConnectionError):
+            YandexTranslator(self.MockedSettingsYandex()).request_translation(self.string_to_translate)
+
+    @mock.patch('md_translate.translator.requests.post')
+    def test_google_translation_requesting_fails(self, mocked_post):
+        mocked_post.return_value = self.MockedResponseEnRuFailed
+        with self.assertRaises(ConnectionError):
+            GoogleTranslator(self.MockedSettingsYandex()).request_translation(self.string_to_translate)
+
+
+class TestYandexTranslator(unittest.TestCase):
+    en_string_to_translate = 'Some string to translate'
+    en_translated_string = 'Переведенная строка'
+
+    ru_string_to_translate = 'Переведенная строка'
+    ru_translated_string = 'Some string to translate'
+
+    @staticmethod
+    def get_settings_class(source, target):
+        class MockedSettings:
+            api_key = 'TEST_API_KEY'
+            service = 'Yandex'
+            source_lang = source
+            target_lang = target
+
+        return MockedSettings
+
+    @staticmethod
+    def get_ok_response_mock(source):
+        class MockedResponse:
+            ok = True
+            if source == 'en':
+                translated_string = TestYandexTranslator.en_translated_string
+            elif source == 'ru':
+                translated_string = TestYandexTranslator.ru_translated_string
+
+            def json(s):
+                return {'text': [s.translated_string, ]}
+
+        return MockedResponse
+
+    def setUp(self):
+        self.en_ru_settings = self.get_settings_class('en', 'ru')()
+        self.ru_en_settings = self.get_settings_class('ru', 'en')()
+
+        self.en_ru_response = self.get_ok_response_mock('en')()
+        self.ru_en_response = self.get_ok_response_mock('ru')()
+
+    @mock.patch('md_translate.translator.requests.post')
+    def test_en_ru_translation_ok(self, request_mock):
+        request_mock.return_value = self.en_ru_response
+        translate_result = YandexTranslator(self.en_ru_settings).request_translation(self.en_string_to_translate)
+        request_mock.assert_called_with(
+            'https://translate.yandex.net/api/v1.5/tr.json/translate',
+            data={'text': self.en_string_to_translate}, params={'key': 'TEST_API_KEY', 'lang': 'en-ru'}
+        )
+        self.assertEqual(translate_result, self.en_translated_string)
+
+    @mock.patch('md_translate.translator.requests.post')
+    def ru_en_translation_ok(self, request_mock):
+        request_mock.return_value = self.ru_en_response
+        translate_result = YandexTranslator(self.ru_en_settings).request_translation(self.ru_string_to_translate)
+        request_mock.assert_called_with(
+            'https://translate.yandex.net/api/v1.5/tr.json/translate',
+            data={'text': self.ru_string_to_translate}, params={'key': 'TEST_API_KEY', 'lang': 'en-ru'}
+        )
+        self.assertEqual(translate_result, self.ru_translated_string)
+
+
+class TestGoogleTranslator(unittest.TestCase):
+    en_string_to_translate = 'Some string to translate'
+    en_translated_string = 'Переведенная строка'
+
+    ru_string_to_translate = 'Переведенная строка'
+    ru_translated_string = 'Some string to translate'
+
+    @staticmethod
+    def get_settings_class(source, target):
+        class MockedSettings:
+            api_key = 'TEST_API_KEY'
+            service = 'Google'
+            source_lang = source
+            target_lang = target
+
+        return MockedSettings
+
+    @staticmethod
+    def get_ok_response_mock(source):
+        class MockedResponse:
+            ok = True
+            if source == 'en':
+                translated_string = TestGoogleTranslator.en_translated_string
+            elif source == 'ru':
+                translated_string = TestGoogleTranslator.ru_translated_string
+
+            def json(s):
+                return {'data': {'translations': [{'translatedText': s.translated_string}]}}
+
+        return MockedResponse
+
+    def setUp(self):
+        self.en_ru_settings = self.get_settings_class('en', 'ru')()
+        self.ru_en_settings = self.get_settings_class('ru', 'en')()
+
+        self.en_ru_response = self.get_ok_response_mock('en')()
+        self.ru_en_response = self.get_ok_response_mock('ru')()
+
+    @mock.patch('md_translate.translator.requests.post')
+    def test_en_ru_translation_ok(self, request_mock):
+        request_mock.return_value = self.en_ru_response
+        translate_result = GoogleTranslator(self.en_ru_settings).request_translation(self.en_string_to_translate)
+        request_mock.assert_called_with(
             'https://translation.googleapis.com/language/translate/v2',
             headers={'Authorization': 'Bearer "TEST_API_KEY"'},
-            data={'q': 'Some string to translate', 'source': 'en', 'target': 'ru', 'format': 'text'},
+            data={'q': self.en_string_to_translate, 'source': 'en', 'target': 'ru', 'format': 'text'},
         )
-        self.assertEqual(translate_result, self.translated_string)
+        self.assertEqual(translate_result, self.en_translated_string)
+
+    @mock.patch('md_translate.translator.requests.post')
+    def ru_en_translation_ok(self, request_mock):
+        request_mock.return_value = self.ru_en_response
+        translate_result = GoogleTranslator(self.ru_en_settings).request_translation(self.ru_string_to_translate)
+        request_mock.assert_called_with(
+            'https://translation.googleapis.com/language/translate/v2',
+            headers={'Authorization': 'Bearer "TEST_API_KEY"'},
+            data={'q': self.en_string_to_translate, 'source': 'en', 'target': 'ru', 'format': 'text'},
+        )
+        self.assertEqual(translate_result, self.ru_translated_string)
 
 
-class TestTranslatorGoogleRuEn(unittest.TestCase):
+class TestAbstractTranslatorFails(unittest.TestCase):
     class MockedSettings:
         api_key = 'TEST_API_KEY'
         source_lang = 'ru'
         target_lang = 'en'
-        service = 'Google'
 
-    class MockedResponseRuEn:
-        translated_string = 'Some string to translate'
-        ok = True
-
-        def json(self):
-            return {'data': {'translations': [{'translatedText': self.translated_string}]}}
-
-    def setUp(self):
-        self.string_to_translate = 'Переведенная строка'
-        self.translated_string = 'Some string to translate'
-
-        self.mocked_settings = self.MockedSettings()
-        self.mocked_response = self.MockedResponseRuEn()
-
-    @mock.patch('md_translate.translator.requests.post')
-    def test_translation_requesting(self, mocked_post):
-        mocked_post.return_value = self.mocked_response
-        translate_result = GoogleTranslator(self.mocked_settings).request_translation(self.string_to_translate)
-        mocked_post.assert_called_with(
-            'https://translation.googleapis.com/language/translate/v2',
-            headers={'Authorization': 'Bearer "TEST_API_KEY"'},
-            data={'q': 'Переведенная строка', 'source': 'ru', 'target': 'en', 'format': 'text'},
-        )
-        self.assertEqual(translate_result, self.translated_string)
+    def test_abstract_method_usage_fails(self):
+        abstract_translator_object = AbstractTranslator(self.MockedSettings())
+        with self.assertRaises(NotImplementedError):
+            abstract_translator_object.request_for_translation('some_string')
+        with self.assertRaises(NotImplementedError):
+            abstract_translator_object.process_response(Response())
