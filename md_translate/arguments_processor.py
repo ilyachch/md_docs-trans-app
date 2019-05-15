@@ -15,7 +15,7 @@ class ArgumentsProcessor:
     TRANSLATOR_API_KEY_FILE_DEFAULT_PATH = Path.home().joinpath(TRANSLATOR_API_KEY_FILENAME)
     CONFIG_FILE_DEFAULT_PATH = Path.home().joinpath(CONFIG_FILENAME)
 
-    def __init__(self, args_str=sys.argv[:1]):
+    def __init__(self, args_str=sys.argv[1:]):
         self.args_str = args_str
         self.args_parser = self.__get_args_parser()
         self.params = self.args_parser.parse_args(self.args_str)
