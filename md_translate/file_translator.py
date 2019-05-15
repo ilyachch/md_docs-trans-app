@@ -41,10 +41,6 @@ class FileTranslator:
                     self.file_contents_with_translation.append(''.join([translated, '\n']))
                 else:
                     self.file_contents_with_translation.append(translated)
-
-                print('Processed: {percent}% ({counter} of {lines})'.format(percent=(counter / len(lines) * 100),
-                                                                            counter=counter, lines=len(lines)))
-
         self.__write_translated_data_to_file()
 
     def __write_translated_data_to_file(self):

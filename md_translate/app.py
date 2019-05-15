@@ -1,4 +1,4 @@
-from md_translate.arguments_processor import settings
+from md_translate.arguments_processor import ArgumentsProcessor
 from md_translate.exceptions import NoApiKeyFileError
 from md_translate.files_worker import FilesWorker
 from md_translate.file_translator import FileTranslator
@@ -6,7 +6,7 @@ from md_translate.file_translator import FileTranslator
 
 class App:
     def __init__(self):
-        self.settings = settings
+        self.settings = ArgumentsProcessor()
         self.__validate_setup()
 
     def __validate_setup(self):

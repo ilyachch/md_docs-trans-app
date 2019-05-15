@@ -21,3 +21,4 @@ class NoConfigFileError(RuntimeError):
 
 class FileIsNotMarkdown(RuntimeError):
     pass
+
