@@ -3,7 +3,7 @@ import re
 from typing import Type, Union, IO
 
 from md_translate.line_processor import LineProcessor
-from md_translate.translator import get_translator_by_name, Translator
+from md_translate.translator import get_translator_by_name, AbstractTranslator
 
 
 class FileTranslator:
@@ -13,9 +13,9 @@ class FileTranslator:
     paragraph_regexp = re.compile(r'^[a-zA-Z]+.*')
 
     def __init__(self, settings, file_path: pathlib.Path):
-        translator_class: Type[Translator] = get_translator_by_name(settings.service)
+        translator_class: Type[AbstractTranslator] = get_translator_by_name(settings.service)
         self.settings = settings
-        self.__translator = translator_class()
+        self.__translator: AbstractTranslator = translator_class(settings)
         self.__file_path: pathlib.Path = file_path
         self.line_processor: Union[LineProcessor, None] = None
         self.file_contents_with_translation: list = []
@@ -37,11 +37,10 @@ class FileTranslator:
             if self.line_processor.line_can_be_translated() and not self.code_block:
                 translated = self.__translator.request_translation(line)
                 self.file_contents_with_translation.append('\n')
-                self.file_contents_with_translation.append(translated)
-
-                print('Processed: {percent}% ({counter} of {lines})'.format(percent=(counter / len(lines) * 100),
-                                                                            counter=counter, lines=len(lines)))
-
+                if line.endswith('\n') and not translated.endswith('\n'):
+                    self.file_contents_with_translation.append(''.join([translated, '\n']))
+                else:
+                    self.file_contents_with_translation.append(translated)
         self.__write_translated_data_to_file()
 
     def __write_translated_data_to_file(self):

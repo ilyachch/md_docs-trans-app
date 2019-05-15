@@ -31,6 +31,7 @@ setuptools.setup(
             'wheel',
             'setuptools',
             'bumpversion',
+            'coverage',
         ]
     },
     classifiers=[

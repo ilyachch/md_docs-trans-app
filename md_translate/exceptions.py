@@ -2,7 +2,7 @@ class ConfigurationError(RuntimeError):
     pass
 
 
-class DirectoryNotFoundException(OSError):
+class ObjectNotFoundException(OSError):
     pass
 
 
@@ -17,3 +17,8 @@ class NoApiKeyFileError(RuntimeError):
 
 class NoConfigFileError(RuntimeError):
     pass
+
+
+class FileIsNotMarkdown(RuntimeError):
+    pass
+

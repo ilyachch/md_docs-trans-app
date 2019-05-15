@@ -24,7 +24,7 @@ class LineProcessor:
         return self._line.startswith(self.code_mark) and self._line.endswith(self.code_mark) and len(self._line) > 3
 
     @staticmethod
-    def get_regexp(source_lang):
+    def get_regexp(source_lang=''):
         if source_lang == 'ru':
             return r'^[а-яА-Я]+.*'
         elif source_lang == 'en':

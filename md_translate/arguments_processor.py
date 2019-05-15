@@ -1,8 +1,8 @@
 import argparse
 import configparser
 from pathlib import Path
-
-from md_translate.exceptions import NoApiKeyFileError, NoConfigFileError
+import sys
+from md_translate.exceptions import NoApiKeyFileError, NoConfigFileError, ConfigurationError
 
 
 class ArgumentsProcessor:
@@ -15,14 +15,15 @@ class ArgumentsProcessor:
     TRANSLATOR_API_KEY_FILE_DEFAULT_PATH = Path.home().joinpath(TRANSLATOR_API_KEY_FILENAME)
     CONFIG_FILE_DEFAULT_PATH = Path.home().joinpath(CONFIG_FILENAME)
 
-    def __init__(self):
-        self.__args_parser = self.__get_args_parser()
-        self.__arguments = self.__args_parser.parse_args()
-        self.__use_config_file = True
-        self.__config_file_path = self.CONFIG_FILE_DEFAULT_PATH
+    def __init__(self, args_str=sys.argv[:1]):
+        self.args_str = args_str
+        self.args_parser = self.__get_args_parser()
+        self.params = self.args_parser.parse_args(self.args_str)
+        self.use_config_file = True
+        self.config_file_path = self.CONFIG_FILE_DEFAULT_PATH
 
         self.path = None
-        self.__api_key_file_path = self.TRANSLATOR_API_KEY_FILE_DEFAULT_PATH
+        self.api_key_file_path = self.TRANSLATOR_API_KEY_FILE_DEFAULT_PATH
         self.api_key = None
         self.service = None
         self.source_lang = None
@@ -57,7 +58,7 @@ class ArgumentsProcessor:
         api_key_group.add_argument(
             '-K', '--api_key',
             help='API key to use Translation API',
-            type=Path)
+            type=str)
 
         arg_parser.add_argument(
             '-s', '--service',
@@ -75,31 +76,48 @@ class ArgumentsProcessor:
         return arg_parser
 
     def set_settings(self):
-        if self.__arguments.config_path is not None and self.__arguments.config_path.exists():
-            self.__set_settings_from_config_file(self.__arguments.config_path)
+        if self.params.config_path is not None and self.params.config_path.exists():
+            self.__set_settings_from_config_file(self.params.config_path)
         elif self.CONFIG_FILE_DEFAULT_PATH.exists():
             self.__set_settings_from_config_file(self.CONFIG_FILE_DEFAULT_PATH)
 
-        self.path = self.__arguments.path
+        self.path = self.params.path
 
-        if self.__arguments.api_key_file is not None:
-            with self.__arguments.api_key_file.open() as api_key_file:
+        if self.params.api_key_file is not None:
+            with self.params.api_key_file.open() as api_key_file:
                 self.api_key = api_key_file.read()
-        elif self.__arguments.api_key is not None:
-            self.api_key = self.__arguments.api_key
+        elif self.params.api_key is not None:
+            self.api_key = self.params.api_key
 
-        if self.__arguments.service is not None:
-            self.service = self.__arguments.service
+        if self.params.api_key_file is None and self.params.api_key is None and self.api_key is None:
+            if self.TRANSLATOR_API_KEY_FILE_DEFAULT_PATH.exists():
+                with self.TRANSLATOR_API_KEY_FILE_DEFAULT_PATH.open() as api_key_file:
+                    self.api_key = api_key_file.read()
 
-        if self.__arguments.source_lang is not None:
-            self.source_lang = self.__arguments.source_lang
+        if self.params.service is not None:
+            self.service = self.params.service
 
-        if self.__arguments.target_lang is not None:
-            self.target_lang = self.__arguments.target_lang
+        if self.params.source_lang is not None:
+            self.source_lang = self.params.source_lang
+
+        if self.params.target_lang is not None:
+            self.target_lang = self.params.target_lang
 
     def validate_arguments(self):
-        if self.__arguments.api_key_file is not None and not self.__arguments.api_key_file.exists():
-            raise NoApiKeyFileError(self.__arguments.api_key)
+        settings_props = [self.service, self.source_lang, self.target_lang, self.api_key]
+        if not all(settings_props):
+            if self.CONFIG_FILE_DEFAULT_PATH.exists():
+                raise ConfigurationError(
+                    'Some of settings missed. Check your config file'
+                )
+            elif not self.CONFIG_FILE_DEFAULT_PATH.exists():
+                raise NoConfigFileError(
+                    'No config file found. Create file {} or pass custom file  with `-c` param'.format(
+                        self.CONFIG_FILE_DEFAULT_PATH
+                    )
+                )
+        if self.params.api_key_file is not None and not self.params.api_key_file.exists():
+            raise NoApiKeyFileError(self.params.api_key)
 
     def __set_settings_from_config_file(self, config_file_path: Path):
         config = configparser.ConfigParser()
@@ -107,10 +125,7 @@ class ArgumentsProcessor:
 
         config_ns = config['Settings']
 
-        self.api_key = config_ns['api_key']
-        self.service = config_ns['service']
-        self.source_lang = config_ns['source_lang']
-        self.target_lang = config_ns['target_lang']
-
-
-settings = ArgumentsProcessor()
+        self.api_key = config_ns.get('api_key', None)
+        self.service = config_ns.get('service', None)
+        self.source_lang = config_ns.get('source_lang', None)
+        self.target_lang = config_ns.get('target_lang', None)
