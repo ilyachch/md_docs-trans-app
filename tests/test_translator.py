@@ -2,9 +2,8 @@ import unittest
 from unittest import mock
 
 from requests.exceptions import ConnectionError
-from requests import Response
-from md_translate.translator import YandexTranslator, get_translator_by_name, GoogleTranslator, \
-    AbstractTranslator
+
+from md_translate.translator import YandexTranslator, get_translator_by_name, GoogleTranslator
 
 
 class TestGetTranslator(unittest.TestCase):

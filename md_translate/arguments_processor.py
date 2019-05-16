@@ -1,7 +1,9 @@
-import argparse
 import configparser
-from pathlib import Path
 import sys
+from argparse import ArgumentParser, Namespace
+from pathlib import Path
+from typing import Union
+
 from md_translate.exceptions import NoApiKeyFileError, NoConfigFileError, ConfigurationError
 
 
@@ -15,24 +17,24 @@ class ArgumentsProcessor:
     TRANSLATOR_API_KEY_FILE_DEFAULT_PATH = Path.home().joinpath(TRANSLATOR_API_KEY_FILENAME)
     CONFIG_FILE_DEFAULT_PATH = Path.home().joinpath(CONFIG_FILENAME)
 
-    def __init__(self, args_str=sys.argv[1:]):
-        self.args_str = args_str
-        self.args_parser = self.__get_args_parser()
-        self.params = self.args_parser.parse_args(self.args_str)
+    def __init__(self, args: list = sys.argv[1:]):
+        self.args: list = args
+        self.args_parser: ArgumentParser = self.__get_args_parser()
+        self.params: Namespace = self.args_parser.parse_args(self.args)
         self.use_config_file = True
         self.config_file_path = self.CONFIG_FILE_DEFAULT_PATH
 
-        self.path = None
-        self.api_key_file_path = self.TRANSLATOR_API_KEY_FILE_DEFAULT_PATH
-        self.api_key = None
-        self.service = None
-        self.source_lang = None
-        self.target_lang = None
+        self.path: Union[Path, None] = None
+        self.api_key_file_path: Path = self.TRANSLATOR_API_KEY_FILE_DEFAULT_PATH
+        self.api_key: Union[str, None] = None
+        self.service: Union[str, None] = None
+        self.source_lang: Union[str, None] = None
+        self.target_lang: Union[str, None] = None
 
         self.set_settings()
 
-    def __get_args_parser(self) -> argparse.ArgumentParser:
-        arg_parser = argparse.ArgumentParser(
+    def __get_args_parser(self) -> ArgumentParser:
+        arg_parser = ArgumentParser(
             description=self.APPLICATION_DESCRIPTION,
             epilog=self.APPLICATION_EPILOG
         )
