@@ -17,11 +17,11 @@ class FilesWorker:
         if self.object_to_process.is_file() and self.object_to_process.suffix == '.md':
             self.single_file = True
         elif self.object_to_process.is_file():
-            raise FileIsNotMarkdown('{} is not a Markdown file!'.format(self.object_to_process))
+            raise FileIsNotMarkdown(self.object_to_process)
 
     def __validate_folder(self):
         if not self.object_to_process.exists():
-            raise ObjectNotFoundException('{} not found'.format(self.object_to_process))
+            raise ObjectNotFoundException(self.object_to_process)
 
     def __get_md_files_list(self) -> Sequence[pathlib.Path]:
         md_files_list = []

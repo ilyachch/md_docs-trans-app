@@ -1,5 +1,5 @@
 from md_translate.arguments_processor import ArgumentsProcessor
-from md_translate.exceptions import NoApiKeyFileError
+from md_translate.exceptions import MdTranslateBaseException
 from md_translate.files_worker import FilesWorker
 from md_translate.file_translator import FileTranslator
 
@@ -12,7 +12,7 @@ class App:
     def __validate_setup(self):
         try:
             self.settings.validate_arguments()
-        except NoApiKeyFileError as err:
+        except MdTranslateBaseException as err:
             print(err.get_message())
             exit(1)
 

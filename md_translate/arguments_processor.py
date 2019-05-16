@@ -107,15 +107,9 @@ class ArgumentsProcessor:
         settings_props = [self.service, self.source_lang, self.target_lang, self.api_key]
         if not all(settings_props):
             if self.CONFIG_FILE_DEFAULT_PATH.exists():
-                raise ConfigurationError(
-                    'Some of settings missed. Check your config file'
-                )
+                raise ConfigurationError()
             elif not self.CONFIG_FILE_DEFAULT_PATH.exists():
-                raise NoConfigFileError(
-                    'No config file found. Create file {} or pass custom file  with `-c` param'.format(
-                        self.CONFIG_FILE_DEFAULT_PATH
-                    )
-                )
+                raise NoConfigFileError(self.CONFIG_FILE_DEFAULT_PATH)
         if self.params.api_key_file is not None and not self.params.api_key_file.exists():
             raise NoApiKeyFileError(self.params.api_key)
 
