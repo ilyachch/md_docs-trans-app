@@ -35,7 +35,7 @@ def get_translator_by_name(name) -> Type[AbstractTranslator]:
 class YandexTranslator(AbstractTranslator):
     BASE_API_URL = 'https://translate.yandex.net/api/v1.5/tr.json/translate'
 
-    def request_for_translation(self, string_to_translate):
+    def request_for_translation(self, string_to_translate: str) -> requests.Response:
         params = {'key': self.settings.api_key,
                   'lang': '-'.join([self.settings.source_lang, self.settings.target_lang]),
                   }
@@ -44,14 +44,14 @@ class YandexTranslator(AbstractTranslator):
                              data=data
                              )
 
-    def process_response(self, response):
+    def process_response(self, response: requests.Response) -> str:
         return response.json()['text'][0]
 
 
 class GoogleTranslator(AbstractTranslator):
     BASE_API_URL = 'https://translation.googleapis.com/language/translate/v2'
 
-    def request_for_translation(self, string_to_translate):
+    def request_for_translation(self, string_to_translate: str) -> requests.Response:
         headers = {'Authorization': 'Bearer "{}"'.format(self.settings.api_key)}
         data = {'q': string_to_translate,
                 'source': self.settings.source_lang,
@@ -59,5 +59,5 @@ class GoogleTranslator(AbstractTranslator):
                 'format': 'text'}
         return requests.post(self.BASE_API_URL, headers=headers, data=data)
 
-    def process_response(self, response):
+    def process_response(self, response: requests.Response) -> str:
         return response.json()['data']['translations'][0]['translatedText']
