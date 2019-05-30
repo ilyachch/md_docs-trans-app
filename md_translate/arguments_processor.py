@@ -86,15 +86,13 @@ class ArgumentsProcessor:
         self.path = self.params.path
 
         if self.params.api_key_file is not None:
-            with self.params.api_key_file.open() as api_key_file:
-                self.api_key = api_key_file.read()
+            self.api_key = self.params.api_key_file.read_text()
         elif self.params.api_key is not None:
             self.api_key = self.params.api_key
 
         if self.params.api_key_file is None and self.params.api_key is None and self.api_key is None:
             if self.TRANSLATOR_API_KEY_FILE_DEFAULT_PATH.exists():
-                with self.TRANSLATOR_API_KEY_FILE_DEFAULT_PATH.open() as api_key_file:
-                    self.api_key = api_key_file.read()
+                self.api_key = self.TRANSLATOR_API_KEY_FILE_DEFAULT_PATH.read_text()
 
         if self.params.service is not None:
             self.service = self.params.service

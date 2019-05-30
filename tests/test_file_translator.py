@@ -18,9 +18,7 @@ class TestFileTranslator(unittest.TestCase):
 
         self.settings_mock = SettingsMock()
 
-        with self.fixture.open() as fixture:
-            with self.file_to_test_on.open('w') as target:
-                target.write(fixture.read())
+        self.file_to_test_on.write_text(self.fixture.read_text())
 
     def tearDown(self) -> None:
         self.file_to_test_on.unlink()
@@ -33,6 +31,4 @@ class TestFileTranslator(unittest.TestCase):
             file_translator.translate()
         translator_mock().request_translation.assert_called_with('Some string for translation\n')
 
-        with self.file_to_test_on.open() as fixture:
-            with self.fixture_translated.open() as fixture_translated:
-                self.assertEqual(fixture.read(), fixture_translated.read())
+        self.assertEqual(self.file_to_test_on.read_text(), self.fixture_translated.read_text())
