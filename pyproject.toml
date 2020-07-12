@@ -40,8 +40,8 @@ omit = [
 [tool.coverage.html]
 directory = '.coverage_html'
 
-[tool.coverage.report]
-fail_under = 100
+#[tool.coverage.report]
+#fail_under = 100
 
 exclude_lines = [
     '# pragma: no cover',
