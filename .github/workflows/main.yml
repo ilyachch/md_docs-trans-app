@@ -35,8 +35,8 @@ jobs:
 #        run: make coverage_cmd_report
       - name: Running codestyle checks
         run: make check_black
-      - name: Running types checks
-        run: make check_mypy
+#      - name: Running types checks
+#        run: make check_mypy
       - name: Generate coverage report
         run: make coverage_xml_report
       - name: Upload coverage to Codecov

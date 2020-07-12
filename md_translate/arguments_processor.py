@@ -2,7 +2,7 @@ import configparser
 import sys
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
-from typing import Union
+from typing import Union, Optional
 
 from md_translate.exceptions import (
     NoApiKeyFileError,
@@ -30,12 +30,12 @@ class ArgumentsProcessor:
         self.use_config_file = True
         self.config_file_path = self.CONFIG_FILE_DEFAULT_PATH
 
-        self.path: Union[Path, None] = None
+        self.path: Optional[Path] = None
         self.api_key_file_path: Path = self.TRANSLATOR_API_KEY_FILE_DEFAULT_PATH
-        self.api_key: Union[str, None] = None
-        self.service: Union[str, None] = None
-        self.source_lang: Union[str, None] = None
-        self.target_lang: Union[str, None] = None
+        self.api_key: Optional[str] = None
+        self.service: Optional[str] = None
+        self.source_lang: Optional[str] = None
+        self.target_lang: Optional[str] = None
 
         self.set_settings()
 
@@ -96,10 +96,10 @@ class ArgumentsProcessor:
             self.params.api_key_file is None
             and self.params.api_key is None
             and self.api_key is None
+            and self.TRANSLATOR_API_KEY_FILE_DEFAULT_PATH.exists()
         ):
-            if self.TRANSLATOR_API_KEY_FILE_DEFAULT_PATH.exists():
-                with self.TRANSLATOR_API_KEY_FILE_DEFAULT_PATH.open() as api_key_file:
-                    self.api_key = api_key_file.read()
+            with self.TRANSLATOR_API_KEY_FILE_DEFAULT_PATH.open() as api_key_file:
+                self.api_key = api_key_file.read()
 
         if self.params.service is not None:
             self.service = self.params.service
