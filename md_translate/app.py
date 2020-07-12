@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Sequence
 
 from md_translate.arguments_processor import ArgumentsProcessor
-from md_translate.exceptions import MdTranslateBaseException
 from md_translate.file_translator import FileTranslator
 from md_translate.files_worker import FilesWorker
 
@@ -13,11 +12,7 @@ class App:
         self.__validate_setup()
 
     def __validate_setup(self) -> None:
-        try:
-            self.settings.validate_arguments()
-        except MdTranslateBaseException as err:
-            print(err.get_message())
-            exit(1)
+        self.settings.validate_arguments()
 
     def process(self):
         files_to_process: Sequence[Path] = FilesWorker(self.settings).md_files_list
