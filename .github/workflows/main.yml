@@ -95,7 +95,7 @@ jobs:
         run: make check_black
 
   validate_version:
-    name: Validate Code Style
+    name: Validate Version
     runs-on: ubuntu-latest
     steps:
       - name: Getting code
