@@ -1,6 +1,7 @@
 import unittest
 from pathlib import Path
 from unittest import mock
+from unittest.mock import Mock
 
 from md_translate.file_translator import FileTranslator
 
@@ -15,6 +16,7 @@ class TestFileTranslator(unittest.TestCase):
             service = 'Yandex'
             source_lang = 'en'
             target_lang = 'ru'
+            api_key = 'TEST_API_KEY'
 
         self.settings_mock = SettingsMock()
 
@@ -25,13 +27,15 @@ class TestFileTranslator(unittest.TestCase):
     def tearDown(self) -> None:
         self.file_to_test_on.unlink()
 
-    @mock.patch('md_translate.translator.YandexTranslator')
-    def test_file_translator(self, translator_mock):
-        translator_mock().request_translation.return_value = 'Переведенная строка'
+    @mock.patch('md_translate.file_translator.get_translator_class_by_service_name')
+    def test_file_translator(self, get_translator_mock):
+        translator_mock = Mock()
+        translator_mock.request_translation.return_value = 'Переведенная строка'
+        get_translator_mock.return_value.return_value = translator_mock
         with FileTranslator(self.settings_mock, self.file_to_test_on) as file_translator:
             self.assertIsInstance(file_translator, FileTranslator)
             file_translator.translate()
-        translator_mock().request_translation.assert_called_with('Some string for translation\n')
+        translator_mock.request_translation.assert_called_with('Some string for translation\n')
 
         with self.file_to_test_on.open() as fixture:
             with self.fixture_translated.open() as fixture_translated:

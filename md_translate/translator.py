@@ -16,7 +16,7 @@ class AbstractTranslator:
             translated_data = self.process_response(response)
             return translated_data
         else:
-            raise ConnectionError('Something web wrong with translation requesting.')
+            raise ConnectionError('Something went wrong with translation requesting.')
 
     def request_for_translation(self, string_to_translate: str) -> requests.Response:
         raise NotImplementedError()
