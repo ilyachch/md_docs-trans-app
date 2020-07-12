@@ -28,7 +28,6 @@ class Settings:
         self.__args_parser = self.get_arg_parser()
         self.params: Namespace = self.__args_parser.parse_args(get_cli_args())
         self.config = self.__get_config_from_file()
-        print(1)
 
     def __get_config_from_file(self) -> Dict[str, str]:
         config_file_path = self.params.config_path or self.CONFIG_FILE_DEFAULT_PATH
