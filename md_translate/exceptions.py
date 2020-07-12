@@ -12,7 +12,7 @@ class UnknownServiceError(MdTranslateBaseException):
 
 class ConfigurationError(MdTranslateBaseException):
     def __init__(self) -> None:
-        super().__init__('Some of settings missed. Check your config file')
+        super().__init__('Some of settings missed. Check your config file or cli arguments')
 
 
 class ObjectNotFoundException(MdTranslateBaseException):

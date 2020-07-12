@@ -1,6 +1,6 @@
 import re
 
-from md_translate.arguments_processor import ArgumentsProcessor
+from md_translate.settings import Settings
 from md_translate import const
 
 
@@ -12,7 +12,7 @@ class LineProcessor:
     }
     DEFAULT_TRANSLATION_CHECK_REGEXP_BY_LANG = r'^\d+.*'
 
-    def __init__(self, settings: ArgumentsProcessor, line: str) -> None:
+    def __init__(self, settings: Settings, line: str) -> None:
         self.settings = settings
         self._line: str = line
         self.pattern = self.TRANSLATION_CHECK_REGEXP_BY_LANG.get(

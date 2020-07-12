@@ -1,14 +1,14 @@
 from pathlib import Path
 from typing import Sequence
 
-from md_translate.arguments_processor import ArgumentsProcessor
+from md_translate.settings import Settings
 from md_translate.file_translator import FileTranslator
 from md_translate.files_worker import FilesWorker
 
 
 class App:
     def __init__(self) -> None:
-        self.settings: ArgumentsProcessor = ArgumentsProcessor()
+        self.settings: Settings = Settings()
         self.__validate_setup()
 
     def __validate_setup(self) -> None:

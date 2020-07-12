@@ -1,13 +1,17 @@
+from typing import TYPE_CHECKING
+
 import requests
 from requests.exceptions import ConnectionError
 
-from md_translate.arguments_processor import ArgumentsProcessor
+# from md_translate.settings import settings
+# if TYPE_CHECKING:
+#     from md_translate.settings import Settings
 
 
 class AbstractTranslator:
     BASE_API_URL: str
 
-    def __init__(self, settings: ArgumentsProcessor) -> None:
+    def __init__(self, settings: 'Settings') -> None:
         self.settings = settings
 
     def request_translation(self, string_to_translate: str) -> str:
