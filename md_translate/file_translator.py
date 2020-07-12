@@ -15,7 +15,9 @@ class FileTranslator:
     paragraph_regexp = re.compile(r'^[a-zA-Z]+.*')
 
     def __init__(self, settings: ArgumentsProcessor, file_path: pathlib.Path):
-        translator_class: Type[AbstractTranslator] = get_translator_class_by_service_name(settings.service)
+        translator_class: Type[
+            AbstractTranslator
+        ] = get_translator_class_by_service_name(settings.service)
         self.settings = settings
         self.__translator: AbstractTranslator = translator_class(settings)
         self.__file_path: pathlib.Path = file_path

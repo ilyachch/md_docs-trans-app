@@ -5,6 +5,11 @@ class MdTranslateBaseException(Exception):
     pass
 
 
+class UnknownServiceError(MdTranslateBaseException):
+    def __init__(self, service_name: str) -> None:
+        super().__init__(f'{service_name} service is unknown')
+
+
 class ConfigurationError(MdTranslateBaseException):
     def __init__(self) -> None:
         super().__init__('Some of settings missed. Check your config file')
