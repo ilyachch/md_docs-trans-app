@@ -21,8 +21,10 @@ class NoApiKeyFileError(MdTranslateBaseException):
         self.api_key_path = api_key_path
 
     def get_message(self):
-        return ('API_KEY file in location "{}" not found\n'
-                'Provide API_KEY file path or create it, if not exist').format(self.api_key_path)
+        return (
+            'API_KEY file in location "{}" not found\n'
+            'Provide API_KEY file path or create it, if not exist'
+        ).format(self.api_key_path)
 
 
 class NoConfigFileError(MdTranslateBaseException):
@@ -30,7 +32,9 @@ class NoConfigFileError(MdTranslateBaseException):
         self.not_found_file = not_found_file
 
     def get_message(self):
-        return 'No config file found. Create file {} or pass custom file  with `-c` param'.format(self.not_found_file)
+        return 'No config file found. Create file {} or pass custom file  with `-c` param'.format(
+            self.not_found_file
+        )
 
 
 class FileIsNotMarkdown(MdTranslateBaseException):

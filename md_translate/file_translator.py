@@ -14,7 +14,9 @@ class FileTranslator:
     paragraph_regexp = re.compile(r'^[a-zA-Z]+.*')
 
     def __init__(self, settings: ArgumentsProcessor, file_path: pathlib.Path):
-        translator_class: Type[AbstractTranslator] = get_translator_by_name(settings.service)
+        translator_class: Type[AbstractTranslator] = get_translator_by_name(
+            settings.service
+        )
         self.settings = settings
         self.__translator: AbstractTranslator = translator_class(settings)
         self.__file_path: pathlib.Path = file_path
@@ -34,12 +36,18 @@ class FileTranslator:
         for counter, line in enumerate(lines):
             self.file_contents_with_translation.append(line)
             self.line_processor = LineProcessor(self.settings, line)
-            self.code_block = not self.code_block if self.line_processor.is_code_block_border() else self.code_block
+            self.code_block = (
+                not self.code_block
+                if self.line_processor.is_code_block_border()
+                else self.code_block
+            )
             if self.line_processor.line_can_be_translated() and not self.code_block:
                 translated = self.__translator.request_translation(line)
                 self.file_contents_with_translation.append('\n')
                 if line.endswith('\n') and not translated.endswith('\n'):
-                    self.file_contents_with_translation.append(''.join([translated, '\n']))
+                    self.file_contents_with_translation.append(
+                        ''.join([translated, '\n'])
+                    )
                 else:
                     self.file_contents_with_translation.append(translated)
         self.__write_translated_data_to_file()

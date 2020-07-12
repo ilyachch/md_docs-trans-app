@@ -1,7 +1,7 @@
 .PHONY: all
 
 
-PROJECT_FOLDER = django_partisan
+PROJECT_FOLDER = md_translate
 WORKING_DIRECTORY = $(shell pwd)
 
 
