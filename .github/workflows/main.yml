@@ -31,8 +31,8 @@ jobs:
         run: poetry install --no-root
       - name: Running tests
         run: make coverage_run
-      - name: Running coverage check
-        run: make coverage_cmd_report
+#      - name: Running coverage check
+#        run: make coverage_cmd_report
       - name: Running codestyle checks
         run: make check_black
       - name: Running types checks
