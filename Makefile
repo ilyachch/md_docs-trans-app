@@ -19,7 +19,7 @@ run_black:
 
 # Tests section
 run_tests:
-	@poetry run test_partisan/manage.py test $(PROJECT_FOLDER)
+	@poetry run python -m  unittest
 
 # Linters section
 check_black:
