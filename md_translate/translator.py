@@ -1,14 +1,16 @@
 import requests
 from requests.exceptions import ConnectionError
 
+from md_translate.arguments_processor import ArgumentsProcessor
+
 
 class AbstractTranslator:
     BASE_API_URL: str
 
-    def __init__(self, settings):
+    def __init__(self, settings: ArgumentsProcessor) -> None:
         self.settings = settings
 
-    def request_translation(self, string_to_translate: str):
+    def request_translation(self, string_to_translate: str) -> str:
         response = self.request_for_translation(string_to_translate)
         if response.ok:
             translated_data = self.process_response(response)
@@ -16,10 +18,10 @@ class AbstractTranslator:
         else:
             raise ConnectionError('Something web wrong with translation requesting.')
 
-    def request_for_translation(self, string_to_translate: str):
+    def request_for_translation(self, string_to_translate: str) -> requests.Response:
         raise NotImplementedError()
 
-    def process_response(self, response: requests.Response):
+    def process_response(self, response: requests.Response) -> str:
         raise NotImplementedError()
 
 

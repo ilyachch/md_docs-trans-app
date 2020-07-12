@@ -1,6 +1,6 @@
 import pathlib
 import re
-from typing import Type, Union, IO
+from typing import Type, Union, IO, Any
 
 from md_translate.arguments_processor import ArgumentsProcessor
 from md_translate.const import TRANSLATOR_BY_SERVICE_NAME
@@ -25,14 +25,14 @@ class FileTranslator:
         self.file_contents_with_translation: list = []
         self.code_block: bool = False
 
-    def __enter__(self):
+    def __enter__(self) -> 'FileTranslator':
         self.__translating_file: IO = self.__file_path.open(self.default_open_mode)
         return self
 
-    def __exit__(self, *args, **kwargs):
+    def __exit__(self, *args: Any, **kwargs: Any) -> None:
         self.__translating_file.close()
 
-    def translate(self):
+    def translate(self) -> None:
         lines = self.__translating_file.readlines()
         for counter, line in enumerate(lines):
             self.file_contents_with_translation.append(line)
@@ -53,6 +53,6 @@ class FileTranslator:
                     self.file_contents_with_translation.append(translated)
         self.__write_translated_data_to_file()
 
-    def __write_translated_data_to_file(self):
+    def __write_translated_data_to_file(self) -> None:
         self.__translating_file.seek(0)
         self.__translating_file.writelines(self.file_contents_with_translation)

@@ -82,7 +82,7 @@ class ArgumentsProcessor:
         )
         return arg_parser
 
-    def set_settings(self):
+    def set_settings(self) -> None:
         if self.params.config_path is not None and self.params.config_path.exists():
             self.__set_settings_from_config_file(self.params.config_path)
         elif self.CONFIG_FILE_DEFAULT_PATH.exists():
@@ -114,7 +114,7 @@ class ArgumentsProcessor:
         if self.params.target_lang is not None:
             self.target_lang = self.params.target_lang
 
-    def validate_arguments(self):
+    def validate_arguments(self) -> None:
         settings_props = [
             self.service,
             self.source_lang,
@@ -132,7 +132,7 @@ class ArgumentsProcessor:
         ):
             raise NoApiKeyFileError(self.params.api_key)
 
-    def __set_settings_from_config_file(self, config_file_path: Path):
+    def __set_settings_from_config_file(self, config_file_path: Path) -> None:
         config = configparser.ConfigParser()
         config.read(config_file_path)
 

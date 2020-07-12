@@ -1,36 +1,38 @@
 import re
 
+from md_translate.arguments_processor import ArgumentsProcessor
+
 
 class LineProcessor:
     code_mark: str = '```'
 
-    def __init__(self, settings, line: str):
+    def __init__(self, settings: ArgumentsProcessor, line: str) -> None:
         self.settings = settings
         self._line: str = line
         self.pattern = self.get_regexp(self.settings.source_lang)
 
-    def is_code_block_border(self):
+    def is_code_block_border(self) -> bool:
         if self._line == self.code_mark:
             return True
         return self._line.startswith(self.code_mark) and not self._line.endswith(
             self.code_mark
         )
 
-    def line_can_be_translated(self):
+    def line_can_be_translated(self) -> bool:
         return not self.__is_single_code_line() and self.__is_untranslated_paragraph()
 
-    def __is_untranslated_paragraph(self):
+    def __is_untranslated_paragraph(self) -> bool:
         return re.match(self.pattern, self._line) is not None
 
-    def __is_single_code_line(self):
+    def __is_single_code_line(self) -> bool:
         return (
-            self._line.startswith(self.code_mark)
-            and self._line.endswith(self.code_mark)
-            and len(self._line) > 3
+                self._line.startswith(self.code_mark)
+                and self._line.endswith(self.code_mark)
+                and len(self._line) > 3
         )
 
     @staticmethod
-    def get_regexp(source_lang=''):
+    def get_regexp(source_lang: str = '') -> str:
         if source_lang == 'ru':
             return r'^[а-яА-Я]+.*'
         elif source_lang == 'en':

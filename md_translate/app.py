@@ -7,14 +7,14 @@ from md_translate.files_worker import FilesWorker
 
 
 class App:
-    def __init__(self):
+    def __init__(self) -> None:
         self.settings: ArgumentsProcessor = ArgumentsProcessor()
         self.__validate_setup()
 
     def __validate_setup(self) -> None:
         self.settings.validate_arguments()
 
-    def process(self):
+    def process(self) -> None:
         files_to_process: Sequence[Path] = FilesWorker(self.settings).md_files_list
         for file_name in files_to_process:
             with FileTranslator(self.settings, file_name) as processing_file:
@@ -22,7 +22,7 @@ class App:
             print('Processed: {file_name}'.format(file_name=file_name))
 
 
-def main():
+def main() -> None:
     try:
         App().process()
         exit(0)
