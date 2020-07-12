@@ -26,9 +26,9 @@ class LineProcessor:
 
     def __is_single_code_line(self) -> bool:
         return (
-                self._line.startswith(self.code_mark)
-                and self._line.endswith(self.code_mark)
-                and len(self._line) > 3
+            self._line.startswith(self.code_mark)
+            and self._line.endswith(self.code_mark)
+            and len(self._line) > 3
         )
 
     @staticmethod
