@@ -4,6 +4,8 @@ from pathlib import Path
 from md_translate.exceptions import ObjectNotFoundException, FileIsNotMarkdown
 from md_translate.files_worker import FilesWorker
 
+TEST_FIRST_FILE = 'tests/test_data/md_files_folder/first_file.md'
+TEST_SECOND_FILE = 'tests/test_data/md_files_folder/second_file.md'
 
 class TestFilesWorker(unittest.TestCase):
     def test_folder_errors(self):
@@ -29,18 +31,18 @@ class TestFilesWorker(unittest.TestCase):
         self.assertListEqual(
             sorted(file_worker_object.md_files_list),
             sorted([
-                Path('tests/test_data/md_files_folder/first_file.md'),
-                Path('tests/test_data/md_files_folder/second_file.md')
+                Path(TEST_FIRST_FILE),
+                Path(TEST_SECOND_FILE)
             ]),
         )
 
     def test_single_object(self):
         class MockedSettings:
-            path = Path('tests/test_data/md_files_folder/first_file.md')
+            path = Path(TEST_FIRST_FILE)
 
         file_worker_object = FilesWorker(MockedSettings())
         self.assertTrue(file_worker_object)
         self.assertEqual(
             file_worker_object.md_files_list,
-            [Path('tests/test_data/md_files_folder/first_file.md')]
+            [Path(TEST_FIRST_FILE)]
         )

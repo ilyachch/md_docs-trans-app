@@ -30,12 +30,12 @@ class ArgumentsProcessor:
         self.use_config_file = True
         self.config_file_path = self.CONFIG_FILE_DEFAULT_PATH
 
-        self.path: Optional[Path] = None
-        self.api_key_file_path: Path = self.TRANSLATOR_API_KEY_FILE_DEFAULT_PATH
-        self.api_key: Optional[str] = None
-        self.service: Optional[str] = None
-        self.source_lang: Optional[str] = None
-        self.target_lang: Optional[str] = None
+        self.path: Path
+        self.api_key_file_path: Path
+        self.api_key: str
+        self.service: str
+        self.source_lang: str
+        self.target_lang: str
 
         self.set_settings()
 
@@ -64,7 +64,11 @@ class ArgumentsProcessor:
             type=Path,
         )
         api_key_group.add_argument(
-            '-K', '--api_key', help='API key to use Translation API', type=str
+            '-K',
+            '--api_key',
+            help='API key to use Translation API',
+            type=str,
+            default=self.TRANSLATOR_API_KEY_FILE_DEFAULT_PATH,
         )
 
         arg_parser.add_argument(

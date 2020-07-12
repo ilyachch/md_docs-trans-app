@@ -1,11 +1,9 @@
-from typing import Type
-
 import requests
 from requests.exceptions import ConnectionError
 
 
 class AbstractTranslator:
-    BASE_API_URL = None
+    BASE_API_URL: str
 
     def __init__(self, settings):
         self.settings = settings
@@ -25,13 +23,6 @@ class AbstractTranslator:
         raise NotImplementedError()
 
 
-def get_translator_by_name(name) -> Type[AbstractTranslator]:
-    if name == 'Yandex':
-        return YandexTranslator
-    elif name == 'Google':
-        return GoogleTranslator
-
-
 class YandexTranslator(AbstractTranslator):
     BASE_API_URL = 'https://translate.yandex.net/api/v1.5/tr.json/translate'
 
@@ -44,7 +35,8 @@ class YandexTranslator(AbstractTranslator):
         return requests.post(self.BASE_API_URL, params=params, data=data)
 
     def process_response(self, response: requests.Response) -> str:
-        return response.json()['text'][0]
+        response_data = response.json()
+        return response_data['text'][0]
 
 
 class GoogleTranslator(AbstractTranslator):
@@ -61,4 +53,5 @@ class GoogleTranslator(AbstractTranslator):
         return requests.post(self.BASE_API_URL, headers=headers, data=data)
 
     def process_response(self, response: requests.Response) -> str:
-        return response.json()['data']['translations'][0]['translatedText']
+        response_data = response.json()
+        return response_data['data']['translations'][0]['translatedText']

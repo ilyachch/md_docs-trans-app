@@ -3,8 +3,9 @@ import re
 from typing import Type, Union, IO
 
 from md_translate.arguments_processor import ArgumentsProcessor
+from md_translate.const import TRANSLATOR_BY_SERVICE_NAME
 from md_translate.line_processor import LineProcessor
-from md_translate.translator import get_translator_by_name, AbstractTranslator
+from md_translate.translator import AbstractTranslator
 
 
 class FileTranslator:
@@ -14,9 +15,9 @@ class FileTranslator:
     paragraph_regexp = re.compile(r'^[a-zA-Z]+.*')
 
     def __init__(self, settings: ArgumentsProcessor, file_path: pathlib.Path):
-        translator_class: Type[AbstractTranslator] = get_translator_by_name(
+        translator_class: Type[AbstractTranslator] = TRANSLATOR_BY_SERVICE_NAME[
             settings.service
-        )
+        ]
         self.settings = settings
         self.__translator: AbstractTranslator = translator_class(settings)
         self.__file_path: pathlib.Path = file_path

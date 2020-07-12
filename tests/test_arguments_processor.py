@@ -6,11 +6,12 @@ from unittest.mock import patch, PropertyMock
 from md_translate.arguments_processor import ArgumentsProcessor
 from md_translate.exceptions import NoConfigFileError, ConfigurationError
 
+TEST_PATH = 'tests/test_data/md_files_folder'
 
 class TestArgumentsProcessorWithoutSettings(TestCase):
     def setUp(self) -> None:
         self.current_path = Path().cwd()
-        self.test_path = Path('tests/test_data/md_files_folder')
+        self.test_path = Path(TEST_PATH)
         self.test_settings_file = Path('tests/test_data/settings.ini')
         self.api_key = 'API_KEY'
         self.service = 'Yandex'
@@ -98,7 +99,7 @@ class TestArgumentsProcessorWithSettings(TestCase):
 
 class TestArgumentsProcessorWithApiKeyFile(TestCase):
     def setUp(self) -> None:
-        self.test_path = Path('tests/test_data/md_files_folder')
+        self.test_path = Path(TEST_PATH)
         self.api_key = 'FILE_API_KEY'
         self.service = 'Yandex'
         self.source_lang = 'ru'
@@ -130,7 +131,7 @@ class TestArgumentsProcessorWithApiKeyFile(TestCase):
 
 class TestArgumentsProcessorErrors(TestCase):
     def setUp(self) -> None:
-        self.test_path = Path('tests/test_data/md_files_folder')
+        self.test_path = Path(TEST_PATH)
         self.api_key = 'FILE_API_KEY'
         self.service = 'Yandex'
         self.source_lang = 'ru'

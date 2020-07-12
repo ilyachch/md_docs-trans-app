@@ -3,21 +3,10 @@ from unittest import mock
 
 from requests.exceptions import ConnectionError
 
-from md_translate.translator import YandexTranslator, get_translator_by_name, GoogleTranslator
+from md_translate.translator import YandexTranslator, GoogleTranslator
 
-
-class TestGetTranslator(unittest.TestCase):
-    def test_get_translator_yandex(self):
-        service = 'Yandex'
-        service_parser = get_translator_by_name(service)
-        self.assertEqual(service_parser, YandexTranslator)
-        self.assertNotEqual(service_parser, GoogleTranslator)
-
-    def test_get_translator_google(self):
-        service = 'Google'
-        service_parser = get_translator_by_name(service)
-        self.assertEqual(service_parser, GoogleTranslator)
-        self.assertNotEqual(service_parser, YandexTranslator)
+EN_STR = 'Some string to translate'
+RU_STR = 'Переведенная строка'
 
 
 class TestTranslatorFails(unittest.TestCase):
@@ -52,11 +41,11 @@ class TestTranslatorFails(unittest.TestCase):
 
 
 class TestYandexTranslator(unittest.TestCase):
-    en_string_to_translate = 'Some string to translate'
-    en_translated_string = 'Переведенная строка'
+    en_string_to_translate = EN_STR
+    en_translated_string = RU_STR
 
-    ru_string_to_translate = 'Переведенная строка'
-    ru_translated_string = 'Some string to translate'
+    ru_string_to_translate = RU_STR
+    ru_translated_string = EN_STR
 
     @staticmethod
     def get_settings_class(source, target):
@@ -111,11 +100,11 @@ class TestYandexTranslator(unittest.TestCase):
 
 
 class TestGoogleTranslator(unittest.TestCase):
-    en_string_to_translate = 'Some string to translate'
-    en_translated_string = 'Переведенная строка'
+    en_string_to_translate = EN_STR
+    en_translated_string = RU_STR
 
-    ru_string_to_translate = 'Переведенная строка'
-    ru_translated_string = 'Some string to translate'
+    ru_string_to_translate = RU_STR
+    ru_translated_string = EN_STR
 
     @staticmethod
     def get_settings_class(source, target):

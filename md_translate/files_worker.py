@@ -9,7 +9,7 @@ class FilesWorker:
     def __init__(self, settings: ArgumentsProcessor):
         self.settings: ArgumentsProcessor = settings
         self.single_file: bool = False
-        self.object_to_process: Optional[Path] = self.settings.path
+        self.object_to_process: Path = self.settings.path
         self.__check_for_single_obj()
         self.__validate_folder()
         self.md_files_list: Sequence[Path] = self.__get_md_files_list()
