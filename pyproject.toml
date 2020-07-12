@@ -4,6 +4,28 @@ version = "0.2.3"
 description = "CLI tool to translate markdown files"
 authors = ["Ilya Chichak <ilyachch@gmail.com>"]
 license = "MIT License"
+readme = "README.md"
+repository = "https://github.com/ilyachch/md_docs-trans-app"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Documentation",
+    "Topic :: Utilities",
+    "Typing :: Typed"
+]
+
+[tool.poetry.scripts]
+md-translate = 'md_translate.app:main'
 
 [tool.poetry.dependencies]
 python = "^3.6"
