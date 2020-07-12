@@ -1,14 +1,14 @@
 import requests
 from requests.exceptions import ConnectionError
 
+from md_translate.utils import get_settings
+
 
 class AbstractTranslator:
     BASE_API_URL: str
 
     def __init__(self) -> None:
-        from md_translate.settings import settings
-
-        self.settings = settings
+        self.settings = get_settings()
 
     def request_translation(self, string_to_translate: str) -> str:
         response = self.request_for_translation(string_to_translate)

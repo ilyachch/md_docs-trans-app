@@ -17,12 +17,6 @@ class Settings:
     APPLICATION_EPILOG = 'See README.md for more information.'
 
     TRANSLATOR_API_KEY_FILENAME = '.md_translate_api_key'
-    CONFIG_FILENAME = '.md_translate_config.ini'
-
-    TRANSLATOR_API_KEY_FILE_DEFAULT_PATH = Path.home().joinpath(
-        TRANSLATOR_API_KEY_FILENAME
-    )
-    CONFIG_FILE_DEFAULT_PATH = Path.home().joinpath(CONFIG_FILENAME)
 
     def __init__(self) -> None:
         self.__args_parser = self.get_arg_parser()
@@ -30,8 +24,8 @@ class Settings:
         self.config = self.__get_config_from_file()
 
     def __get_config_from_file(self) -> Dict[str, str]:
-        config_file_path = self.params.config_path or self.CONFIG_FILE_DEFAULT_PATH
-        if config_file_path.exists():
+        config_file_path = self.params.config_path
+        if config_file_path and config_file_path.exists():
             return json.loads(config_file_path.read_text())
         return {}
 
@@ -99,13 +93,13 @@ class Settings:
             '-S',
             '--source_lang',
             help='Source language',
-            choices=(const.LANG_EN, const.LANG_RU),
+            choices=const.AVAILABLE_LANGS,
         )
         arg_parser.add_argument(
             '-T',
             '--target_lang',
             help='Target language',
-            choices=(const.LANG_EN, const.LANG_RU),
+            choices=const.AVAILABLE_LANGS,
         )
         return arg_parser
 

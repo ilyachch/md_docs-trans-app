@@ -1,7 +1,7 @@
 import re
 
-from md_translate.settings import Settings
 from md_translate import const
+from md_translate.utils import get_settings
 
 
 class LineProcessor:
@@ -12,17 +12,17 @@ class LineProcessor:
     }
     DEFAULT_TRANSLATION_CHECK_REGEXP_BY_LANG = r'^\d+.*'
 
-    def __init__(self, settings: Settings, line: str) -> None:
-        self.settings = settings
-        self._line: str = line
+    def __init__(self, line: str) -> None:
+        self.line = line
+        self.settings = get_settings()
         self.pattern = self.TRANSLATION_CHECK_REGEXP_BY_LANG.get(
             self.settings.source_lang, self.DEFAULT_TRANSLATION_CHECK_REGEXP_BY_LANG
         )
 
     def is_code_block_border(self) -> bool:
-        if self._line == self.code_mark:
+        if self.line == self.code_mark:
             return True
-        return self._line.startswith(self.code_mark) and not self._line.endswith(
+        return self.line.startswith(self.code_mark) and not self.line.endswith(
             self.code_mark
         )
 
@@ -30,11 +30,11 @@ class LineProcessor:
         return not self.__is_single_code_line() and self.__is_untranslated_paragraph()
 
     def __is_untranslated_paragraph(self) -> bool:
-        return re.match(self.pattern, self._line) is not None
+        return re.match(self.pattern, self.line) is not None
 
     def __is_single_code_line(self) -> bool:
         return (
-            self._line.startswith(self.code_mark)
-            and self._line.endswith(self.code_mark)
-            and len(self._line) > 3
+                self.line.startswith(self.code_mark)
+                and self.line.endswith(self.code_mark)
+                and len(self.line) > 3
         )

@@ -1,10 +1,12 @@
 import pathlib
 import re
-from typing import Type, IO, Any
+from typing import Type, IO, Any, TYPE_CHECKING
 
 from md_translate.line_processor import LineProcessor
-from md_translate.translator import AbstractTranslator
-from md_translate.utils import get_translator_class_by_service_name
+from md_translate.utils import get_translator_class_by_service_name, get_settings
+
+if TYPE_CHECKING:
+    from md_translate.translator import AbstractTranslator
 
 
 class FileTranslator:
@@ -14,13 +16,11 @@ class FileTranslator:
     paragraph_regexp = re.compile(r'^[a-zA-Z]+.*')
 
     def __init__(self, file_path: pathlib.Path):
-        from md_translate.settings import settings
-
+        self.settings = get_settings()
         translator_class: Type[
-            AbstractTranslator
-        ] = get_translator_class_by_service_name(settings.service_name)
-        self.settings = settings
-        self.__translator: AbstractTranslator = translator_class()
+            'AbstractTranslator'
+        ] = get_translator_class_by_service_name(self.settings.service_name)
+        self.__translator: 'AbstractTranslator' = translator_class()
         self.__file_path: pathlib.Path = file_path
         self.file_contents_with_translation: list = []
         self.code_block: bool = False
@@ -36,7 +36,7 @@ class FileTranslator:
         lines = self.__translating_file.readlines()
         for counter, line in enumerate(lines):
             self.file_contents_with_translation.append(line)
-            line_processor = LineProcessor(self.settings, line)
+            line_processor = LineProcessor(line)
             self.code_block = (
                 not self.code_block
                 if line_processor.is_code_block_border()
