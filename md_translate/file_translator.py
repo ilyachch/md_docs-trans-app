@@ -15,6 +15,7 @@ class FileTranslator:
 
     def __init__(self, file_path: pathlib.Path):
         from md_translate.settings import settings
+
         translator_class: Type[
             AbstractTranslator
         ] = get_translator_class_by_service_name(settings.service_name)

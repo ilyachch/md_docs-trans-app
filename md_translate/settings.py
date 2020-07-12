@@ -57,7 +57,9 @@ class Settings:
         return self.params.path
 
     def __get_property_by_name(self, prop_name: str) -> str:
-        property_value = getattr(self.params, prop_name, None) or self.config.get(prop_name)
+        property_value = getattr(self.params, prop_name, None) or self.config.get(
+            prop_name
+        )
         if property_value is None:
             raise ConfigurationError(prop_name)
         return property_value
@@ -92,7 +94,7 @@ class Settings:
                 const.TRANSLATION_SERVICE_GOOGLE,
             ),
             type=str,
-            dest='service_name'
+            dest='service_name',
         )
         arg_parser.add_argument(
             '-S',
