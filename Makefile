@@ -19,7 +19,7 @@ run_black:
 
 # Tests section
 run_tests:
-	@poetry run python -m  unittest
+	@poetry run python -m unittest
 
 # Linters section
 check_black:
@@ -30,7 +30,7 @@ check_mypy:
 
 # Coverage section
 coverage_run:
-	@poetry run coverage run test_partisan/manage.py test $(PROJECT_FOLDER)
+	@poetry run coverage run -m unittest
 
 coverage_html_report:
 	@poetry run coverage html
