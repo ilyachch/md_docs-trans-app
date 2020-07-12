@@ -1,0 +1,71 @@
+[tool.poetry]
+name = "md_translate"
+version = "1.0.0"
+description = "CLI tool to translate markdown files"
+authors = ["Ilya Chichak <ilyachch@gmail.com>"]
+license = "MIT License"
+readme = "README.md"
+repository = "https://github.com/ilyachch/md_docs-trans-app"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Documentation",
+    "Topic :: Utilities",
+    "Typing :: Typed"
+]
+
+[tool.poetry.scripts]
+md-translate = 'md_translate.app:main'
+
+[tool.poetry.dependencies]
+python = "^3.6"
+requests = "^2.24.0"
+
+[tool.poetry.dev-dependencies]
+coverage = "^5.2"
+mypy = "^0.782"
+black = "^19.10b0"
+
+[tool.black]
+exclude = """
+(
+    tests
+)
+"""
+
+# Coverage section
+
+[tool.coverage.run]
+source = [
+    'md_translate',
+]
+omit = [
+    'tests/*',
+]
+
+[tool.coverage.html]
+directory = '.coverage_html'
+
+[tool.coverage.report]
+fail_under = 80
+
+exclude_lines = [
+    '# pragma: no cover',
+    'raise NotImplementedError()',
+]
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
+# Black section
+
