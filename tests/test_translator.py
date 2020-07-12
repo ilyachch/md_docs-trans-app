@@ -29,15 +29,19 @@ class TestTranslatorFails(unittest.TestCase):
 
     @mock.patch('md_translate.translator.requests.post')
     def test_yandex_translation_requesting_fails(self, mocked_post):
+        from md_translate import settings
+        settings.settings = self.MockedSettingsYandex()
         mocked_post.return_value = self.MockedResponseEnRuFailed
         with self.assertRaises(ConnectionError):
-            YandexTranslator(self.MockedSettingsYandex()).request_translation(self.string_to_translate)
+            YandexTranslator().request_translation(self.string_to_translate)
 
     @mock.patch('md_translate.translator.requests.post')
     def test_google_translation_requesting_fails(self, mocked_post):
+        from md_translate import settings
+        settings.settings = self.MockedSettingsGoogle()
         mocked_post.return_value = self.MockedResponseEnRuFailed
         with self.assertRaises(ConnectionError):
-            GoogleTranslator(self.MockedSettingsYandex()).request_translation(self.string_to_translate)
+            GoogleTranslator().request_translation(self.string_to_translate)
 
 
 class TestYandexTranslator(unittest.TestCase):
@@ -80,8 +84,10 @@ class TestYandexTranslator(unittest.TestCase):
 
     @mock.patch('md_translate.translator.requests.post')
     def test_en_ru_translation_ok(self, request_mock):
+        from md_translate import settings
+        settings.settings = self.en_ru_settings
         request_mock.return_value = self.en_ru_response
-        translate_result = YandexTranslator(self.en_ru_settings).request_translation(self.en_string_to_translate)
+        translate_result = YandexTranslator().request_translation(self.en_string_to_translate)
         request_mock.assert_called_with(
             'https://translate.yandex.net/api/v1.5/tr.json/translate',
             data={'text': self.en_string_to_translate}, params={'key': 'TEST_API_KEY', 'lang': 'en-ru'}
@@ -90,8 +96,10 @@ class TestYandexTranslator(unittest.TestCase):
 
     @mock.patch('md_translate.translator.requests.post')
     def ru_en_translation_ok(self, request_mock):
+        from md_translate import settings
+        settings.settings = self.ru_en_settings
         request_mock.return_value = self.ru_en_response
-        translate_result = YandexTranslator(self.ru_en_settings).request_translation(self.ru_string_to_translate)
+        translate_result = YandexTranslator().request_translation(self.ru_string_to_translate)
         request_mock.assert_called_with(
             'https://translate.yandex.net/api/v1.5/tr.json/translate',
             data={'text': self.ru_string_to_translate}, params={'key': 'TEST_API_KEY', 'lang': 'en-ru'}
@@ -110,7 +118,7 @@ class TestGoogleTranslator(unittest.TestCase):
     def get_settings_class(source, target):
         class MockedSettings:
             api_key = 'TEST_API_KEY'
-            service = 'Google'
+            service_name = 'Google'
             source_lang = source
             target_lang = target
 
@@ -139,8 +147,10 @@ class TestGoogleTranslator(unittest.TestCase):
 
     @mock.patch('md_translate.translator.requests.post')
     def test_en_ru_translation_ok(self, request_mock):
+        from md_translate import settings
+        settings.settings = self.en_ru_settings
         request_mock.return_value = self.en_ru_response
-        translate_result = GoogleTranslator(self.en_ru_settings).request_translation(self.en_string_to_translate)
+        translate_result = GoogleTranslator().request_translation(self.en_string_to_translate)
         request_mock.assert_called_with(
             'https://translation.googleapis.com/language/translate/v2',
             headers={'Authorization': 'Bearer "TEST_API_KEY"'},
@@ -150,8 +160,10 @@ class TestGoogleTranslator(unittest.TestCase):
 
     @mock.patch('md_translate.translator.requests.post')
     def ru_en_translation_ok(self, request_mock):
+        from md_translate import settings
+        settings.settings = self.ru_en_settings
         request_mock.return_value = self.ru_en_response
-        translate_result = GoogleTranslator(self.ru_en_settings).request_translation(self.ru_string_to_translate)
+        translate_result = GoogleTranslator().request_translation(self.ru_string_to_translate)
         request_mock.assert_called_with(
             'https://translation.googleapis.com/language/translate/v2',
             headers={'Authorization': 'Bearer "TEST_API_KEY"'},

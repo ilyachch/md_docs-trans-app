@@ -63,7 +63,7 @@ omit = [
 directory = '.coverage_html'
 
 [tool.coverage.report]
-fail_under = 100
+fail_under = 80
 
 exclude_lines = [
     '# pragma: no cover',

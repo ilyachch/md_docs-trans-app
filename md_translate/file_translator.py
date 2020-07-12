@@ -2,7 +2,6 @@ import pathlib
 import re
 from typing import Type, IO, Any
 
-from md_translate.settings import Settings
 from md_translate.line_processor import LineProcessor
 from md_translate.translator import AbstractTranslator
 from md_translate.utils import get_translator_class_by_service_name
@@ -14,12 +13,13 @@ class FileTranslator:
     code_mark: str = '```'
     paragraph_regexp = re.compile(r'^[a-zA-Z]+.*')
 
-    def __init__(self, settings: Settings, file_path: pathlib.Path):
+    def __init__(self, file_path: pathlib.Path):
+        from md_translate.settings import settings
         translator_class: Type[
             AbstractTranslator
-        ] = get_translator_class_by_service_name(settings.service)
+        ] = get_translator_class_by_service_name(settings.service_name)
         self.settings = settings
-        self.__translator: AbstractTranslator = translator_class(settings)
+        self.__translator: AbstractTranslator = translator_class()
         self.__file_path: pathlib.Path = file_path
         self.file_contents_with_translation: list = []
         self.code_block: bool = False

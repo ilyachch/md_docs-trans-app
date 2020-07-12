@@ -14,7 +14,7 @@ class TestSettings(TestCase):
         self.current_path = Path().cwd()
         self.test_path = Path(TEST_PATH)
         self.api_key = 'API_KEY'
-        self.service = const.TRANSLATION_SERVICE_YANDEX
+        self.service_name = const.TRANSLATION_SERVICE_YANDEX
         self.source_lang = const.LANG_EN
         self.target_lang = const.LANG_RU
 
@@ -22,13 +22,12 @@ class TestSettings(TestCase):
     def test_common_launch(self, cli_args_mock):
         from md_translate.settings import Settings
         cli_args_mock.return_value = '-k {} -s {} -S {} -T {}'.format(
-            self.api_key, self.service, self.source_lang, self.target_lang
+            self.api_key, self.service_name, self.source_lang, self.target_lang
         ).split(' ')
         settings = Settings()
-        self.assertTrue(settings.is_valid())
         self.assertEqual(settings.path, self.current_path)
         self.assertEqual(settings.api_key, self.api_key)
-        self.assertEqual(settings.service_name, self.service)
+        self.assertEqual(settings.service_name, self.service_name)
         self.assertEqual(settings.source_lang, self.source_lang)
         self.assertEqual(settings.target_lang, self.target_lang)
 
@@ -36,13 +35,12 @@ class TestSettings(TestCase):
     def test_lauch_with_path(self, cli_args_mock):
         from md_translate.settings import Settings
         cli_args_mock.return_value = '{} -k {} -s {} -S {} -T {}'.format(
-            self.test_path, self.api_key, self.service, self.source_lang, self.target_lang
+            self.test_path, self.api_key, self.service_name, self.source_lang, self.target_lang
         ).split(' ')
         settings = Settings()
-        self.assertTrue(settings.is_valid())
         self.assertEqual(settings.path, self.test_path)
         self.assertEqual(settings.api_key, self.api_key)
-        self.assertEqual(settings.service_name, self.service)
+        self.assertEqual(settings.service_name, self.service_name)
         self.assertEqual(settings.source_lang, self.source_lang)
         self.assertEqual(settings.target_lang, self.target_lang)
 
@@ -53,7 +51,6 @@ class TestSettings(TestCase):
             self.config_file_path
         ).split(' ')
         settings = Settings()
-        self.assertTrue(settings.is_valid())
         self.assertEqual(settings.path, self.current_path)
         self.assertEqual(settings.api_key, 'API_KEY_IN_FILE')
         self.assertEqual(settings.service_name, const.TRANSLATION_SERVICE_GOOGLE)
@@ -64,13 +61,12 @@ class TestSettings(TestCase):
     def test_lauch_with_file_and_override(self, cli_args_mock):
         from md_translate.settings import Settings
         cli_args_mock.return_value = '-c {} -k {} -s {} -S {} -T {}'.format(
-            self.config_file_path, self.api_key, self.service, self.source_lang, self.target_lang
+            self.config_file_path, self.api_key, self.service_name, self.source_lang, self.target_lang
         ).split(' ')
         settings = Settings()
-        self.assertTrue(settings.is_valid())
         self.assertEqual(settings.path, self.current_path)
         self.assertEqual(settings.api_key, self.api_key)
-        self.assertEqual(settings.service_name, self.service)
+        self.assertEqual(settings.service_name, self.service_name)
         self.assertEqual(settings.source_lang, self.source_lang)
         self.assertEqual(settings.target_lang, self.target_lang)
 
@@ -81,6 +77,5 @@ class TestSettings(TestCase):
             self.api_key, self.target_lang
         ).split(' ')
         settings = Settings()
-        self.assertFalse(settings.is_valid())
         with self.assertRaises(ConfigurationError):
-            settings.validate()
+            settings.source_lang

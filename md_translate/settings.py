@@ -2,13 +2,13 @@ import json
 import sys
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
 
 from md_translate import const
 from md_translate.exceptions import ConfigurationError
 
 
-def get_cli_args():
+def get_cli_args() -> List[str]:
     return sys.argv[1:]
 
 
@@ -24,49 +24,45 @@ class Settings:
     )
     CONFIG_FILE_DEFAULT_PATH = Path.home().joinpath(CONFIG_FILENAME)
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.__args_parser = self.get_arg_parser()
-        self.__params: Namespace = self.__args_parser.parse_args(get_cli_args())
-        self.__config = self.__get_config_from_file()
+        self.params: Namespace = self.__args_parser.parse_args(get_cli_args())
+        self.config = self.__get_config_from_file()
+        print(1)
 
     def __get_config_from_file(self) -> Dict[str, str]:
-        config_file_path = self.__params.config_path or self.CONFIG_FILE_DEFAULT_PATH
+        config_file_path = self.params.config_path or self.CONFIG_FILE_DEFAULT_PATH
         if config_file_path.exists():
             return json.loads(config_file_path.read_text())
         return {}
 
     @property
-    def source_lang(self):
-        return self.__params.source_lang or self.__config.get('source_lang')
+    def source_lang(self) -> str:
+        return self.__get_property_by_name('source_lang')
 
     @property
-    def target_lang(self):
-        return self.__params.target_lang or self.__config.get('target_lang')
+    def target_lang(self) -> str:
+        return self.__get_property_by_name('target_lang')
 
     @property
-    def service_name(self):
-        return self.__params.service or self.__config.get('service_name')
+    def service_name(self) -> str:
+        return self.__get_property_by_name('service_name')
 
     @property
-    def api_key(self):
-        return self.__params.api_key or self.__config.get('api_key')
+    def api_key(self) -> str:
+        return self.__get_property_by_name('api_key')
 
     @property
-    def path(self):
-        return self.__params.path
+    def path(self) -> Path:
+        return self.params.path
 
-    def is_valid(self) -> bool:
-        for param_name in ['source_lang', 'target_lang', 'service_name', 'api_key']:
-            param_value = getattr(self, param_name)
-            if not param_value:
-                return False
-        return True
+    def __get_property_by_name(self, prop_name: str) -> str:
+        property_value = getattr(self.params, prop_name, None) or self.config.get(prop_name)
+        if property_value is None:
+            raise ConfigurationError(prop_name)
+        return property_value
 
-    def validate(self) -> None:
-        if not self.is_valid():
-            raise ConfigurationError()
-
-    def get_arg_parser(self):
+    def get_arg_parser(self) -> ArgumentParser:
         arg_parser = ArgumentParser(
             description=self.APPLICATION_DESCRIPTION, epilog=self.APPLICATION_EPILOG
         )
@@ -84,22 +80,31 @@ class Settings:
         )
 
         arg_parser.add_argument(
-            '-k',
-            '--api_key',
-            help='API key to use Translation API',
-            type=str,
+            '-k', '--api_key', help='API key to use Translation API', type=str,
         )
 
         arg_parser.add_argument(
-            '-s', '--service', help='Translating service',
-            choices=(const.TRANSLATION_SERVICE_YANDEX, const.TRANSLATION_SERVICE_GOOGLE),
-            type=str
+            '-s',
+            '--service',
+            help='Translating service',
+            choices=(
+                const.TRANSLATION_SERVICE_YANDEX,
+                const.TRANSLATION_SERVICE_GOOGLE,
+            ),
+            type=str,
+            dest='service_name'
         )
         arg_parser.add_argument(
-            '-S', '--source_lang', help='Source language', choices=(const.LANG_EN, const.LANG_RU)
+            '-S',
+            '--source_lang',
+            help='Source language',
+            choices=(const.LANG_EN, const.LANG_RU),
         )
         arg_parser.add_argument(
-            '-T', '--target_lang', help='Target language', choices=(const.LANG_EN, const.LANG_RU)
+            '-T',
+            '--target_lang',
+            help='Target language',
+            choices=(const.LANG_EN, const.LANG_RU),
         )
         return arg_parser
 

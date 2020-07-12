@@ -12,14 +12,6 @@ class TestFileTranslator(unittest.TestCase):
     file_to_test_on = Path('tests/test_data/file_to_test_on.md')
 
     def setUp(self):
-        class SettingsMock:
-            service = 'Yandex'
-            source_lang = 'en'
-            target_lang = 'ru'
-            api_key = 'TEST_API_KEY'
-
-        self.settings_mock = SettingsMock()
-
         with self.fixture.open() as fixture:
             with self.file_to_test_on.open('w') as target:
                 target.write(fixture.read())
@@ -29,10 +21,19 @@ class TestFileTranslator(unittest.TestCase):
 
     @mock.patch('md_translate.file_translator.get_translator_class_by_service_name')
     def test_file_translator(self, get_translator_mock):
+        class SettingsMock:
+            service_name = 'Yandex'
+            source_lang = 'en'
+            target_lang = 'ru'
+            api_key = 'TEST_API_KEY'
+
+        from md_translate import settings
+        settings.settings = SettingsMock()
+
         translator_mock = Mock()
         translator_mock.request_translation.return_value = 'Переведенная строка'
         get_translator_mock.return_value.return_value = translator_mock
-        with FileTranslator(self.settings_mock, self.file_to_test_on) as file_translator:
+        with FileTranslator(self.file_to_test_on) as file_translator:
             self.assertIsInstance(file_translator, FileTranslator)
             file_translator.translate()
         translator_mock.request_translation.assert_called_with('Some string for translation\n')

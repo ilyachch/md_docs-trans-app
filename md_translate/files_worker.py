@@ -1,13 +1,13 @@
 from pathlib import Path
-from typing import Sequence, Optional
+from typing import Sequence
 
-from md_translate.settings import Settings
+from md_translate import settings
 from md_translate.exceptions import ObjectNotFoundException, FileIsNotMarkdown
 
 
 class FilesWorker:
-    def __init__(self, settings: Settings):
-        self.settings: Settings = settings
+    def __init__(self) -> None:
+        self.settings = settings.settings
         self.single_file: bool = False
         self.object_to_process: Path = self.settings.path
         self.__check_for_single_obj()
