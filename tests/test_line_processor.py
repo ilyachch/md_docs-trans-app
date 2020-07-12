@@ -1,7 +1,7 @@
 import unittest
 
 from md_translate.line_processor import LineProcessor
-
+from md_translate import const
 
 class TestLineProcessorWithCodeEnRu(unittest.TestCase):
     CODE_BLOCK_STR = '```'
@@ -17,9 +17,9 @@ class TestLineProcessorWithCodeEnRu(unittest.TestCase):
 
     class MockedSettings:
         api_key = 'TEST_API_KEY'
-        source_lang = 'en'
-        target_lang = 'ru'
-        service = 'Yandex'
+        source_lang = const.LANG_EN
+        target_lang = const.LANG_RU
+        service = const.TRANSLATION_SERVICE_YANDEX
 
     def setUp(self) -> None:
         self.settings = self.MockedSettings()
@@ -56,9 +56,9 @@ class TestLineProcessorWithCodeRuEn(unittest.TestCase):
 
     class MockedSettings:
         api_key = 'TEST_API_KEY'
-        source_lang = 'ru'
-        target_lang = 'en'
-        service = 'Yandex'
+        source_lang = const.LANG_RU
+        target_lang = const.LANG_EN
+        service = const.TRANSLATION_SERVICE_YANDEX
 
     def setUp(self) -> None:
         self.settings = self.MockedSettings()
@@ -79,14 +79,3 @@ class TestLineProcessorWithCodeRuEn(unittest.TestCase):
         self.assertFalse(LineProcessor(self.settings, self.SINGLE_LINE_CODE_BLOCK_STR).line_can_be_translated())
         self.assertFalse(LineProcessor(self.settings, self.QUOTE_BLOCK_STR).line_can_be_translated())
         self.assertFalse(LineProcessor(self.settings, self.LIST_ITEM_STR).line_can_be_translated())
-
-
-class TestLineProcessorGetRegex(unittest.TestCase):
-    def test_ru_regex(self):
-        self.assertEqual(LineProcessor.get_regexp('ru'), r'^[а-яА-Я]+.*')
-
-    def test_en_regex(self):
-        self.assertEqual(LineProcessor.get_regexp('en'), r'^[a-zA-Z]+.*')
-
-    def test_common_regex(self):
-        self.assertEqual(LineProcessor.get_regexp(), r'^\d+.*')

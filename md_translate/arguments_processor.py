@@ -2,7 +2,7 @@ import configparser
 import sys
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
-from typing import Union, Optional
+from typing import Union, Optional, List
 
 from md_translate.exceptions import (
     NoApiKeyFileError,
@@ -24,7 +24,7 @@ class ArgumentsProcessor:
     CONFIG_FILE_DEFAULT_PATH = Path.home().joinpath(CONFIG_FILENAME)
 
     def __init__(self, args: list = sys.argv[1:]):
-        self.args: list = args
+        self.args: List[str] = args
         self.args_parser: ArgumentParser = self.__get_args_parser()
         self.params: Namespace = self.args_parser.parse_args(self.args)
         self.use_config_file = True

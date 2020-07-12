@@ -1,15 +1,23 @@
 import re
 
 from md_translate.arguments_processor import ArgumentsProcessor
+from md_translate import const
 
 
 class LineProcessor:
     code_mark: str = '```'
+    TRANSLATION_CHECK_REGEXP_BY_LANG = {
+        const.LANG_RU: r'^[а-яА-Я]+.*',
+        const.LANG_EN: r'^[a-zA-Z]+.*',
+    }
+    DEFAULT_TRANSLATION_CHECK_REGEXP_BY_LANG = r'^\d+.*'
 
     def __init__(self, settings: ArgumentsProcessor, line: str) -> None:
         self.settings = settings
         self._line: str = line
-        self.pattern = self.get_regexp(self.settings.source_lang)
+        self.pattern = self.TRANSLATION_CHECK_REGEXP_BY_LANG.get(
+            self.settings.source_lang, self.DEFAULT_TRANSLATION_CHECK_REGEXP_BY_LANG
+        )
 
     def is_code_block_border(self) -> bool:
         if self._line == self.code_mark:
