@@ -31,9 +31,9 @@ jobs:
           poetry config virtualenvs.create true
           poetry config virtualenvs.in-project true
       - name: Installing dependencies
-        run: poetry install --no-root
+        run: poetry install
       - name: Running tests
-        run: make coverage_run
+        run: make coverage
       - name: Running coverage check
         run: make coverage_cmd_report
       - name: Running codestyle checks
@@ -85,6 +85,3 @@ jobs:
           asset_path: dist/${{ steps.get_asset_name.outputs.assert_name }}
           asset_name: ${{ steps.get_asset_name.outputs.assert_name }}
           asset_content_type: application/tar+gzip
-
-
-

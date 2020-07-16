@@ -4,23 +4,28 @@ on:
   pull_request:
     branches: master
 
-
 jobs:
   test_pr:
     name: Tests
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
     steps:
       - name: Getting code
         uses: actions/checkout@master
       - name: Getting Python
         uses: actions/setup-python@master
+        with:
+          python-version: ${{ matrix.python-version }}
+
       - name: Cache pip
         uses: actions/cache@v2
         with:
           path: .venv
-          key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
           restore-keys: |
-            ${{ runner.os }}-pip-
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
       - name: Getting Poetry
         uses: dschep/install-poetry-action@v1.3
       - name: Config Poetry
@@ -28,14 +33,18 @@ jobs:
           poetry config virtualenvs.create true
           poetry config virtualenvs.in-project true
       - name: Installing dependencies
-        run: poetry install --no-root
+        run: poetry install
+
       - name: Running tests
-        run: make coverage_run
+        run: make coverage
       - name: Running coverage check
+        if: ${{ matrix.python-version == 3.6 }}
         run: make coverage_cmd_report
       - name: Generate coverage report
+        if: ${{ matrix.python-version == 3.6 }}
         run: make coverage_xml_report
       - name: Upload coverage to Codecov
+        if: ${{ matrix.python-version == 3.6 }}
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -43,7 +52,7 @@ jobs:
           flags: pull_requests
 
   validate_typing:
-    name: Validate typing
+    name: Validate Typing
     runs-on: ubuntu-latest
     steps:
       - name: Getting code
@@ -115,8 +124,6 @@ jobs:
         run: |
           poetry config virtualenvs.create true
           poetry config virtualenvs.in-project true
-      - name: Installing dependencies
-        run: poetry install --no-root
       - name: Check if pyproject is changed
         uses: technote-space/get-diff-action@v1
         id: pyproject_is_changed
@@ -126,8 +133,7 @@ jobs:
         uses: technote-space/get-diff-action@v1
         id: python_files_are_changed
         with:
-          PREFIX_FILTER: django_partisan
+          SUFFIX_FILTER: .py
       - name: Fail if pyproject is not changed and files are changed
-        if: ${{ steps.pyproject_is_changed.outputs.count != 1 && steps.python_files_are_changed.outputs.count == 1 }}
+        if: ${{ steps.pyproject_is_changed.outputs.count != 1 && steps.python_files_are_changed.outputs.count > 0 }}
         run: exit 1
-
