@@ -4,7 +4,6 @@ on:
   pull_request:
     branches: master
 
-
 jobs:
   test_pr:
     name: Tests
@@ -37,7 +36,7 @@ jobs:
         run: poetry install
 
       - name: Running tests
-        run: make run_coverage
+        run: make coverage
       - name: Running coverage check
         if: ${{ matrix.python-version == 3.6 }}
         run: make coverage_cmd_report

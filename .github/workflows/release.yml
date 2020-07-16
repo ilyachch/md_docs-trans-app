@@ -33,7 +33,7 @@ jobs:
       - name: Installing dependencies
         run: poetry install
       - name: Running tests
-        run: make run_coverage
+        run: make coverage
       - name: Running coverage check
         run: make coverage_cmd_report
       - name: Running codestyle checks
