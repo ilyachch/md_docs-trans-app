@@ -4,22 +4,12 @@
 PROJECT_FOLDER = md_translate
 WORKING_DIRECTORY = $(shell pwd)
 
-
-coverage_html: go_to_project_folder coverage_run coverage_html_report
-coverage_simple: go_to_project_folder coverage_run coverage_xml_report
-make_checks: go_to_project_folder check_black check_mypy
-make_all_checks: go_to_project_folder coverage_run coverage_xml_report make_checks
-
 go_to_project_folder:
 	@cd $(WORKING_DIRECTORY)
 
 # Tools section
-run_black:
+black:
 	@poetry run black -S $(PROJECT_FOLDER)
-
-# Tests section
-run_tests:
-	@poetry run python -m unittest
 
 # Linters section
 check_black:
@@ -29,7 +19,7 @@ check_mypy:
 	@poetry run mypy $(PROJECT_FOLDER)
 
 # Coverage section
-coverage_run:
+coverage:
 	@poetry run coverage run -m unittest
 
 coverage_html_report:
