@@ -30,6 +30,7 @@ md-translate = 'md_translate.app:main'
 [tool.poetry.dependencies]
 python = "^3.6"
 requests = "^2.24.0"
+translators = "^4.7.2"
 
 [tool.poetry.dev-dependencies]
 coverage = "^5.2"

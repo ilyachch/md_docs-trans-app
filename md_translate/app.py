@@ -14,7 +14,7 @@ class App:
             print('Processed: {file_name}'.format(file_name=file_name))
 
 
-def main() -> None:
+def run() -> None:
     try:
         App().process()
         exit(0)
@@ -24,4 +24,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    run()

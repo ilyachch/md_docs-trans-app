@@ -56,8 +56,8 @@ class TestLineProcessorWithCodeRuEn(unittest.TestCase):
 
     class MockedSettings:
         api_key = 'TEST_API_KEY'
-        source_lang = const.LANG_RU
-        target_lang = const.LANG_EN
+        source_lang = 'ru'
+        target_lang = 'en'
         service = const.TRANSLATION_SERVICE_YANDEX
 
     def setUp(self) -> None:
