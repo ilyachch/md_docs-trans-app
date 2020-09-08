@@ -1,6 +1,6 @@
 from typing import Any
 
-from translators import apis
+from translators import apis  # type: ignore
 
 from md_translate import const
 from md_translate.exceptions import UnknownServiceError

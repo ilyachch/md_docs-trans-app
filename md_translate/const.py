@@ -1,4 +1,4 @@
-from translators import bing, deepl, google, yandex
+from translators import bing, deepl, google, yandex  # type: ignore
 
 TRANSLATION_SERVICE_YANDEX = 'Yandex'
 TRANSLATION_SERVICE_GOOGLE = 'Google'

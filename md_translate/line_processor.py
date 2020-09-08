@@ -1,5 +1,5 @@
-from langdetect import detect
-from langdetect.lang_detect_exception import LangDetectException
+from langdetect import detect  # type: ignore
+from langdetect.lang_detect_exception import LangDetectException  # type: ignore
 
 from md_translate.settings import Settings
 
