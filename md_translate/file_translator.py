@@ -1,5 +1,4 @@
 import pathlib
-import re
 from typing import IO, Any
 
 from md_translate.line_processor import LineProcessor
@@ -38,7 +37,11 @@ class FileTranslator:
                 else self.code_block
             )
             if line_processor.line_can_be_translated() and not self.code_block:
-                translated = self.__translator(line)
+                translated = self.__translator(
+                    line,
+                    from_language=self.settings.source_lang,
+                    to_language=self.settings.target_lang,
+                )
                 self.file_contents_with_translation.append('\n')
                 if line.endswith('\n') and not translated.endswith('\n'):
                     self.file_contents_with_translation.append(

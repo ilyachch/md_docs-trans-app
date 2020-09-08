@@ -15,8 +15,8 @@ class TestSettings(TestCase):
         self.test_path = Path(TEST_PATH)
         self.api_key = 'API_KEY'
         self.service_name = const.TRANSLATION_SERVICE_YANDEX
-        self.source_lang = const.LANG_EN
-        self.target_lang = const.LANG_RU
+        self.source_lang = 'en'
+        self.target_lang = 'ru'
 
     @patch('md_translate.settings.get_cli_args')
     def test_common_launch(self, cli_args_mock):
@@ -51,8 +51,8 @@ class TestSettings(TestCase):
         settings = Settings()
         self.assertEqual(settings.path, self.current_path)
         self.assertEqual(settings.service_name, const.TRANSLATION_SERVICE_GOOGLE)
-        self.assertEqual(settings.source_lang, const.LANG_RU)
-        self.assertEqual(settings.target_lang, const.LANG_EN)
+        self.assertEqual(settings.source_lang, 'ru')
+        self.assertEqual(settings.target_lang, 'en')
 
     @patch('md_translate.settings.get_cli_args')
     def test_lauch_with_file_and_override(self, cli_args_mock):

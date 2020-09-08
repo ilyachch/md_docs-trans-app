@@ -129,6 +129,17 @@ version = "0.14"
 
 [[package]]
 category = "main"
+description = "Language detection library ported from Google's language-detection."
+name = "langdetect"
+optional = false
+python-versions = "*"
+version = "1.0.8"
+
+[package.dependencies]
+six = "*"
+
+[[package]]
+category = "main"
 description = "Python logging made (stupidly) simple"
 name = "loguru"
 optional = false
@@ -301,7 +312,7 @@ version = "1.0.2"
 dev = ["pytest (>=4.6.2)", "black (>=19.3b0)"]
 
 [metadata]
-content-hash = "595cd824a6ed54801ba7100b68607aced3df3572978f3b9325114aef67b870c1"
+content-hash = "b2f082889cddbc19fe3959f8d74763d1a19c535cf5c7ced11b68510055715461"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -393,6 +404,10 @@ immutables = [
     {file = "immutables-0.14-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:c453e12b95e1d6bb4909e8743f88b7f5c0c97b86a8bc0d73507091cb644e3c1e"},
     {file = "immutables-0.14-cp38-cp38-win_amd64.whl", hash = "sha256:ef9da20ec0f1c5853b5c8f8e3d9e1e15b8d98c259de4b7515d789a606af8745e"},
     {file = "immutables-0.14.tar.gz", hash = "sha256:a0a1cc238b678455145bae291d8426f732f5255537ed6a5b7645949704c70a78"},
+]
+langdetect = [
+    {file = "langdetect-1.0.8-py2-none-any.whl", hash = "sha256:f37495e63607865e47deed08d78f7f8e58172658216ff954b2f14671bcd87740"},
+    {file = "langdetect-1.0.8.tar.gz", hash = "sha256:363795ea005f1243c958e953245dac5d814fabdc025c9afa91588c5fa6b2fa83"},
 ]
 loguru = [
     {file = "loguru-0.5.2-py3-none-any.whl", hash = "sha256:a5e5e196b9958feaf534ac2050171d16576bae633074ce3e73af7dda7e9a58ae"},

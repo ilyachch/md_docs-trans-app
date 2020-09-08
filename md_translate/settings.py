@@ -86,16 +86,10 @@ class Settings(Singletone):
             dest='service_name',
         )
         arg_parser.add_argument(
-            '-S',
-            '--source_lang',
-            help='Source language',
-            choices=const.AVAILABLE_LANGS,
+            '-S', '--source_lang', help='Source language code',
         )
         arg_parser.add_argument(
-            '-T',
-            '--target_lang',
-            help='Target language',
-            choices=const.AVAILABLE_LANGS,
+            '-T', '--target_lang', help='Target language code',
         )
         return arg_parser
 

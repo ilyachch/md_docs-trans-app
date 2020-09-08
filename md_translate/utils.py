@@ -1,8 +1,9 @@
 from typing import Any
 
+from translators import apis
+
 from md_translate import const
 from md_translate.exceptions import UnknownServiceError
-from translators import apis
 
 
 def get_translator_by_service_name(service_name: str) -> apis.Tse:

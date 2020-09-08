@@ -36,7 +36,7 @@ class TestFileTranslator(unittest.TestCase):
         with FileTranslator(self.file_to_test_on) as file_translator:
             self.assertIsInstance(file_translator, FileTranslator)
             file_translator.translate()
-        translator_mock.assert_called_with('Some string for translation\n')
+        translator_mock.assert_called_with('Some string for translation\n', from_language='en', to_language='ru')
 
         with self.file_to_test_on.open() as fixture:
             with self.fixture_translated.open() as fixture_translated:
