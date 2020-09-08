@@ -48,7 +48,9 @@ class FileTranslator:
                         ''.join([translated, '\n'])
                     )
                 else:
-                    self.file_contents_with_translation.append(translated)
+                    self.file_contents_with_translation.append(
+                        translated
+                    )  # pragma: no cover
         self.__write_translated_data_to_file()
 
     def __write_translated_data_to_file(self) -> None:
