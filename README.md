@@ -23,7 +23,6 @@ Settings file content example:
   "source_lang": "ru",
   "target_lang": "en",
   "service_name": "Google",
-  "api_key": "API_KEY_IN_FILE"
 }
 ```
 
@@ -32,8 +31,8 @@ If you set config file, you should specify it with `-c CONFIG_PATH` argument!
 ## Usage
 
 ```bash
-$ md-translate [-h] [-c CONFIG_PATH] [-K API_KEY]
-               [-s {Yandex,Google}] [-S {ru, en}] [-T {ru, en}]
+$ md-translate [-h] [-c CONFIG_PATH]
+               [-s {Yandex,Google}] [-S] [-T]
                [path]
 ```
 
@@ -45,7 +44,11 @@ If you set config file, you can override any of settings by arguments
 ### Optional arguments:
 * `-h, --help`, show this help message and exit
 * `-c CONFIG_PATH, --config_path CONFIG_PATH`, Path to config_file
-* `-K API_KEY, --api_key API_KEY`, API key to use Translation API
-* `-s {Yandex,Google}, --service_name {Yandex,Google}`, Translating service
-* `-S SOURCE_LANG, --source_lang SOURCE_LANG`, Source language
-* `-T TARGET_LANG, --target_lang TARGET_LANG`, Target language
+* `-s {Yandex,Google,Bing,Deepl}, --service_name {Yandex,Google,Bing,Deepl}`, Translating service
+* `-S SOURCE_LANG, --source_lang SOURCE_LANG`, Source language code
+* `-T TARGET_LANG, --target_lang TARGET_LANG`, Target language code
+
+### Translation services:
+Now used `Yandex`, `Google`, `Bing`, `Deepl`
+
+Some of them can be not working, try it and find the most suitable for you
