@@ -1,14 +1,13 @@
-from md_translate.translator import GoogleTranslator, YandexTranslator
+from translators import bing, deepl, google, yandex  # type: ignore
 
 TRANSLATION_SERVICE_YANDEX = 'Yandex'
 TRANSLATION_SERVICE_GOOGLE = 'Google'
+TRANSLATION_SERVICE_BING = 'Bing'
+TRANSLATION_SERVICE_DEEPL = 'Deepl'
 
 TRANSLATOR_BY_SERVICE_NAME = {
-    TRANSLATION_SERVICE_YANDEX: YandexTranslator,
-    TRANSLATION_SERVICE_GOOGLE: GoogleTranslator,
+    TRANSLATION_SERVICE_YANDEX: yandex,
+    TRANSLATION_SERVICE_GOOGLE: google,
+    TRANSLATION_SERVICE_BING: bing,
+    TRANSLATION_SERVICE_DEEPL: deepl,
 }
-
-LANG_RU = 'ru'
-LANG_EN = 'en'
-
-AVAILABLE_LANGS = [LANG_EN, LANG_RU]

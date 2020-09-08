@@ -1,26 +1,20 @@
 import pathlib
-import re
-from typing import Type, IO, Any
+from typing import IO, Any
 
 from md_translate.line_processor import LineProcessor
-from md_translate.translator import AbstractTranslator
-from md_translate.utils import get_translator_class_by_service_name
+from md_translate.utils import get_translator_by_service_name
 
 
 class FileTranslator:
     default_open_mode: str = 'r+'
 
     code_mark: str = '```'
-    paragraph_regexp = re.compile(r'^[a-zA-Z]+.*')
 
     def __init__(self, file_path: pathlib.Path):
         from md_translate.settings import settings
 
-        translator_class: Type[
-            AbstractTranslator
-        ] = get_translator_class_by_service_name(settings.service_name)
         self.settings = settings
-        self.__translator: AbstractTranslator = translator_class()
+        self.__translator = get_translator_by_service_name(settings.service_name)
         self.__file_path: pathlib.Path = file_path
         self.file_contents_with_translation: list = []
         self.code_block: bool = False
@@ -43,14 +37,20 @@ class FileTranslator:
                 else self.code_block
             )
             if line_processor.line_can_be_translated() and not self.code_block:
-                translated = self.__translator.request_translation(line)
+                translated = self.__translator(
+                    line,
+                    from_language=self.settings.source_lang,
+                    to_language=self.settings.target_lang,
+                )
                 self.file_contents_with_translation.append('\n')
                 if line.endswith('\n') and not translated.endswith('\n'):
                     self.file_contents_with_translation.append(
                         ''.join([translated, '\n'])
                     )
                 else:
-                    self.file_contents_with_translation.append(translated)
+                    self.file_contents_with_translation.append(
+                        translated
+                    )  # pragma: no cover
         self.__write_translated_data_to_file()
 
     def __write_translated_data_to_file(self) -> None:

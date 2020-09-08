@@ -6,13 +6,14 @@ from typing import Dict, List
 
 from md_translate import const
 from md_translate.exceptions import ConfigurationError
+from md_translate.utils import Singletone
 
 
 def get_cli_args() -> List[str]:
     return sys.argv[1:]
 
 
-class Settings:
+class Settings(Singletone):
     APPLICATION_DESCRIPTION = 'Translates .md files in folder'
     APPLICATION_EPILOG = 'See README.md for more information.'
 
@@ -48,10 +49,6 @@ class Settings:
         return self.__get_property_by_name('service_name')
 
     @property
-    def api_key(self) -> str:
-        return self.__get_property_by_name('api_key')
-
-    @property
     def path(self) -> Path:
         return self.params.path
 
@@ -81,31 +78,18 @@ class Settings:
         )
 
         arg_parser.add_argument(
-            '-k', '--api_key', help='API key to use Translation API', type=str,
-        )
-
-        arg_parser.add_argument(
             '-s',
             '--service',
             help='Translating service',
-            choices=(
-                const.TRANSLATION_SERVICE_YANDEX,
-                const.TRANSLATION_SERVICE_GOOGLE,
-            ),
+            choices=const.TRANSLATOR_BY_SERVICE_NAME.keys(),
             type=str,
             dest='service_name',
         )
         arg_parser.add_argument(
-            '-S',
-            '--source_lang',
-            help='Source language',
-            choices=(const.LANG_EN, const.LANG_RU),
+            '-S', '--source_lang', help='Source language code',
         )
         arg_parser.add_argument(
-            '-T',
-            '--target_lang',
-            help='Target language',
-            choices=(const.LANG_EN, const.LANG_RU),
+            '-T', '--target_lang', help='Target language code',
         )
         return arg_parser
 

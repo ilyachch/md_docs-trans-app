@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "md_translate"
-version = "1.0.0"
+version = "2.0.0"
 description = "CLI tool to translate markdown files"
 authors = ["Ilya Chichak <ilyachch@gmail.com>"]
 license = "MIT License"
@@ -25,11 +25,13 @@ classifiers = [
 ]
 
 [tool.poetry.scripts]
-md-translate = 'md_translate.app:main'
+md-translate = 'md_translate.app:run'
 
 [tool.poetry.dependencies]
 python = "^3.6"
 requests = "^2.24.0"
+translators = "^4.7.2"
+langdetect = "^1.0.8"
 
 [tool.poetry.dev-dependencies]
 coverage = "^5.2"
@@ -51,6 +53,7 @@ source = [
 ]
 omit = [
     'tests/*',
+    'md_translate/app.py'
 ]
 
 [tool.coverage.html]

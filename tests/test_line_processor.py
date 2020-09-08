@@ -10,15 +10,15 @@ class TestLineProcessorWithCodeEnRu(unittest.TestCase):
     SINGLE_LINE_CODE_BLOCK_STR = '```Some_String```'
     NOT_CODE_BLOCK_STR = 'Some Data'
 
-    PARAGRAPH_STR = 'Lorem Ipsum'
-    TRANSLATED_PARAGRAPH_STR = 'Лорем ипсум'
+    PARAGRAPH_STR = 'Test string'
+    TRANSLATED_PARAGRAPH_STR = 'Тестовая строка'
     QUOTE_BLOCK_STR = '> Quote'
     LIST_ITEM_STR = '* List Item'
 
     class MockedSettings:
         api_key = 'TEST_API_KEY'
-        source_lang = const.LANG_EN
-        target_lang = const.LANG_RU
+        source_lang = 'en'
+        target_lang = 'ru'
         service = const.TRANSLATION_SERVICE_YANDEX
 
     def setUp(self) -> None:
@@ -56,8 +56,8 @@ class TestLineProcessorWithCodeRuEn(unittest.TestCase):
 
     class MockedSettings:
         api_key = 'TEST_API_KEY'
-        source_lang = const.LANG_RU
-        target_lang = const.LANG_EN
+        source_lang = 'ru'
+        target_lang = 'en'
         service = const.TRANSLATION_SERVICE_YANDEX
 
     def setUp(self) -> None:

@@ -19,7 +19,7 @@ class TestFileTranslator(unittest.TestCase):
     def tearDown(self) -> None:
         self.file_to_test_on.unlink()
 
-    @mock.patch('md_translate.file_translator.get_translator_class_by_service_name')
+    @mock.patch('md_translate.file_translator.get_translator_by_service_name')
     def test_file_translator(self, get_translator_mock):
         class SettingsMock:
             service_name = 'Yandex'
@@ -31,12 +31,12 @@ class TestFileTranslator(unittest.TestCase):
         settings.settings = SettingsMock()
 
         translator_mock = Mock()
-        translator_mock.request_translation.return_value = 'Переведенная строка'
-        get_translator_mock.return_value.return_value = translator_mock
+        translator_mock.return_value = 'Переведенная строка'
+        get_translator_mock.return_value = translator_mock
         with FileTranslator(self.file_to_test_on) as file_translator:
             self.assertIsInstance(file_translator, FileTranslator)
             file_translator.translate()
-        translator_mock.request_translation.assert_called_with('Some string for translation\n')
+        translator_mock.assert_called_with('Some string for translation\n', from_language='en', to_language='ru')
 
         with self.file_to_test_on.open() as fixture:
             with self.fixture_translated.open() as fixture_translated:

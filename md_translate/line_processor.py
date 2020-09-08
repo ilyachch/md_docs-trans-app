@@ -1,23 +1,17 @@
-import re
+from langdetect import detect  # type: ignore
+from langdetect.lang_detect_exception import LangDetectException  # type: ignore
 
 from md_translate.settings import Settings
-from md_translate import const
 
 
 class LineProcessor:
     code_mark: str = '```'
-    TRANSLATION_CHECK_REGEXP_BY_LANG = {
-        const.LANG_RU: r'^[а-яА-Я]+.*',
-        const.LANG_EN: r'^[a-zA-Z]+.*',
-    }
-    DEFAULT_TRANSLATION_CHECK_REGEXP_BY_LANG = r'^\d+.*'
+    list_item_mark = '* '
+    quote_item_mark = '> '
 
     def __init__(self, settings: Settings, line: str) -> None:
         self.settings = settings
         self._line: str = line
-        self.pattern = self.TRANSLATION_CHECK_REGEXP_BY_LANG.get(
-            self.settings.source_lang, self.DEFAULT_TRANSLATION_CHECK_REGEXP_BY_LANG
-        )
 
     def is_code_block_border(self) -> bool:
         if self._line == self.code_mark:
@@ -27,10 +21,18 @@ class LineProcessor:
         )
 
     def line_can_be_translated(self) -> bool:
-        return not self.__is_single_code_line() and self.__is_untranslated_paragraph()
+        return (
+            not self.__is_quote_string()
+            and not self.__is_list_item_string()
+            and not self.__is_single_code_line()
+            and self.__is_untranslated_paragraph()
+        )
 
     def __is_untranslated_paragraph(self) -> bool:
-        return re.match(self.pattern, self._line) is not None
+        try:
+            return detect(self._line) == self.settings.source_lang
+        except LangDetectException:
+            return False
 
     def __is_single_code_line(self) -> bool:
         return (
@@ -38,3 +40,9 @@ class LineProcessor:
             and self._line.endswith(self.code_mark)
             and len(self._line) > 3
         )
+
+    def __is_list_item_string(self) -> bool:
+        return self._line.startswith(self.list_item_mark)
+
+    def __is_quote_string(self) -> bool:
+        return self._line.startswith(self.quote_item_mark)
