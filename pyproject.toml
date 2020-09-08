@@ -53,6 +53,7 @@ source = [
 ]
 omit = [
     'tests/*',
+    'md_translate/app.py'
 ]
 
 [tool.coverage.html]
