@@ -11,12 +11,18 @@ go_to_project_folder:
 black:
 	@poetry run black -S $(PROJECT_FOLDER)
 
+isort:
+	@poetry run isort $(PROJECT_FOLDER)
+
 # Linters section
 check_black:
 	@poetry run black -S --diff --check $(PROJECT_FOLDER)
 
 check_mypy:
 	@poetry run mypy $(PROJECT_FOLDER)
+
+check_imports:
+	@poetry run isort --check-only $(PROJECT_FOLDER)
 
 # Coverage section
 coverage:

@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Sequence
 
 from md_translate import settings
-from md_translate.exceptions import ObjectNotFoundException, FileIsNotMarkdown
+from md_translate.exceptions import FileIsNotMarkdown, ObjectNotFoundException
 
 
 class FilesWorker:

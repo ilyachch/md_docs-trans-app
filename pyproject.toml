@@ -38,6 +38,7 @@ loguru = "^0.5.3"
 coverage = "^5.2"
 mypy = "^0.782"
 black = "^19.10b0"
+isort = "^5.6.4"
 
 [tool.black]
 exclude = """
@@ -59,6 +60,10 @@ omit = [
 
 [tool.coverage.html]
 directory = '.coverage_html'
+
+[tool.isort]
+profile = "black"
+src_paths = ["md_translate"]
 
 [tool.coverage.report]
 fail_under = 80

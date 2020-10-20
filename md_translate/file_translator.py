@@ -2,14 +2,15 @@ import pathlib
 import sys
 from typing import IO, Any
 
+from loguru import logger
+
 from md_translate.line_processor import LineProcessor
 from md_translate.utils import get_translator_by_service_name
-
-from loguru import logger
 
 logger.remove()
 logger.add(sys.stdout, format='[{time:HH:mm:ss}] <lvl>{message}</lvl>', level='INFO')
 logger.opt(colors=True)
+
 
 class FileTranslator:
     default_open_mode: str = 'r+'

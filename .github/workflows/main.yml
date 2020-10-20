@@ -102,6 +102,8 @@ jobs:
         run: poetry install --no-root
       - name: Running codestyle checks
         run: make check_black
+      - name: Running imports check
+        run: make check_isort
 
   validate_version:
     name: Validate Version
