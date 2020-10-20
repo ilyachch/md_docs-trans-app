@@ -1,18 +1,28 @@
+from typing import TYPE_CHECKING
+
 from langdetect import detect  # type: ignore
 from langdetect.lang_detect_exception import LangDetectException  # type: ignore
 
-from md_translate.settings import Settings
+if TYPE_CHECKING:
+    from md_translate.settings import Settings
 
 
-class LineProcessor:
+class Line:
     code_mark: str = '```'
     list_item_mark = '* '
     quote_item_mark = '> '
 
-    def __init__(self, settings: Settings, line: str) -> None:
+    def __init__(self, settings: 'Settings', line: str) -> None:
         self.settings = settings
         self._line: str = line
 
+    def __str__(self) -> str:
+        return self._line
+
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__}: {self._line}'
+
+    @property
     def is_code_block_border(self) -> bool:
         if self._line == self.code_mark:
             return True
@@ -20,6 +30,7 @@ class LineProcessor:
             self.code_mark
         )
 
+    @property
     def line_can_be_translated(self) -> bool:
         return (
             not self.__is_quote_string()
