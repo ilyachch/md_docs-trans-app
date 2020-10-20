@@ -144,7 +144,7 @@ description = "Python logging made (stupidly) simple"
 name = "loguru"
 optional = false
 python-versions = ">=3.5"
-version = "0.5.2"
+version = "0.5.3"
 
 [package.dependencies]
 colorama = ">=0.3.4"
@@ -312,7 +312,7 @@ version = "1.0.2"
 dev = ["pytest (>=4.6.2)", "black (>=19.3b0)"]
 
 [metadata]
-content-hash = "b2f082889cddbc19fe3959f8d74763d1a19c535cf5c7ced11b68510055715461"
+content-hash = "e67a4abbba9397ff31716ab81cbe574baf45a8b63b8d064e6b948b25c0679ddd"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -410,8 +410,8 @@ langdetect = [
     {file = "langdetect-1.0.8.tar.gz", hash = "sha256:363795ea005f1243c958e953245dac5d814fabdc025c9afa91588c5fa6b2fa83"},
 ]
 loguru = [
-    {file = "loguru-0.5.2-py3-none-any.whl", hash = "sha256:a5e5e196b9958feaf534ac2050171d16576bae633074ce3e73af7dda7e9a58ae"},
-    {file = "loguru-0.5.2.tar.gz", hash = "sha256:5aecbf13bc8e2f6e5a5d0475460a345b44e2885464095ea7de44e8795857ad33"},
+    {file = "loguru-0.5.3-py3-none-any.whl", hash = "sha256:f8087ac396b5ee5f67c963b495d615ebbceac2796379599820e324419d53667c"},
+    {file = "loguru-0.5.3.tar.gz", hash = "sha256:b28e72ac7a98be3d28ad28570299a393dfcd32e5e3f6a353dec94675767b6319"},
 ]
 lxml = [
     {file = "lxml-4.5.2-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:74f48ec98430e06c1fa8949b49ebdd8d27ceb9df8d3d1c92e1fdc2773f003f20"},

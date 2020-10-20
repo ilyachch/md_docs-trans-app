@@ -1,9 +1,15 @@
 import pathlib
+import sys
 from typing import IO, Any
 
 from md_translate.line_processor import LineProcessor
 from md_translate.utils import get_translator_by_service_name
 
+from loguru import logger
+
+logger.remove()
+logger.add(sys.stdout, format='[{time:HH:mm:ss}] <lvl>{message}</lvl>', level='INFO')
+logger.opt(colors=True)
 
 class FileTranslator:
     default_open_mode: str = 'r+'
@@ -28,6 +34,8 @@ class FileTranslator:
 
     def translate(self) -> None:
         lines = self.__translating_file.readlines()
+        lines_count = len(lines)
+        logger.info(f'Got {lines_count} lines to process')
         for counter, line in enumerate(lines):
             self.file_contents_with_translation.append(line)
             line_processor = LineProcessor(self.settings, line)
@@ -51,6 +59,8 @@ class FileTranslator:
                     self.file_contents_with_translation.append(
                         translated
                     )  # pragma: no cover
+
+                logger.info(f'Processed {counter+1} lines')
         self.__write_translated_data_to_file()
 
     def __write_translated_data_to_file(self) -> None:

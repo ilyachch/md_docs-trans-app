@@ -32,6 +32,7 @@ python = "^3.6"
 requests = "^2.24.0"
 translators = "^4.7.2"
 langdetect = "^1.0.8"
+loguru = "^0.5.3"
 
 [tool.poetry.dev-dependencies]
 coverage = "^5.2"
