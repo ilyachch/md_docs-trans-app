@@ -26,7 +26,7 @@ check_imports:
 
 # Coverage section
 coverage:
-	@poetry run coverage run -m unittest
+	@poetry run pytest --cov=$(PROJECT_FOLDER) tests
 
 coverage_html_report:
 	@poetry run coverage html
@@ -66,3 +66,4 @@ clean:
 	@rm -rf .mypy_cache
 	@rm -rf .coverage
 	@rm -rf .coverage_html
+	@rm -rf .pytest_cache

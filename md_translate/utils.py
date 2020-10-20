@@ -1,5 +1,3 @@
-from typing import Any
-
 from translators import apis  # type: ignore
 
 from md_translate import const

@@ -16,11 +16,11 @@ class Line:
         self.settings = settings
         self._line: str = line
 
-    def __str__(self) -> str:
-        return self._line  # pragma: no cover
+    def __str__(self) -> str:  # pragma: no cover
+        return self._line
 
-    def __repr__(self) -> str:
-        return f'{self.__class__.__name__}: {self._line}'  # pragma: no cover
+    def __repr__(self) -> str:  # pragma: no cover
+        return f'{self.__class__.__name__}: {self._line}'
 
     @property
     def is_code_block_border(self) -> bool:
@@ -33,10 +33,11 @@ class Line:
     @property
     def line_can_be_translated(self) -> bool:
         return (
-            not self.__is_quote_string()
-            and not self.__is_list_item_string()
-            and not self.__is_single_code_line()
-            and self.__is_untranslated_paragraph()
+            # not self.__is_quote_string() and
+            # not self.__is_list_item_string() and
+            not self.is_code_block_border and
+            not self.__is_single_code_line() and
+            self.__is_untranslated_paragraph()
         )
 
     def __is_untranslated_paragraph(self) -> bool:
@@ -52,8 +53,8 @@ class Line:
             and len(self._line) > 3
         )
 
-    def __is_list_item_string(self) -> bool:
-        return self._line.startswith(self.list_item_mark)
-
-    def __is_quote_string(self) -> bool:
-        return self._line.startswith(self.quote_item_mark)
+    # def __is_list_item_string(self) -> bool:
+    #     return self._line.startswith(self.list_item_mark)
+    #
+    # def __is_quote_string(self) -> bool:
+    #     return self._line.startswith(self.quote_item_mark)
