@@ -1,4 +1,5 @@
 from unittest import mock
+
 import pytest
 
 from md_translate import const
@@ -41,33 +42,33 @@ class TestLineProcessor:
 
 class TestLineProcessorEnRu:
     @pytest.mark.parametrize('line, valid, line_lang', [
-        ['Test string', True, ],
-        ['Тестовая строка', False, ],
-        ['> Quote', True, ],
-        ['* List Item', True, ],
-        ['```', False, ],
-        ['```python', False, ],
-        ['```bash', False, ],
-        ['```Some_String```', False, ],
+        ['Test string', True, 'en'],
+        ['Тестовая строка', False, 'ru'],
+        ['> Quote', True, 'en'],
+        ['* List Item', True, 'en'],
+        ['```', False, 'en'],
+        ['```python', False, 'en'],
+        ['```bash', False, 'en'],
+        ['```Some_String```', False, 'en'],
     ])
     def test_line_can_be_translated(self, line, valid, line_lang, en_ru_settings):
         with mock.patch('md_translate.line_processor.detect') as detect_mock:
-            detect_mock.return_value = 'en'
+            detect_mock.return_value = line_lang
             assert Line(en_ru_settings, line).line_can_be_translated == valid
 
 
 class TestLineProcessorRuEn:
     @pytest.mark.parametrize('line, valid, line_lang', [
-        ['Лорем ипсум', True, ],
-        ['Lorem Ipsum', False, ],
-        ['> Цитата', True, ],
-        ['* Элемент списка', True, ],
-        ['```', False, ],
-        ['```python', False, ],
-        ['```bash', False, ],
-        ['```Some_String```', False, ],
+        ['Лорем ипсум', True, 'ru'],
+        ['Lorem Ipsum', False, 'en'],
+        ['> Цитата', True, 'ru'],
+        ['* Элемент списка', True, 'ru'],
+        ['```', False, 'ru'],
+        ['```python', False, 'ru'],
+        ['```bash', False, 'ru'],
+        ['```Some_String```', False, 'ru'],
     ])
     def test_line_can_be_translated(self, line, valid, line_lang, ru_en_settings):
         with mock.patch('md_translate.line_processor.detect') as detect_mock:
-            detect_mock.return_value = 'ru'
+            detect_mock.return_value = line_lang
             assert Line(ru_en_settings, line).line_can_be_translated == valid

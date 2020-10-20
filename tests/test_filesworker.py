@@ -1,5 +1,6 @@
-import unittest
 from pathlib import Path
+
+import pytest
 
 from md_translate.exceptions import ObjectNotFoundException, FileIsNotMarkdown
 from md_translate.files_worker import FilesWorker
@@ -8,42 +9,28 @@ TEST_FIRST_FILE = 'tests/test_data/md_files_folder/first_file.md'
 TEST_SECOND_FILE = 'tests/test_data/md_files_folder/second_file.md'
 
 
-class TestFilesWorker(unittest.TestCase):
-    def test_folder_errors(self):
-        class SettingsMock:
-            def __init__(self, path):
-                self.path = Path('tests/test_data').joinpath(path)
+class SettingsMock:
+    def __init__(self, path):
+        self.path = Path('tests/test_data').joinpath(path)
 
-        with self.assertRaises(ObjectNotFoundException):
-            FilesWorker(SettingsMock('not existing folder'))
-        with self.assertRaises(FileNotFoundError):
-            FilesWorker(SettingsMock('folder_without_md_files')).get_md_files()
-        with self.assertRaises(FileIsNotMarkdown):
-            FilesWorker(SettingsMock('not_a_folder'))
-        with self.assertRaises(FileIsNotMarkdown):
-            FilesWorker(SettingsMock('not_markdown_file.txt'))
+
+class TestFilesWorker:
+    @pytest.mark.parametrize('path, err', [
+        ['not existing folder', ObjectNotFoundException],
+        ['folder_without_md_files', FileNotFoundError],
+        ['not_a_folder', FileIsNotMarkdown],
+        ['not_markdown_file.txt', FileIsNotMarkdown],
+    ])
+    def test_folder_errors(self, path, err):
+        with pytest.raises(err):
+            FilesWorker(SettingsMock(path)).get_md_files()
 
     def test_multiple_objects(self):
-        class MockedSettings:
-            path = Path('tests/test_data/md_files_folder')
-
-        file_worker_object = FilesWorker(MockedSettings())
-        self.assertFalse(file_worker_object.single_file)
-        self.assertListEqual(
-            sorted(file_worker_object.get_md_files()),
-            sorted([
-                Path(TEST_FIRST_FILE),
-                Path(TEST_SECOND_FILE)
-            ]),
-        )
+        file_worker_object = FilesWorker(SettingsMock('md_files_folder'))
+        assert file_worker_object.single_file == False
+        assert sorted(file_worker_object.get_md_files()) == [Path(TEST_FIRST_FILE), Path(TEST_SECOND_FILE)]
 
     def test_single_object(self):
-        class MockedSettings:
-            path = Path(TEST_FIRST_FILE)
-
-        file_worker_object = FilesWorker(MockedSettings())
-        self.assertTrue(file_worker_object)
-        self.assertEqual(
-            file_worker_object.get_md_files(),
-            [Path(TEST_FIRST_FILE)]
-        )
+        file_worker_object = FilesWorker(SettingsMock('md_files_folder/first_file.md'))
+        assert file_worker_object.single_file == True
+        assert file_worker_object.get_md_files() == [Path(TEST_FIRST_FILE)]
