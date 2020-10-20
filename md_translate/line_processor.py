@@ -17,10 +17,10 @@ class Line:
         self._line: str = line
 
     def __str__(self) -> str:
-        return self._line
+        return self._line  # pragma: no cover
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}: {self._line}'
+        return f'{self.__class__.__name__}: {self._line}'  # pragma: no cover
 
     @property
     def is_code_block_border(self) -> bool:

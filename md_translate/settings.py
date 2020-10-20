@@ -9,7 +9,7 @@ from md_translate.exceptions import ConfigurationError
 
 
 def get_cli_args() -> List[str]:
-    return sys.argv[1:]
+    return sys.argv[1:]  # pragma: no cover
 
 
 class Settings:

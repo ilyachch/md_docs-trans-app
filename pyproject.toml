@@ -71,6 +71,7 @@ fail_under = 80
 exclude_lines = [
     '# pragma: no cover',
     'raise NotImplementedError()',
+    'if TYPE_CHECKING:'
 ]
 [build-system]
 requires = ["poetry>=0.12"]
