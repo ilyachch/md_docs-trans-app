@@ -27,13 +27,10 @@ class TestFileTranslator(unittest.TestCase):
             target_lang = 'ru'
             api_key = 'TEST_API_KEY'
 
-        from md_translate import settings
-        settings.settings = SettingsMock()
-
         translator_mock = Mock()
         translator_mock.return_value = 'Переведенная строка'
         get_translator_mock.return_value = translator_mock
-        with FileTranslator(self.file_to_test_on) as file_translator:
+        with FileTranslator(SettingsMock(), self.file_to_test_on) as file_translator:
             self.assertIsInstance(file_translator, FileTranslator)
             file_translator.translate()
         translator_mock.assert_called_with('Some string for translation\n', from_language='en', to_language='ru')
