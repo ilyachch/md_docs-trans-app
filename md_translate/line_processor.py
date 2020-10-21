@@ -34,7 +34,7 @@ class Line:
 
     @property
     def translated(self) -> str:
-        if not self._translated_line and self.can_be_translated:
+        if not self._translated_line and self.can_be_translated():
             self._translate()
         return self._translated_line
 
@@ -46,7 +46,6 @@ class Line:
             else self.translated
         )
 
-    @property
     def is_code_block_border(self) -> bool:
         if self._line == self.code_mark:
             return True
@@ -54,11 +53,10 @@ class Line:
             self.code_mark
         )
 
-    @property
     def can_be_translated(self) -> bool:
         return (
             not self._is_empty_line()
-            and not self.is_code_block_border
+            and not self.is_code_block_border()
             and not self._is_single_code_line()
             and self._is_untranslated_paragraph()
         )

@@ -38,7 +38,7 @@ class TestLineProcessor:
     ])
     def test_is_code_block_border(self, line, valid, en_ru_settings):
         line = Line(en_ru_settings, line)
-        assert line.is_code_block_border == valid
+        assert line.is_code_block_border() == valid
 
 
 class TestLineProcessorEnRu:
@@ -55,8 +55,7 @@ class TestLineProcessorEnRu:
     def test_line_can_be_translated(self, line, valid, line_lang, en_ru_settings):
         with mock.patch('md_translate.line_processor.detect') as detect_mock:
             detect_mock.return_value = line_lang
-            line = Line(en_ru_settings, line)
-            assert line.can_be_translated == valid
+            assert Line(en_ru_settings, line).can_be_translated() == valid
 
 
 class TestLineProcessorRuEn:
@@ -73,4 +72,4 @@ class TestLineProcessorRuEn:
     def test_line_can_be_translated(self, line, valid, line_lang, ru_en_settings):
         with mock.patch('md_translate.line_processor.detect') as detect_mock:
             detect_mock.return_value = line_lang
-            assert Line(ru_en_settings, line).can_be_translated == valid
+            assert Line(ru_en_settings, line).can_be_translated() == valid

@@ -30,9 +30,9 @@ class FileTranslator:
             line = Line(self.settings, _line)
             self.file_contents_with_translation.append(line.original)
             self.code_block = (
-                not self.code_block if line.is_code_block_border else self.code_block
+                not self.code_block if line.is_code_block_border() else self.code_block
             )
-            if line.can_be_translated and not self.code_block:
+            if line.can_be_translated() and not self.code_block:
                 self.file_contents_with_translation.append('\n')
                 self.file_contents_with_translation.append(line.fixed)
                 logger.info(f'Processed {counter+1} lines')
