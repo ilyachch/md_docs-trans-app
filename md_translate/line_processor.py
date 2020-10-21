@@ -22,10 +22,10 @@ class Line:
         self._line: str = line
         self._translated_line = ''
 
-    def __str__(self) -> str:  # pragma: no cover
+    def __str__(self) -> str:
         return self._line
 
-    def __repr__(self) -> str:  # pragma: no cover
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}: "{self._line}"'
 
     @property
@@ -71,7 +71,7 @@ class Line:
     def _is_untranslated_paragraph(self) -> bool:
         try:
             return detect(self._line) == self.settings.source_lang
-        except LangDetectException:  # pragma: no cover
+        except LangDetectException:
             return False
 
     def _is_single_code_line(self) -> bool:
