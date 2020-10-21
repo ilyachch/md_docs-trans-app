@@ -44,7 +44,6 @@ class Line:
             return ''.join([self.translated, '\n'])
         return self.translated
 
-
     def is_code_block_border(self) -> bool:
         if self._line == self.code_mark:
             return True
