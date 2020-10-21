@@ -3,6 +3,8 @@ from typing import TYPE_CHECKING
 from langdetect import detect  # type: ignore
 from langdetect.lang_detect_exception import LangDetectException  # type: ignore
 
+from md_translate.utils import get_translator_by_service_name
+
 if TYPE_CHECKING:
     from md_translate.settings import Settings
 
@@ -12,15 +14,35 @@ class Line:
     list_item_mark = '* '
     quote_item_mark = '> '
 
+    new_line_symb = '\n'
+
     def __init__(self, settings: 'Settings', line: str) -> None:
         self.settings = settings
+        self._translator = get_translator_by_service_name(self.settings.service_name)
         self._line: str = line
+        self._translated_line = None
 
     def __str__(self) -> str:  # pragma: no cover
         return self._line
 
     def __repr__(self) -> str:  # pragma: no cover
-        return f'{self.__class__.__name__}: {self._line}'
+        return f'{self.__class__.__name__}: "{self._line}"'
+
+    @property
+    def original(self) -> str:
+        return self._line
+
+    @property
+    def translated(self) -> str:
+        if not self._translated_line and self.can_be_translated:
+            self._translate()
+        return self._translated_line or self._line
+
+    @property
+    def fixed(self) -> str:
+        if self._line.endswith('\n') and not self.translated.endswith('\n'):
+            return ''.join([self.translated, '\n'])
+        return self.translated
 
     @property
     def is_code_block_border(self) -> bool:
@@ -31,30 +53,35 @@ class Line:
         )
 
     @property
-    def line_can_be_translated(self) -> bool:
+    def can_be_translated(self) -> bool:
         return (
-            # not self.__is_quote_string() and
-            # not self.__is_list_item_string() and
-            not self.is_code_block_border and
-            not self.__is_single_code_line() and
-            self.__is_untranslated_paragraph()
+            not self._is_empty_line()
+            and not self.is_code_block_border
+            and not self._is_single_code_line()
+            and self._is_untranslated_paragraph()
         )
 
-    def __is_untranslated_paragraph(self) -> bool:
+    def _translate(self) -> None:
+        self._translated_line = self._translator(
+            self._line,
+            from_language=self.settings.source_lang,
+            to_language=self.settings.target_lang,
+        )
+
+    def _is_untranslated_paragraph(self) -> bool:
         try:
             return detect(self._line) == self.settings.source_lang
         except LangDetectException:
             return False
 
-    def __is_single_code_line(self) -> bool:
+    def _is_single_code_line(self) -> bool:
         return (
             self._line.startswith(self.code_mark)
             and self._line.endswith(self.code_mark)
             and len(self._line) > 3
         )
 
-    # def __is_list_item_string(self) -> bool:
-    #     return self._line.startswith(self.list_item_mark)
-    #
-    # def __is_quote_string(self) -> bool:
-    #     return self._line.startswith(self.quote_item_mark)
+    def _is_empty_line(self) -> bool:
+        if self._line == self.new_line_symb:
+            return True
+        return not bool(self._line)

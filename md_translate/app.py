@@ -11,10 +11,10 @@ class App:
     def process(self) -> None:
         files_to_process = FilesWorker(self.settings).get_md_files()
         logger.info(f'Processing: {", ".join([f.name for f in files_to_process])}')
-        for file_name in files_to_process:
-            with FileTranslator(self.settings, file_name) as processing_file:
+        for file_path in files_to_process:
+            with FileTranslator(self.settings, file_path) as processing_file:
                 processing_file.translate()
-            logger.success('Processed: {file_name}'.format(file_name=file_name))
+            logger.success('Processed: {file_path}'.format(file_path=file_path))
 
 
 def run() -> None:
