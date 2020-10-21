@@ -1,6 +1,7 @@
 from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
+from md_translate.settings import Settings
 
 from md_translate import const
 from md_translate.exceptions import ConfigurationError
@@ -20,7 +21,6 @@ class TestSettings(TestCase):
 
     @patch('md_translate.settings.get_cli_args')
     def test_common_launch(self, cli_args_mock):
-        from md_translate.settings import Settings
         cli_args_mock.return_value = '-s {} -S {} -T {}'.format(
             self.service_name, self.source_lang, self.target_lang
         ).split(' ')
@@ -32,7 +32,6 @@ class TestSettings(TestCase):
 
     @patch('md_translate.settings.get_cli_args')
     def test_lauch_with_path(self, cli_args_mock):
-        from md_translate.settings import Settings
         cli_args_mock.return_value = '{} -s {} -S {} -T {}'.format(
             self.test_path, self.service_name, self.source_lang, self.target_lang
         ).split(' ')
@@ -44,7 +43,6 @@ class TestSettings(TestCase):
 
     @patch('md_translate.settings.get_cli_args')
     def test_lauch_with_file(self, cli_args_mock):
-        from md_translate.settings import Settings
         cli_args_mock.return_value = '-c {}'.format(
             self.config_file_path
         ).split(' ')
@@ -56,7 +54,6 @@ class TestSettings(TestCase):
 
     @patch('md_translate.settings.get_cli_args')
     def test_lauch_with_file_and_override(self, cli_args_mock):
-        from md_translate.settings import Settings
         cli_args_mock.return_value = '-c {} -s {} -S {} -T {}'.format(
             self.config_file_path, self.service_name, self.source_lang, self.target_lang
         ).split(' ')
@@ -68,7 +65,6 @@ class TestSettings(TestCase):
 
     @patch('md_translate.settings.get_cli_args')
     def test_settings_are_not_valid(self, cli_args_mock):
-        from md_translate.settings import Settings
         cli_args_mock.return_value = '-T {}'.format(
             self.target_lang
         ).split(' ')

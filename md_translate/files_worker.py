@@ -1,18 +1,19 @@
 from pathlib import Path
-from typing import Sequence
+from typing import TYPE_CHECKING, Iterable
 
-from md_translate import settings
-from md_translate.exceptions import ObjectNotFoundException, FileIsNotMarkdown
+from md_translate.exceptions import FileIsNotMarkdown, ObjectNotFoundException
+
+if TYPE_CHECKING:
+    from md_translate.settings import Settings
 
 
 class FilesWorker:
-    def __init__(self) -> None:
-        self.settings = settings.settings
+    def __init__(self, settings: 'Settings') -> None:
+        self.settings = settings
         self.single_file: bool = False
         self.object_to_process: Path = self.settings.path
         self.__check_for_single_obj()
         self.__validate_folder()
-        self.md_files_list: Sequence[Path] = self.__get_md_files_list()
 
     def __check_for_single_obj(self) -> None:
         if self.object_to_process.is_file() and self.object_to_process.suffix == '.md':
@@ -24,7 +25,7 @@ class FilesWorker:
         if not self.object_to_process.exists():
             raise ObjectNotFoundException(self.object_to_process)
 
-    def __get_md_files_list(self) -> Sequence[Path]:
+    def get_md_files(self) -> Iterable[Path]:
         md_files_list: list = []
         if self.single_file:
             md_files_list.append(self.object_to_process)

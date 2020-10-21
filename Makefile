@@ -11,6 +11,9 @@ go_to_project_folder:
 black:
 	@poetry run black -S $(PROJECT_FOLDER)
 
+isort:
+	@poetry run isort $(PROJECT_FOLDER)
+
 # Linters section
 check_black:
 	@poetry run black -S --diff --check $(PROJECT_FOLDER)
@@ -18,9 +21,12 @@ check_black:
 check_mypy:
 	@poetry run mypy $(PROJECT_FOLDER)
 
+check_imports:
+	@poetry run isort --check-only $(PROJECT_FOLDER)
+
 # Coverage section
 coverage:
-	@poetry run coverage run -m unittest
+	@poetry run pytest --cov=$(PROJECT_FOLDER) tests
 
 coverage_html_report:
 	@poetry run coverage html
@@ -60,3 +66,4 @@ clean:
 	@rm -rf .mypy_cache
 	@rm -rf .coverage
 	@rm -rf .coverage_html
+	@rm -rf .pytest_cache

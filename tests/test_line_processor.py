@@ -1,81 +1,112 @@
-import unittest
+from unittest import mock
 
-from md_translate.line_processor import LineProcessor
+import pytest
+from langdetect.lang_detect_exception import LangDetectException
+
 from md_translate import const
+from md_translate.line_processor import Line
 
-class TestLineProcessorWithCodeEnRu(unittest.TestCase):
-    CODE_BLOCK_STR = '```'
-    PYTHON_CODE_BLOCK_STR = '```python'
-    BASH_CODE_BLOCK_STR = '```bash'
-    SINGLE_LINE_CODE_BLOCK_STR = '```Some_String```'
-    NOT_CODE_BLOCK_STR = 'Some Data'
+detect_path = 'md_translate.line_processor.detect'
 
-    PARAGRAPH_STR = 'Test string'
-    TRANSLATED_PARAGRAPH_STR = 'Тестовая строка'
-    QUOTE_BLOCK_STR = '> Quote'
-    LIST_ITEM_STR = '* List Item'
-
+@pytest.fixture()
+def en_ru_settings():
     class MockedSettings:
         api_key = 'TEST_API_KEY'
         source_lang = 'en'
         target_lang = 'ru'
-        service = const.TRANSLATION_SERVICE_YANDEX
+        service_name = const.TRANSLATION_SERVICE_YANDEX
 
-    def setUp(self) -> None:
-        self.settings = self.MockedSettings()
-
-    def test_code_block_border(self):
-        self.assertTrue(LineProcessor(self.settings, self.CODE_BLOCK_STR).is_code_block_border())
-        self.assertTrue(LineProcessor(self.settings, self.PYTHON_CODE_BLOCK_STR).is_code_block_border())
-        self.assertTrue(LineProcessor(self.settings, self.BASH_CODE_BLOCK_STR).is_code_block_border())
-        self.assertFalse(LineProcessor(self.settings, self.SINGLE_LINE_CODE_BLOCK_STR).is_code_block_border())
-        self.assertFalse(LineProcessor(self.settings, self.NOT_CODE_BLOCK_STR).is_code_block_border())
-
-    def test_line_can_be_translated(self):
-        self.assertTrue(LineProcessor(self.settings, self.PARAGRAPH_STR).line_can_be_translated())
-        self.assertFalse(LineProcessor(self.settings, self.TRANSLATED_PARAGRAPH_STR).line_can_be_translated())
-        self.assertFalse(LineProcessor(self.settings, self.CODE_BLOCK_STR).line_can_be_translated())
-        self.assertFalse(LineProcessor(self.settings, self.PYTHON_CODE_BLOCK_STR).line_can_be_translated())
-        self.assertFalse(LineProcessor(self.settings, self.BASH_CODE_BLOCK_STR).line_can_be_translated())
-        self.assertFalse(LineProcessor(self.settings, self.SINGLE_LINE_CODE_BLOCK_STR).line_can_be_translated())
-        self.assertFalse(LineProcessor(self.settings, self.QUOTE_BLOCK_STR).line_can_be_translated())
-        self.assertFalse(LineProcessor(self.settings, self.LIST_ITEM_STR).line_can_be_translated())
+    return MockedSettings()
 
 
-class TestLineProcessorWithCodeRuEn(unittest.TestCase):
-    CODE_BLOCK_STR = '```'
-    PYTHON_CODE_BLOCK_STR = '```python'
-    BASH_CODE_BLOCK_STR = '```bash'
-    SINGLE_LINE_CODE_BLOCK_STR = '```Some_String```'
-    NOT_CODE_BLOCK_STR = 'Some Data'
-
-    PARAGRAPH_STR = 'Лорем ипсум'
-    TRANSLATED_PARAGRAPH_STR = 'Lorem Ipsum'
-    QUOTE_BLOCK_STR = '> Quote'
-    LIST_ITEM_STR = '* List Item'
-
+@pytest.fixture()
+def ru_en_settings():
     class MockedSettings:
         api_key = 'TEST_API_KEY'
         source_lang = 'ru'
         target_lang = 'en'
-        service = const.TRANSLATION_SERVICE_YANDEX
+        service_name = const.TRANSLATION_SERVICE_YANDEX
 
-    def setUp(self) -> None:
-        self.settings = self.MockedSettings()
+    return MockedSettings()
 
-    def test_code_block_border(self):
-        self.assertTrue(LineProcessor(self.settings, self.CODE_BLOCK_STR).is_code_block_border())
-        self.assertTrue(LineProcessor(self.settings, self.PYTHON_CODE_BLOCK_STR).is_code_block_border())
-        self.assertTrue(LineProcessor(self.settings, self.BASH_CODE_BLOCK_STR).is_code_block_border())
-        self.assertFalse(LineProcessor(self.settings, self.SINGLE_LINE_CODE_BLOCK_STR).is_code_block_border())
-        self.assertFalse(LineProcessor(self.settings, self.NOT_CODE_BLOCK_STR).is_code_block_border())
 
-    def test_line_can_be_translated(self):
-        self.assertTrue(LineProcessor(self.settings, self.PARAGRAPH_STR).line_can_be_translated())
-        self.assertFalse(LineProcessor(self.settings, self.TRANSLATED_PARAGRAPH_STR).line_can_be_translated())
-        self.assertFalse(LineProcessor(self.settings, self.CODE_BLOCK_STR).line_can_be_translated())
-        self.assertFalse(LineProcessor(self.settings, self.PYTHON_CODE_BLOCK_STR).line_can_be_translated())
-        self.assertFalse(LineProcessor(self.settings, self.BASH_CODE_BLOCK_STR).line_can_be_translated())
-        self.assertFalse(LineProcessor(self.settings, self.SINGLE_LINE_CODE_BLOCK_STR).line_can_be_translated())
-        self.assertFalse(LineProcessor(self.settings, self.QUOTE_BLOCK_STR).line_can_be_translated())
-        self.assertFalse(LineProcessor(self.settings, self.LIST_ITEM_STR).line_can_be_translated())
+class TestLineProcessor:
+    @pytest.mark.parametrize('line, valid', [
+        ['```', True],
+        ['```python', True],
+        ['```bash', True],
+        ['```Some_String```', False],
+        ['Some Data', False],
+    ])
+    def test_is_code_block_border(self, line, valid, en_ru_settings):
+        line = Line(en_ru_settings, line)
+        assert line.is_code_block_border() == valid
+
+    @pytest.mark.parametrize('line, valid, line_lang', [
+        ['Test string', True, 'en'],
+        ['Тестовая строка', False, 'ru'],
+        ['> Quote', True, 'en'],
+        ['* List Item', True, 'en'],
+        ['```', False, 'en'],
+        ['```python', False, 'en'],
+        ['```bash', False, 'en'],
+        ['```Some_String```', False, 'en'],
+    ])
+    def test_line_can_be_translated_en_ru(
+            self, line, valid, line_lang, en_ru_settings
+    ):
+        with mock.patch(detect_path) as detect_mock:
+            detect_mock.return_value = line_lang
+            assert Line(en_ru_settings, line).can_be_translated() == valid
+
+    @pytest.mark.parametrize('line, valid, line_lang', [
+        ['Лорем ипсум', True, 'ru'],
+        ['Lorem Ipsum', False, 'en'],
+        ['> Цитата', True, 'ru'],
+        ['* Элемент списка', True, 'ru'],
+        ['```', False, 'ru'],
+        ['```python', False, 'ru'],
+        ['```bash', False, 'ru'],
+        ['```Some_String```', False, 'ru'],
+    ])
+    def test_line_can_be_translated_ru_en(
+            self, line, valid, line_lang, ru_en_settings
+    ):
+        with mock.patch(detect_path) as detect_mock:
+            detect_mock.return_value = line_lang
+            assert Line(ru_en_settings, line).can_be_translated() == valid
+
+
+@pytest.mark.parametrize('line', [
+    'Лорем ипсум',
+    'Lorem Ipsum',
+    '> Цитата',
+    '* Элемент списка',
+    'Test string',
+    'Тестовая строка',
+    '> Quote',
+    '* List Item',
+    '```',
+    '```python',
+    '```bash',
+    '```Some_String```',
+])
+class TestLineProcessorUniversal:
+    def test_line_can_be_translated_error(self, line, en_ru_settings):
+        with mock.patch(detect_path) as detect_mock:
+            detect_mock.side_effect = LangDetectException(1, 'Boom!')
+            assert not Line(en_ru_settings, line).can_be_translated()
+
+    def test_type_methods(self, line, en_ru_settings):
+        line_inst = Line(en_ru_settings, line)
+        assert str(line_inst) == line
+        assert repr(line_inst) == f'Line: "{line}"'
+
+    def test_properties(self, line, en_ru_settings):
+        with mock.patch(detect_path) as detect_mock:
+            detect_mock.return_value = 'ru'
+            line_ints = Line(en_ru_settings, line)
+            assert line_ints.original == line
+            assert line_ints.fixed == line
+            assert line_ints.translated == line
+

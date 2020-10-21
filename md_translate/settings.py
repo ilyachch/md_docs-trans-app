@@ -6,14 +6,13 @@ from typing import Dict, List
 
 from md_translate import const
 from md_translate.exceptions import ConfigurationError
-from md_translate.utils import Singletone
 
 
 def get_cli_args() -> List[str]:
-    return sys.argv[1:]
+    return sys.argv[1:]  # pragma: no cover
 
 
-class Settings(Singletone):
+class Settings:
     APPLICATION_DESCRIPTION = 'Translates .md files in folder'
     APPLICATION_EPILOG = 'See README.md for more information.'
 
@@ -92,6 +91,3 @@ class Settings(Singletone):
             '-T', '--target_lang', help='Target language code',
         )
         return arg_parser
-
-
-settings = Settings()
