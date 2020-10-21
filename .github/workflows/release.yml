@@ -41,7 +41,7 @@ jobs:
       - name: Running types checks
         run: make check_mypy
       - name: Running imports check
-        run: make check_isort
+        run: make check_imports
 
       - name: Generate coverage report
         run: make coverage_xml_report

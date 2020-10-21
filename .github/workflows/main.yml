@@ -103,7 +103,7 @@ jobs:
       - name: Running codestyle checks
         run: make check_black
       - name: Running imports check
-        run: make check_isort
+        run: make check_imports
 
   validate_version:
     name: Validate Version
