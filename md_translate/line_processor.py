@@ -36,15 +36,14 @@ class Line:
     def translated(self) -> str:
         if not self._translated_line and self.can_be_translated():
             self._translate()
-        return self._translated_line
+        return self._translated_line or self.original
 
     @property
     def fixed(self) -> str:
-        return (
-            ''.join([self.translated, '\n'])
-            if self._line.endswith('\n') and not self.translated.endswith('\n')
-            else self.translated
-        )
+        if self._line.endswith('\n') and not self.translated.endswith('\n'):
+            return ''.join([self.translated, '\n'])
+        return self.translated
+
 
     def is_code_block_border(self) -> bool:
         if self._line == self.code_mark:

@@ -71,40 +71,37 @@ class TestLineProcessor:
             detect_mock.return_value = line_lang
             assert Line(ru_en_settings, line).can_be_translated() == valid
 
-    @pytest.mark.parametrize('line', [
-        'Лорем ипсум',
-        'Lorem Ipsum',
-        '> Цитата',
-        '* Элемент списка',
-        'Test string',
-        'Тестовая строка',
-        '> Quote',
-        '* List Item',
-        '```',
-        '```python',
-        '```bash',
-        '```Some_String```',
-    ])
+
+@pytest.mark.parametrize('line', [
+    'Лорем ипсум',
+    'Lorem Ipsum',
+    '> Цитата',
+    '* Элемент списка',
+    'Test string',
+    'Тестовая строка',
+    '> Quote',
+    '* List Item',
+    '```',
+    '```python',
+    '```bash',
+    '```Some_String```',
+])
+class TestLineProcessorUniversal:
     def test_line_can_be_translated_error(self, line, en_ru_settings):
         with mock.patch('md_translate.line_processor.detect') as detect_mock:
             detect_mock.side_effect = LangDetectException(1, 'Boom!')
             assert not Line(en_ru_settings, line).can_be_translated()
 
-    @pytest.mark.parametrize('line', [
-        'Лорем ипсум',
-        'Lorem Ipsum',
-        '> Цитата',
-        '* Элемент списка',
-        'Test string',
-        'Тестовая строка',
-        '> Quote',
-        '* List Item',
-        '```',
-        '```python',
-        '```bash',
-        '```Some_String```',
-    ])
     def test_type_methods(self, line, en_ru_settings):
         line_inst = Line(en_ru_settings, line)
         assert str(line_inst) == line
         assert repr(line_inst) == f'Line: "{line}"'
+
+    def test_properties(self, line, en_ru_settings):
+        with mock.patch('md_translate.line_processor.detect') as detect_mock:
+            detect_mock.return_value = 'ru'
+            line_ints = Line(en_ru_settings, line)
+            assert line_ints.original == line
+            assert line_ints.fixed == line
+            assert line_ints.translated == line
+
