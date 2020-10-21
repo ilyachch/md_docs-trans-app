@@ -20,7 +20,7 @@ class Line:
         self.settings = settings
         self._translator = get_translator_by_service_name(self.settings.service_name)
         self._line: str = line
-        self._translated_line = None
+        self._translated_line = ''
 
     def __str__(self) -> str:  # pragma: no cover
         return self._line
@@ -36,13 +36,15 @@ class Line:
     def translated(self) -> str:
         if not self._translated_line and self.can_be_translated:
             self._translate()
-        return self._translated_line or self._line
+        return self._translated_line
 
     @property
     def fixed(self) -> str:
-        if self._line.endswith('\n') and not self.translated.endswith('\n'):
-            return ''.join([self.translated, '\n'])
-        return self.translated
+        return (
+            ''.join([self.translated, '\n'])
+            if self._line.endswith('\n') and not self.translated.endswith('\n')
+            else self.translated
+        )
 
     @property
     def is_code_block_border(self) -> bool:
@@ -71,7 +73,7 @@ class Line:
     def _is_untranslated_paragraph(self) -> bool:
         try:
             return detect(self._line) == self.settings.source_lang
-        except LangDetectException:
+        except LangDetectException:  # pragma: no cover
             return False
 
     def _is_single_code_line(self) -> bool:
