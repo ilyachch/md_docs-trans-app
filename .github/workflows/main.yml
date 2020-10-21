@@ -4,28 +4,6 @@ on:
   pull_request:
     branches: master
 
-common_steps: &common_steps
-  - name: Getting code
-    uses: actions/checkout@master
-  - name: Getting Python
-    uses: actions/setup-python@master
-  - name: Cache pip
-    uses: actions/cache@v2
-    with:
-      path: .venv
-      key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}
-      restore-keys: |
-        ${{ runner.os }}-pip-
-  - name: Getting Poetry
-    uses: dschep/install-poetry-action@v1.3
-  - name: Config Poetry
-    run: |
-      poetry config virtualenvs.create true
-      poetry config virtualenvs.in-project true
-  - name: Installing dependencies
-    run: poetry install
-
-
 jobs:
   test_pr:
     name: Tests
@@ -77,7 +55,25 @@ jobs:
     name: Validate Typing
     runs-on: ubuntu-latest
     steps:
-      <<: *common_steps
+      - name: Getting code
+        uses: actions/checkout@master
+      - name: Getting Python
+        uses: actions/setup-python@master
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Getting Poetry
+        uses: dschep/install-poetry-action@v1.3
+      - name: Config Poetry
+        run: |
+          poetry config virtualenvs.create true
+          poetry config virtualenvs.in-project true
+      - name: Installing dependencies
+        run: poetry install
       - name: Running types checks
         run: make check_mypy
 
@@ -85,7 +81,25 @@ jobs:
     name: Validate Code Style
     runs-on: ubuntu-latest
     steps:
-      <<: *common_steps
+      - name: Getting code
+        uses: actions/checkout@master
+      - name: Getting Python
+        uses: actions/setup-python@master
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Getting Poetry
+        uses: dschep/install-poetry-action@v1.3
+      - name: Config Poetry
+        run: |
+          poetry config virtualenvs.create true
+          poetry config virtualenvs.in-project true
+      - name: Installing dependencies
+        run: poetry install
       - name: Running codestyle checks
         run: make check_black
       - name: Running imports check
@@ -95,7 +109,10 @@ jobs:
     name: Validate Version
     runs-on: ubuntu-latest
     steps:
-      <<: *common_steps
+      - name: Getting code
+        uses: actions/checkout@master
+      - name: Getting Python
+        uses: actions/setup-python@master
       - name: Check if pyproject is changed
         uses: technote-space/get-diff-action@v1
         id: pyproject_is_changed
