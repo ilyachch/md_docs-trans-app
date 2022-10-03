@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "md_translate"
-version = "2.1.0"
+version = "3.0.0"
 description = "CLI tool to translate markdown files"
 authors = ["Ilya Chichak <ilyachch@gmail.com>"]
 license = "MIT License"
@@ -16,8 +16,8 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Documentation",
     "Topic :: Utilities",
@@ -28,7 +28,7 @@ classifiers = [
 md-translate = 'md_translate.app:run'
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.8"
 requests = "^2.24.0"
 translators = "^4.7.2"
 langdetect = "^1.0.8"
@@ -68,7 +68,7 @@ fail_under = 80
 
 exclude_lines = [
     '# pragma: no cover',
-    'raise NotImplementedError()',
+    'raise NotImplementedError',
     'if TYPE_CHECKING:'
 ]
 [tool.isort]

@@ -14,6 +14,8 @@ black:
 isort:
 	@poetry run isort $(PROJECT_FOLDER)
 
+format: black isort
+
 # Linters section
 check_black:
 	@poetry run black -S --diff --check $(PROJECT_FOLDER)
@@ -21,8 +23,10 @@ check_black:
 check_mypy:
 	@poetry run mypy $(PROJECT_FOLDER)
 
-check_imports:
+check_isort:
 	@poetry run isort --check-only $(PROJECT_FOLDER)
+
+check: check_black check_mypy check_isort
 
 # Coverage section
 coverage:
