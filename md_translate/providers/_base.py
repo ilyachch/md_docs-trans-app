@@ -1,6 +1,6 @@
-import requests
-
 import abc
+
+import requests
 
 
 class Provider(abc.ABC):

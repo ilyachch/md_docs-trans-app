@@ -19,9 +19,7 @@ class Settings:
     TRANSLATOR_API_KEY_FILENAME = '.md_translate_api_key'
     CONFIG_FILENAME = '.md_translate_config.ini'
 
-    TRANSLATOR_API_KEY_FILE_DEFAULT_PATH = Path.home().joinpath(
-        TRANSLATOR_API_KEY_FILENAME
-    )
+    TRANSLATOR_API_KEY_FILE_DEFAULT_PATH = Path.home().joinpath(TRANSLATOR_API_KEY_FILENAME)
     CONFIG_FILE_DEFAULT_PATH = Path.home().joinpath(CONFIG_FILENAME)
 
     def __init__(self) -> None:
@@ -52,9 +50,7 @@ class Settings:
         return self.params.path
 
     def __get_property_by_name(self, prop_name: str) -> str:
-        property_value = getattr(self.params, prop_name, None) or self.config.get(
-            prop_name
-        )
+        property_value = getattr(self.params, prop_name, None) or self.config.get(prop_name)
         if property_value is None:
             raise ConfigurationError(prop_name)
         return property_value
@@ -72,9 +68,7 @@ class Settings:
             type=Path,
         )
 
-        arg_parser.add_argument(
-            '-c', '--config_path', help='Path to config_file', type=Path
-        )
+        arg_parser.add_argument('-c', '--config_path', help='Path to config_file', type=Path)
 
         arg_parser.add_argument(
             '-s',

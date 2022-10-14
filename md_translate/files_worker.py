@@ -31,11 +31,7 @@ class FilesWorker:
             md_files_list.append(self.object_to_process)
         else:
             md_files_list.extend(
-                [
-                    link
-                    for link in self.object_to_process.iterdir()
-                    if link.suffix == '.md'
-                ]
+                [link for link in self.object_to_process.iterdir() if link.suffix == '.md']
             )
         if len(md_files_list) == 0:
             raise FileNotFoundError('There are no MD files found with provided path!')

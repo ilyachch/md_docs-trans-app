@@ -47,9 +47,7 @@ class Line:
     def is_code_block_border(self) -> bool:
         if self._line == self.code_mark:
             return True
-        return self._line.startswith(self.code_mark) and not self._line.endswith(
-            self.code_mark
-        )
+        return self._line.startswith(self.code_mark) and not self._line.endswith(self.code_mark)
 
     def can_be_translated(self) -> bool:
         return (
