@@ -20,7 +20,7 @@ class GoogleTranslateProvider(Provider):
         options = Options()
         options.add_argument('--headless')
         self._driver = webdriver.Chrome(
-            executable_path=current_dir / 'bin' / 'chromedriver', options=options
+            executable_path=str(current_dir / 'bin' / 'chromedriver'), options=options
         )
         return self
 
@@ -34,9 +34,12 @@ class GoogleTranslateProvider(Provider):
         }
         url = f'{self._host}/?{urllib.parse.urlencode(params)}'
         self._driver.get(url)
-        self._driver.find_element(by=By.XPATH, value='//*[text()="Accept all"]').click()
+        cookies_accept_button = self._driver.find_element(
+            by=By.XPATH, value='//*[text()="Accept all"]'
+        )
+        if cookies_accept_button:
+            cookies_accept_button.click()
         textarea = self._driver.find_element(by=By.TAG_NAME, value='textarea')
-        # <div aria-live="polite" class="usGWQd" jsaction="copy:zVnXqd,r8sht;" jsname="r5xl4"></div>
         result_container = self._driver.find_element(
             by=By.XPATH, value='//div[@aria-live="polite"]'
         )
