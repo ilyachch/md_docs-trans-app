@@ -1,8 +1,6 @@
 import pathlib
 import urllib.parse
 
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -15,17 +13,6 @@ class GoogleTranslateProvider(Provider):
     def __init__(self):
         super().__init__()
         self._host = 'https://translate.google.com'
-
-    def __enter__(self):
-        options = Options()
-        options.add_argument('--headless')
-        self._driver = webdriver.Chrome(
-            executable_path=str(current_dir / 'bin' / 'chromedriver'), options=options
-        )
-        return self
-
-    def __exit__(self, *args, **kwargs):
-        self._driver.quit()
 
     def translate(self, from_language: str, to_language: str, text: str) -> str:
         params = {
