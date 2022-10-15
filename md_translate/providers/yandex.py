@@ -7,8 +7,6 @@ from md_translate.providers._base import Provider
 
 
 class YandexTranslateProvider(Provider):
-    HEADLESS = False
-
     def __init__(self):
         super().__init__()
         self._host = 'https://translate.yandex.com'

@@ -1,13 +1,12 @@
 import abc
 import pathlib
-from typing import Optional
+import urllib.parse
+from typing import Dict, Optional
 
 import requests
-
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 
 current_dir = pathlib.Path(__file__).parent.absolute()
@@ -21,9 +20,14 @@ class Provider(abc.ABC):
     WEBDRIVER_WAIT = WebDriverWait
     WEBDRIVER_BY = By
 
-    def __init__(self):
+    HOST: Optional[str] = None
+
+    def __init__(self, host: Optional[str] = None) -> None:
         self._session = requests.Session()
         self._selected_driver = self.DEFAULT_DRIVER_NAME
+        self._host = host or self.HOST
+        if self._host is None:
+            raise ValueError('Host is not defined')
 
     def __enter__(self):
         options = Options()
@@ -40,3 +44,13 @@ class Provider(abc.ABC):
     @abc.abstractmethod
     def translate(self, from_language: str, to_language: str, text: str) -> str:
         raise NotImplementedError()
+
+    def get_url(self, params: Dict[str, str]) -> str:
+        return f'{self._host}?{urllib.parse.urlencode(params)}'
+
+    def cookies_accept(self) -> None:
+        cookies_accept_button = self._driver.find_element(
+            by=self.WEBDRIVER_BY.XPATH, value='//*[text()="Accept all"]'
+        )
+        if cookies_accept_button:
+            cookies_accept_button.click()

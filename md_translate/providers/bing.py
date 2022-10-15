@@ -1,5 +1,3 @@
-import urllib.parse
-
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -7,8 +5,6 @@ from md_translate.providers._base import Provider
 
 
 class BingTranslateProvider(Provider):
-    HEADLESS = False
-
     def __init__(self):
         super().__init__()
         self._host = 'https://www.bing.com/translator/'
@@ -18,8 +14,7 @@ class BingTranslateProvider(Provider):
             'from': from_language,
             'to': to_language,
         }
-        url = f'{self._host}?{urllib.parse.urlencode(params)}'
-        self._driver.get(url)
+        self._driver.get(self.get_url(params))
         text_area = self._driver.find_element(by=By.ID, value='tta_input_ta')
 
         result_container = self._driver.find_element(by=By.ID, value='tta_output_ta')
