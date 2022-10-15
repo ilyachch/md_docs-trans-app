@@ -11,7 +11,6 @@ class BingTranslateProvider(TranslationProvider):
         }
         self._driver.get(self.get_url(params))
         text_area = self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='tta_input_ta')
-
         result_container = self._driver.find_element(
             by=self.WEBDRIVER_BY.ID, value='tta_output_ta'
         )
@@ -21,9 +20,7 @@ class BingTranslateProvider(TranslationProvider):
         text_area.send_keys(text)
 
         def wait_for_text(driver):
-            new_text = driver.find_element(
-                by=self.WEBDRIVER_BY.ID, value='tta_output_ta'
-            ).get_attribute('value')
+            new_text = result_container.get_attribute('value')
             if new_text != current_text and '...' not in new_text:
                 return True
             return False

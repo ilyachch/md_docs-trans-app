@@ -5,6 +5,7 @@ from typing import Dict, Optional
 
 import requests
 from selenium import webdriver
+from selenium.common import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -33,6 +34,13 @@ class TranslationProvider(abc.ABC):
         options = Options()
         if self.HEADLESS:
             options.add_argument('--headless')
+            options.add_argument(
+                f'user-agent=Mozilla/5.0 (X11; Linux x86_64) '
+                f'AppleWebKit/537.36 (KHTML, like Gecko) '
+                f'Chrome/106.0.0.0 '
+                f'Safari/537.36'
+            )
+
         self._driver = webdriver.Chrome(
             executable_path=str(current_dir / 'bin' / self._selected_driver), options=options
         )
@@ -49,11 +57,14 @@ class TranslationProvider(abc.ABC):
         return f'{self._host}?{urllib.parse.urlencode(params)}'
 
     def cookies_accept(self) -> None:
-        cookies_accept_button = self._driver.find_element(
-            by=self.WEBDRIVER_BY.XPATH, value='//*[text()="Accept all"]'
-        )
-        if cookies_accept_button:
-            cookies_accept_button.click()
+        try:
+            cookies_accept_button = self._driver.find_element(
+                by=self.WEBDRIVER_BY.XPATH, value='//*[text()="Accept all"]'
+            )
+            if cookies_accept_button:
+                cookies_accept_button.click()
+        except NoSuchElementException:
+            return
 
     @staticmethod
     def get_cleaned_data(data: str) -> str:
