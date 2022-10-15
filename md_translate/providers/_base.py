@@ -12,7 +12,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 current_dir = pathlib.Path(__file__).parent.absolute()
 
 
-class Provider(abc.ABC):
+class TranslationProvider(abc.ABC):
     DEFAULT_DRIVER_NAME = 'chromedriver'
 
     HEADLESS = True
@@ -54,3 +54,10 @@ class Provider(abc.ABC):
         )
         if cookies_accept_button:
             cookies_accept_button.click()
+
+    @staticmethod
+    def get_cleaned_data(data: str) -> str:
+        paragraphs = data.split('\n')
+        paragraphs = [paragraph.strip() for paragraph in paragraphs]
+        paragraphs = [paragraph for paragraph in paragraphs if paragraph]
+        return '\n'.join(paragraphs)

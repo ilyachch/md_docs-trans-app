@@ -1,8 +1,7 @@
-from md_translate.providers._base import Provider
+from md_translate.providers._base import TranslationProvider
 
 
-class DeeplTranslateProvider(Provider):
-    HEADLESS = False
+class DeeplTranslateProvider(TranslationProvider):
     HOST = 'https://www.deepl.com/translator/'
 
     def translate(self, from_language: str, to_language: str, text: str) -> str:
@@ -35,7 +34,4 @@ class DeeplTranslateProvider(Provider):
 
         self.WEBDRIVER_WAIT(self._driver, 10).until(wait_for)
         data = result_container.get_attribute('value')
-        data = data.strip()
-        data = data.replace('\n ', '  ')
-        data = data.replace('\n\n', '\n')
-        return data
+        return self.get_cleaned_data(data)
