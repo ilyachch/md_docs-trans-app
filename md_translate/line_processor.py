@@ -14,7 +14,7 @@ class Line:
     list_item_mark = '* '
     quote_item_mark = '> '
 
-    new_line_symb = '\n'
+    new_line_symbol = '\n'
 
     def __init__(self, settings: 'Settings', line: str) -> None:
         self.settings = settings
@@ -78,6 +78,6 @@ class Line:
         )
 
     def _is_empty_line(self) -> bool:
-        if self._line == self.new_line_symb:
+        if self._line == self.new_line_symbol:
             return True
         return not bool(self._line)
