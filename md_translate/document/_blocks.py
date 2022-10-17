@@ -41,7 +41,7 @@ class Translatable(pydantic.BaseModel):
     translated_text: Optional[str] = None
 
     def __str__(self) -> str:
-        if self.translated_text is None:
+        if self.translated_text is not None:
             '\n\n'.join([self.text, self.translated_text])
         return self.text
 
@@ -80,7 +80,7 @@ class TextBlock(Translatable, BaseBlock):
             return f'**{self.text}**'
         if self.emphasis:
             return f'*{self.text}*'
-        return self.text
+        return super().__str__()
 
     def get_data_to_translate(self):
         return self.text

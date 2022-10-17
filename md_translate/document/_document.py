@@ -43,7 +43,7 @@ class MarkdownDocument(pydantic.BaseModel):
 
     def __dump(self):
         dump_file = Path(self.source.parent / (self.source.name + '.tmp'))
-        dump_file.write_text(self.json(indent=4))
+        dump_file.write_text(self.json(indent=4), encoding='utf-8')
 
     def __save(self, from_lang: str, to_lang: str, new_file: bool) -> None:
         if new_file:
@@ -52,7 +52,7 @@ class MarkdownDocument(pydantic.BaseModel):
             )
         else:
             target_file = self.source
-        target_file.write_text(self.__build())
+        target_file.write_text(self.__build(), encoding='utf-8')
 
     def __build(self) -> str:
         return '\n\n'.join(str(block) for block in self.blocks_data)

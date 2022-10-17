@@ -23,6 +23,10 @@ class TranslationProvider(abc.ABC):
 
     HOST: Optional[str] = None
 
+    COOKIES_ACCEPT_BTN_TEXT = 'Accept all'
+
+    ANTISPAM_TIMEOUT = 60 * 10  # 10 minutes
+
     def __init__(self, host: Optional[str] = None) -> None:
         self._session = requests.Session()
         self._selected_driver = self.DEFAULT_DRIVER_NAME
@@ -59,7 +63,7 @@ class TranslationProvider(abc.ABC):
     def cookies_accept(self) -> None:
         try:
             cookies_accept_button = self._driver.find_element(
-                by=self.WEBDRIVER_BY.XPATH, value='//*[text()="Accept all"]'
+                by=self.WEBDRIVER_BY.XPATH, value=f'//*[text()="{self.COOKIES_ACCEPT_BTN_TEXT}"]'
             )
             if cookies_accept_button:
                 cookies_accept_button.click()
@@ -72,3 +76,19 @@ class TranslationProvider(abc.ABC):
         paragraphs = [paragraph.strip() for paragraph in paragraphs]
         paragraphs = [paragraph for paragraph in paragraphs if paragraph]
         return '\n'.join(paragraphs)
+
+    def check_for_antispam(self) -> bool:
+        raise NotImplementedError()
+
+    def wait_for_antispam(self) -> None:
+        def wait_for(driver):
+            return not self.check_for_antispam()
+
+        if self.check_for_antispam():
+            self.WEBDRIVER_WAIT(self._driver, self.ANTISPAM_TIMEOUT).until(wait_for)
+
+    def wait_for_page_load(self) -> None:
+        def wait_for(driver):
+            return driver.execute_script('return document.readyState') == 'complete'
+
+        self.WEBDRIVER_WAIT(self._driver, 10).until(wait_for)
