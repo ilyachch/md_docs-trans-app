@@ -29,6 +29,9 @@ class BaseBlock(pydantic.BaseModel):
         data['block_type'] = self.__class__.__name__
         return data
 
+    def should_be_translated(self) -> bool:
+        return False
+
     def __str__(self) -> str:
         raise NotImplementedError()
 
@@ -69,7 +72,7 @@ class TextBlock(Translatable, BaseBlock):
     @pydantic.validator('text', pre=True)
     def validate_text(cls, value):
         if isinstance(value, list):
-            return ' '.join(map(str, value))
+            return ''.join(map(str, value))
         return value
 
     def __str__(self) -> str:
@@ -77,6 +80,9 @@ class TextBlock(Translatable, BaseBlock):
             return f'**{self.text}**'
         if self.emphasis:
             return f'*{self.text}*'
+        return self.text
+
+    def get_data_to_translate(self):
         return self.text
 
 

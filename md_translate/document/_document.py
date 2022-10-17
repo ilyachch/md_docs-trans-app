@@ -2,11 +2,12 @@ import json
 from pathlib import Path
 from typing import TYPE_CHECKING, List
 
+import click
 import mistune
 import pydantic
 
-from md_translate.document import blocks
-from md_translate.document.renderers import BlocksRenderer
+from md_translate.document import _blocks as blocks
+from md_translate.document._renderers import BlocksRenderer
 
 if TYPE_CHECKING:
     from md_translate.providers._base import TranslationProvider
@@ -20,23 +21,37 @@ class MarkdownDocument(pydantic.BaseModel):
     source: Path
     blocks_data: List[blocks.BaseBlock]
 
-    def translate(self, translation_provider: 'TranslationProvider', from_lang: str, to_lang: str):
+    def translate(
+        self,
+        translation_provider: 'TranslationProvider',
+        from_lang: str,
+        to_lang: str,
+        new_file: bool,
+    ) -> None:
         with translation_provider as provider:
-            for block in self.blocks_data:
-                if isinstance(block, blocks.Translatable) and block.should_be_translated():
+            for counter, block in enumerate(self.blocks_data, start=1):
+                if block.IS_TRANSLATABLE and block.should_be_translated():
                     block.translated_text = provider.translate(
-                        block.get_data_to_translate(), from_lang, to_lang
+                        from_language=from_lang,
+                        to_language=to_lang,
+                        text=block.get_data_to_translate(),
                     )
+                click.echo(f'Translated: {counter} of {len(self.blocks_data)}')
                 self.__dump()
             self.__dump()
-        self.__save(from_lang, to_lang)
+        self.__save(from_lang, to_lang, new_file)
 
     def __dump(self):
         dump_file = Path(self.source.parent / (self.source.name + '.tmp'))
         dump_file.write_text(self.json(indent=4))
 
-    def __save(self, from_lang: str, to_lang: str) -> None:
-        target_file = Path(self.source.parent / (self.source.name + f'.{from_lang}-{to_lang}.md'))
+    def __save(self, from_lang: str, to_lang: str, new_file: bool) -> None:
+        if new_file:
+            target_file = Path(
+                self.source.parent / (self.source.name + f'.{from_lang}-{to_lang}.md')
+            )
+        else:
+            target_file = self.source
         target_file.write_text(self.__build())
 
     def __build(self) -> str:

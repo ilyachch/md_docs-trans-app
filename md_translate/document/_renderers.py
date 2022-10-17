@@ -1,6 +1,6 @@
 from mistune.renderers import BaseRenderer
 
-from md_translate.document import blocks
+from md_translate.document import _blocks as blocks
 
 
 class BlocksRenderer(BaseRenderer):

@@ -16,7 +16,7 @@ current_dir = pathlib.Path(__file__).parent.absolute()
 class TranslationProvider(abc.ABC):
     DEFAULT_DRIVER_NAME = 'chromedriver'
 
-    HEADLESS = True
+    HEADLESS = False
 
     WEBDRIVER_WAIT = WebDriverWait
     WEBDRIVER_BY = By
@@ -50,7 +50,7 @@ class TranslationProvider(abc.ABC):
         self._driver.quit()
 
     @abc.abstractmethod
-    def translate(self, from_language: str, to_language: str, text: str) -> str:
+    def translate(self, *, from_language: str, to_language: str, text: str) -> str:
         raise NotImplementedError()
 
     def get_url(self, params: Dict[str, str]) -> str:

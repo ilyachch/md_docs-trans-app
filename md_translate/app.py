@@ -1,30 +1,78 @@
-from md_translate.file_translator import FileTranslator
-from md_translate.files_worker import FilesWorker
-from md_translate.logs import logger
-from md_translate.settings import Settings
+from pathlib import Path
+from typing import List, Union
+
+import click
+
+from md_translate.document import MarkdownDocument
+from md_translate.providers import TRANSLATOR_BY_SERVICE_NAME
 
 
-class App:
-    def __init__(self) -> None:
-        self.settings = Settings()
+@click.command()
+@click.argument(
+    'path',
+    type=click.Path(exists=True, path_type=Path),
+    # help='Path to folder or file to process.',
+    required=True,
+)
+@click.option(
+    '--from-lang',
+    type=click.STRING,
+    help='Source language code',
+    required=True,
+)
+@click.option(
+    '--to-lang',
+    type=click.STRING,
+    help='Target language code',
+    required=True,
+)
+@click.option(
+    '--service',
+    type=click.Choice(TRANSLATOR_BY_SERVICE_NAME.keys()),
+    help='Translating service',
+    required=True,
+)
+@click.option(
+    '--new-file',
+    is_flag=True,
+    default=False,
+    help='Create new file with translated content',
+)
+@click.option('--clear', is_flag=True, help='Start from scratch.')
+def main(
+    path: Union[Path, List[Path]],
+    from_lang: str,
+    to_lang: str,
+    service: str,
+    new_file: bool,
+    clear: bool,
+) -> None:
+    if not isinstance(path, list):
+        path = [
+            path,
+        ]
+    files_to_process = []
+    for path_to_process in path:
+        if not path_to_process.exists():
+            raise click.ClickException(f'Path not found: {path_to_process}')
+        if path_to_process.is_file():
+            click.echo('Found file: {}'.format(path_to_process.name))
+            files_to_process.append(path_to_process)
+        else:
+            found_files = path_to_process.glob('*.md')
+            for found_file in found_files:
+                click.echo('Found file: {}'.format(found_file.name))
+                files_to_process.append(found_file)
 
-    def process(self) -> None:
-        files_to_process = FilesWorker(self.settings).get_md_files()
-        logger.info(f'Processing: {", ".join([f.name for f in files_to_process])}')
-        for file_path in files_to_process:
-            with FileTranslator(self.settings, file_path) as processing_file:
-                processing_file.translate()
-            logger.success('Processed: {file_path}'.format(file_path=file_path))
-
-
-def run() -> None:
-    try:
-        App().process()
-        exit(0)
-    except Exception as err:
-        logger.exception(err)
-        exit(1)
+    service = TRANSLATOR_BY_SERVICE_NAME[service]()
+    for file_to_process in files_to_process:
+        click.echo('Processing file: {}'.format(file_to_process.name))
+        document = MarkdownDocument.from_file(file_to_process, force_new=clear)
+        document.translate(service, from_lang, to_lang, new_file=new_file)
+        click.echo('Processed file: {}'.format(file_to_process.name))
+    click.echo('Done')
+    exit(0)
 
 
 if __name__ == "__main__":
-    run()
+    main()
