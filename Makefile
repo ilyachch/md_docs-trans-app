@@ -3,43 +3,44 @@
 
 PROJECT_FOLDER = md_translate
 WORKING_DIRECTORY = $(shell pwd)
+VENV_BIN = .venv/bin/
 
 go_to_project_folder:
 	@cd $(WORKING_DIRECTORY)
 
 # Tools section
 black:
-	@poetry run black -S $(PROJECT_FOLDER)
+	@$(VENV_BIN)/black $(PROJECT_FOLDER)
 
 isort:
-	@poetry run isort $(PROJECT_FOLDER)
+	@$(VENV_BIN)/isort $(PROJECT_FOLDER)
 
 format: black isort
 
 # Linters section
 check_black:
-	@poetry run black -S --diff --check $(PROJECT_FOLDER)
+	@$(VENV_BIN)/black --diff --check $(PROJECT_FOLDER)
 
 check_mypy:
-	@poetry run mypy $(PROJECT_FOLDER)
+	@$(VENV_BIN)/mypy $(PROJECT_FOLDER)
 
 check_isort:
-	@poetry run isort --check-only $(PROJECT_FOLDER)
+	@$(VENV_BIN)/isort --check-only $(PROJECT_FOLDER)
 
 check: check_black check_mypy check_isort
 
 # Coverage section
 coverage:
-	@poetry run pytest --cov=$(PROJECT_FOLDER) tests
+	@$(VENV_BIN)/pytest --cov=$(PROJECT_FOLDER) tests
 
 coverage_html_report:
-	@poetry run coverage html
+	@$(VENV_BIN)/coverage html
 
 coverage_xml_report:
-	@poetry run coverage xml
+	@$(VENV_BIN)/coverage xml
 
 coverage_cmd_report:
-	@poetry run coverage report
+	@$(VENV_BIN)/coverage report
 
 # Releasing
 major_release: bump_major_release commit_version

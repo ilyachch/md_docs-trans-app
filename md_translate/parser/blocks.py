@@ -53,9 +53,7 @@ class TextBlock(BaseBlock):
 class LinkBlock(BaseBlock):
     IS_TRANSLATABLE = True
 
-    def __init__(
-        self, link: str, title: Optional[str] = None, text: Optional[str] = None
-    ) -> None:
+    def __init__(self, link: str, title: Optional[str] = None, text: Optional[str] = None) -> None:
         self.link = link
         self.title = title
         self.text = text
@@ -190,5 +188,3 @@ class ListItemBlock(BaseBlock):
 
     def data_to_translate(self) -> Optional[str]:
         return None
-
-

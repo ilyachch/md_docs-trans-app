@@ -33,17 +33,16 @@ requests = "^2.24.0"
 selenium = "^4.5.0"
 mistune = "^2.0.4"
 pydantic = "^1.10.2"
-
-[tool.poetry.dev-dependencies]
-coverage = "^5.2"
-mypy = "^0.782"
-black = "^19.10b0"
-isort = "^5.6.4"
-pytest = "^6.1.1"
-pytest-cov = "^2.10.1"
+click = "^8.1.3"
 
 [tool.poetry.group.dev.dependencies]
 types-selenium = "^3.141.9"
+black = "^22.10.0"
+coverage = "^6.5.0"
+mypy = "^0.982"
+isort = "^5.10.1"
+pytest = "^7.1.3"
+pytest-cov = "^4.0.0"
 
 [tool.black]
 line-length = 99

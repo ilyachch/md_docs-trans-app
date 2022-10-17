@@ -1,10 +1,10 @@
+from pathlib import Path
 from typing import List
 
 import mistune
-from pathlib import Path
 
-from md_translate.parser.renderers import BlocksRenderer
 from md_translate.parser import blocks
+from md_translate.parser.renderers import BlocksRenderer
 
 
 class MarkdownDocument:

@@ -15,7 +15,9 @@ class BlocksRenderer(BaseRenderer):
             return children[0]
         if isinstance(children, blocks.TextBlock):
             return children
-        if isinstance(children, list) and all(isinstance(child, blocks.TextBlock) for child in children):
+        if isinstance(children, list) and all(
+            isinstance(child, blocks.TextBlock) for child in children
+        ):
             return blocks.TextBlock(''.join(str(child) for child in children))
         return blocks.RawDataBlock('paragraph', children)
 
@@ -33,9 +35,7 @@ class BlocksRenderer(BaseRenderer):
 
     def link(self, link, text=None, title=None):
         text = self.maybe_join_text_blocks(text)
-        return blocks.TextBlock(
-            str(blocks.LinkBlock(link, title, text))
-        )
+        return blocks.TextBlock(str(blocks.LinkBlock(link, title, text)))
 
     def image(self, src, alt="", title=None):
         return blocks.ImageBlock(src, alt, title)
@@ -60,7 +60,11 @@ class BlocksRenderer(BaseRenderer):
         for child in children:
             if isinstance(child, blocks.ListItemBlock):
                 validated_children.append(child)
-            elif isinstance(child, list) and len(child) == 1 and isinstance(child[0], blocks.ListItemBlock):
+            elif (
+                isinstance(child, list)
+                and len(child) == 1
+                and isinstance(child[0], blocks.ListItemBlock)
+            ):
                 validated_children.append(child[0])
             else:
                 validated_children.append(blocks.ListItemBlock(child))
