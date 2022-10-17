@@ -1,21 +1,6 @@
-from typing import Any, ClassVar, List, Optional, Type, Dict
+from typing import Any, ClassVar, Dict, List, Optional
 
 import pydantic
-
-
-class BlocksRegistry:
-    def __init__(self):
-        self.blocks_map = dict()
-
-    def register(self, block: Type['BaseBlock']):
-        self.blocks_map[block.__name__] = block
-        return block
-
-    def get_by_block_name(self, block_name: str) -> Type['BaseBlock']:
-        return self.blocks_map[block_name]
-
-
-block_registry = BlocksRegistry()
 
 
 class BaseBlock(pydantic.BaseModel):
@@ -28,9 +13,11 @@ class BaseBlock(pydantic.BaseModel):
             if children:
                 parsed_children = []
                 for child in children:
-                    if isinstance(child, dict):
+                    if isinstance(child, dict) and 'block_type' in child:
                         block_type = child.pop('block_type')
-                        block = block_registry.get_by_block_name(block_type)(**child)
+                        if block_type not in globals():
+                            raise ValueError('Unknown Block Type: %s', block_type)
+                        block = globals()[block_type](**child)
                     else:
                         block = child
                     parsed_children.append(block)
@@ -45,18 +32,23 @@ class BaseBlock(pydantic.BaseModel):
     def __str__(self) -> str:
         raise NotImplementedError()
 
-    def data_to_translate(self) -> Optional[str]:
+
+class Translatable(pydantic.BaseModel):
+    text: str
+    translated_text: Optional[str] = None
+
+    def __str__(self) -> str:
+        if self.translated_text is None:
+            '\n\n'.join([self.text, self.translated_text])
+        return self.text
+
+    def should_be_translated(self) -> bool:
+        return self.translated_text is None
+
+    def get_data_to_translate(self):
         raise NotImplementedError()
 
 
-class Final(pydantic.BaseModel):
-    text: str
-
-    def __str__(self) -> str:
-        return self.text
-
-
-@block_registry.register
 class RawDataBlock(BaseBlock):
     name: str
     data: Any
@@ -67,12 +59,8 @@ class RawDataBlock(BaseBlock):
     def __bool__(self):
         return bool(self.data)
 
-    def data_to_translate(self) -> Optional[str]:
-        return None
 
-
-@block_registry.register
-class TextBlock(Final, BaseBlock):
+class TextBlock(Translatable, BaseBlock):
     IS_TRANSLATABLE = True
 
     strong: bool = False
@@ -91,11 +79,7 @@ class TextBlock(Final, BaseBlock):
             return f'*{self.text}*'
         return self.text
 
-    def data_to_translate(self) -> Optional[str]:
-        return self.text
 
-
-@block_registry.register
 class LinkBlock(BaseBlock):
     IS_TRANSLATABLE = True
 
@@ -106,11 +90,7 @@ class LinkBlock(BaseBlock):
     def __str__(self) -> str:
         return f'[{str(" ".join(map(str, self.text)) or self.title)}]({self.link})'
 
-    def data_to_translate(self) -> Optional[str]:
-        return self.title
 
-
-@block_registry.register
 class ImageBlock(BaseBlock):
     IS_TRANSLATABLE = True
 
@@ -121,12 +101,8 @@ class ImageBlock(BaseBlock):
     def __str__(self) -> str:
         return f'![{self.alt}]({self.src})'
 
-    def data_to_translate(self) -> Optional[str]:
-        return self.alt
 
-
-@block_registry.register
-class HeadingBlock(Final, BaseBlock):
+class HeadingBlock(Translatable, BaseBlock):
     level: int
     text: str
 
@@ -137,16 +113,11 @@ class HeadingBlock(Final, BaseBlock):
         return self.text
 
 
-@block_registry.register
 class SeparatorBlock(BaseBlock):
     def __str__(self) -> str:
         return '---'
 
-    def data_to_translate(self) -> Optional[str]:
-        return None
 
-
-@block_registry.register
 class CodeBlock(BaseBlock):
     code: str
     language: Optional[str] = None
@@ -155,33 +126,21 @@ class CodeBlock(BaseBlock):
         lang = self.language or ''
         return f'```{lang}\n{self.code}\n```'
 
-    def data_to_translate(self) -> Optional[str]:
-        return None
 
-
-@block_registry.register
 class HtmlBlock(BaseBlock):
     code: str
 
     def __str__(self) -> str:
         return self.code
 
-    def data_to_translate(self) -> Optional[str]:
-        return None
 
-
-@block_registry.register
 class ListItemBlock(BaseBlock):
-    children: List[Final]
+    children: List[Translatable]
 
     def __str__(self) -> str:
         return ''.join([str(child) for child in self.children])
 
-    def data_to_translate(self) -> Optional[str]:
-        return None
 
-
-@block_registry.register
 class ListBlock(BaseBlock):
     children: List['ListItemBlock']
     ordered: bool = False
@@ -193,6 +152,3 @@ class ListBlock(BaseBlock):
                 for counter, item in enumerate(self.children)
             ]
         )
-
-    def data_to_translate(self) -> Optional[str]:
-        return None
