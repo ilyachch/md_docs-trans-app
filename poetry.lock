@@ -203,6 +203,14 @@ htmlsoup = ["BeautifulSoup4"]
 source = ["Cython (>=0.29.7)"]
 
 [[package]]
+name = "mistune"
+version = "2.0.4"
+description = "A sane Markdown parser with useful plugins and renderers"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "mypy"
 version = "0.782"
 description = "Optional static typing for Python"
@@ -530,7 +538,7 @@ h11 = ">=0.9.0,<1"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "50e5a22f0e8d683f13aa09ba4c5db26d910b9174f05eef3a7ad7f2fbb2842f3c"
+content-hash = "eef0497778df7b86afdaa0ed89d3a172b253bc0bf5e5404be0898dd4d0325669"
 
 [metadata.files]
 appdirs = [
@@ -751,6 +759,10 @@ lxml = [
     {file = "lxml-4.5.2-cp39-cp39-manylinux1_i686.whl", hash = "sha256:6f767d11803dbd1274e43c8c0b2ff0a8db941e6ed0f5d44f852fb61b9d544b54"},
     {file = "lxml-4.5.2-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:d15a801d9037d7512edb2f1e196acebb16ab17bef4b25a91ea2e9a455ca353af"},
     {file = "lxml-4.5.2.tar.gz", hash = "sha256:cdc13a1682b2a6241080745b1953719e7fe0850b40a5c71ca574f090a1391df6"},
+]
+mistune = [
+    {file = "mistune-2.0.4-py2.py3-none-any.whl", hash = "sha256:182cc5ee6f8ed1b807de6b7bb50155df7b66495412836b9a74c8fbdfc75fe36d"},
+    {file = "mistune-2.0.4.tar.gz", hash = "sha256:9ee0a66053e2267aba772c71e06891fa8f1af6d4b01d5e84e267b4570d4d9808"},
 ]
 mypy = [
     {file = "mypy-0.782-cp35-cp35m-macosx_10_6_x86_64.whl", hash = "sha256:2c6cde8aa3426c1682d35190b59b71f661237d74b053822ea3d748e2c9578a7c"},

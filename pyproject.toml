@@ -34,6 +34,7 @@ translators = "^4.7.2"
 langdetect = "^1.0.8"
 loguru = "^0.5.3"
 selenium = "^4.5.0"
+mistune = "^2.0.4"
 
 [tool.poetry.dev-dependencies]
 coverage = "^5.2"
