@@ -19,10 +19,10 @@ class BlocksRenderer(BaseRenderer):
         return blocks.TextBlock(text=text)
 
     def strong(self, text):
-        return blocks.TextBlock(text=text, strong=True)
+        return blocks.StrongTextBlock(text=text)
 
     def emphasis(self, text):
-        return blocks.TextBlock(text=text, emphasis=True)
+        return blocks.EmphasisTextBlock(text=text)
 
     def link(self, link, text=None, title=None):
         return blocks.TextBlock(text=str(blocks.LinkBlock(link=link, title=title, text=text)))

@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, cast
 
 import click
 import mistune
@@ -30,20 +30,25 @@ class MarkdownDocument(pydantic.BaseModel):
     ) -> None:
         with translation_provider as provider:
             for counter, block in enumerate(self.blocks_data, start=1):
+                # if hasattr(block, 'children')
                 if block.IS_TRANSLATABLE and block.should_be_translated():
                     block.translated_text = provider.translate(
                         from_language=from_lang,
                         to_language=to_lang,
                         text=block.get_data_to_translate(),
                     )
-                click.echo(f'Translated: {counter} of {len(self.blocks_data)}')
+                    click.echo(f'Translated: {counter} of {len(self.blocks_data)}')
                 self.__dump()
             self.__dump()
         self.__save(from_lang, to_lang, new_file)
 
+    def __get_nested_translatable(self, block: blocks.BaseBlock):
+        pass
+
+
     def __dump(self):
         dump_file = Path(self.source.parent / (self.source.name + '.tmp'))
-        dump_file.write_text(self.json(indent=4), encoding='utf-8')
+        dump_file.write_text(self.json(indent=4))
 
     def __save(self, from_lang: str, to_lang: str, new_file: bool) -> None:
         if new_file:
@@ -52,10 +57,18 @@ class MarkdownDocument(pydantic.BaseModel):
             )
         else:
             target_file = self.source
-        target_file.write_text(self.__build(), encoding='utf-8')
+        target_file.write_text(self._build())
 
-    def __build(self) -> str:
-        return '\n\n'.join(str(block) for block in self.blocks_data)
+    def _build(self) -> str:
+        result = ''
+        for block in self.blocks_data:
+            result += str(block)
+            if block.IS_TRANSLATABLE:
+                block = cast(blocks.Translatable, block)
+                if block.translated_text:
+                    result += f'\n\n{block.translated_text}'
+            result += '\n'
+        return result
 
     @classmethod
     def from_file(cls, source: Path, *, force_new: bool = False) -> 'MarkdownDocument':
@@ -73,7 +86,7 @@ class MarkdownDocument(pydantic.BaseModel):
         if not dump_file.exists():
             raise TempFileNotFoundError(f'Temp file not found: %s', str(dump_file))
         content = json.loads(dump_file.read_text())
-        return cls.parse_obj(content)
+        return cls(source=content['source'], blocks_data=[blocks.BaseBlock(**block_data) for block_data in content['blocks_data']])
 
     @classmethod
     def __from_file(cls, source: Path) -> 'MarkdownDocument':

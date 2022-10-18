@@ -1,4 +1,4 @@
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List, Optional, Generic, TypeVar
 
 import pydantic
 
@@ -36,14 +36,25 @@ class BaseBlock(pydantic.BaseModel):
         raise NotImplementedError()
 
 
-class Translatable(pydantic.BaseModel):
+T = TypeVar('T', bound=BaseBlock)
+
+
+class Container(Generic[T], BaseBlock):
+    children: List[T]
+
+    def __str__(self) -> str:
+        return '\n'.join(str(child) for child in self.children)
+
+
+class Translatable(BaseBlock):
     text: str
     translated_text: Optional[str] = None
 
     def __str__(self) -> str:
-        if self.translated_text is not None:
-            '\n\n'.join([self.text, self.translated_text])
         return self.text
+
+    def get_translated(self) -> Optional[str]:
+        return self.translated_text if self.translated_text else None
 
     def should_be_translated(self) -> bool:
         return self.translated_text is None
@@ -63,11 +74,8 @@ class RawDataBlock(BaseBlock):
         return bool(self.data)
 
 
-class TextBlock(Translatable, BaseBlock):
+class TextBlock(Translatable):
     IS_TRANSLATABLE = True
-
-    strong: bool = False
-    emphasis: bool = False
 
     @pydantic.validator('text', pre=True)
     def validate_text(cls, value):
@@ -75,15 +83,18 @@ class TextBlock(Translatable, BaseBlock):
             return ''.join(map(str, value))
         return value
 
-    def __str__(self) -> str:
-        if self.strong:
-            return f'**{self.text}**'
-        if self.emphasis:
-            return f'*{self.text}*'
-        return super().__str__()
-
     def get_data_to_translate(self):
         return self.text
+
+
+class StrongTextBlock(TextBlock):
+    def __str__(self):
+        return f'**{self.text}**'
+
+
+class EmphasisTextBlock(TextBlock):
+    def __str__(self):
+        return f'*{self.text}*'
 
 
 class LinkBlock(BaseBlock):
@@ -115,7 +126,7 @@ class HeadingBlock(Translatable, BaseBlock):
     def __str__(self) -> str:
         return f'{"#" * self.level} {str(self.text)}'
 
-    def data_to_translate(self) -> Optional[str]:
+    def get_data_to_translate(self):
         return self.text
 
 
@@ -140,15 +151,12 @@ class HtmlBlock(BaseBlock):
         return self.code
 
 
-class ListItemBlock(BaseBlock):
-    children: List[Translatable]
-
+class ListItemBlock(Container[Translatable]):
     def __str__(self) -> str:
         return ''.join([str(child) for child in self.children])
 
 
-class ListBlock(BaseBlock):
-    children: List['ListItemBlock']
+class ListBlock(Container[ListItemBlock], BaseBlock):
     ordered: bool = False
 
     def __str__(self) -> str:
