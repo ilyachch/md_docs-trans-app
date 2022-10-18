@@ -1,4 +1,4 @@
-from typing import Any, ClassVar, Dict, List, Optional, Generic, TypeVar
+from typing import Any, ClassVar, Dict, Generic, List, Optional, TypeVar
 
 import pydantic
 

@@ -14,8 +14,9 @@ class TypedParser(BaseRenderer):
         return blocks.Paragraph(children=children)
 
     def block_text(self, text):
-        print(f'block_text. {text=}')
-        return blocks.TextBlock(text=text)
+        return text
+        # print(f'block_text. {text=}')
+        # return blocks.TextBlock(text=text)
 
     def block_quote(self, children):
         return blocks.BlockQuote(children=children)
@@ -56,10 +57,12 @@ class TypedParser(BaseRenderer):
     def block_html(self, text):
         return blocks.HtmlBlock(code=text)
 
-    def list(self, children, ordered, level, start=None):
+    def list(self, children, ordered, level=1, start=None):
         return blocks.ListBlock(children=children, ordered=ordered, level=level, start=start)
 
-    def list_item(self, children, level):
+    def list_item(self, children, level=1):
+        if isinstance(children, list) and isinstance(children[0], list):
+            children = children[0]
         return blocks.ListItemBlock(children=children, level=level)
 
     def finalize(self, data):

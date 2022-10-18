@@ -1,5 +1,5 @@
 import abc
-from typing import List, Optional, Generic, TypeVar
+from typing import Generic, List, Optional, TypeVar
 
 import pydantic
 
@@ -21,7 +21,8 @@ class Container(Generic[T], AbstractBlock):
 
 
 class Paragraph(Container[AbstractBlock]):
-    pass
+    def __str__(self):
+        return '\n'.join(map(str, self.children))
 
 
 class TextBlock(AbstractBlock):
@@ -104,7 +105,7 @@ class ListItemBlock(Container[AbstractBlock]):
 class ListBlock(Container[ListItemBlock], AbstractBlock):
     ordered: bool = False
     level: int
-    start: int = 1
+    start: Optional[int] = None
 
     def __str__(self) -> str:
         rendered_children: List[str] = []

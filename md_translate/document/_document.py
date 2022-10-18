@@ -45,7 +45,6 @@ class MarkdownDocument(pydantic.BaseModel):
     def __get_nested_translatable(self, block: blocks.BaseBlock):
         pass
 
-
     def __dump(self):
         dump_file = Path(self.source.parent / (self.source.name + '.tmp'))
         dump_file.write_text(self.json(indent=4))
@@ -86,7 +85,10 @@ class MarkdownDocument(pydantic.BaseModel):
         if not dump_file.exists():
             raise TempFileNotFoundError(f'Temp file not found: %s', str(dump_file))
         content = json.loads(dump_file.read_text())
-        return cls(source=content['source'], blocks_data=[blocks.BaseBlock(**block_data) for block_data in content['blocks_data']])
+        return cls(
+            source=content['source'],
+            blocks_data=[blocks.BaseBlock(**block_data) for block_data in content['blocks_data']],
+        )
 
     @classmethod
     def __from_file(cls, source: Path) -> 'MarkdownDocument':

@@ -1,100 +1,22 @@
 import pytest
 
 from md_translate.document.parser.blocks import (
-    HeadingBlock,
-    TextBlock,
-    Paragraph,
-    LineBreakBlock,
-    StrongTextBlock,
+    BlockQuote,
+    CodeBlock,
+    CodeSpanBlock,
     EmphasisTextBlock,
-    LinkBlock,
+    HeadingBlock,
     ImageBlock,
+    LineBreakBlock,
+    LinkBlock,
+    ListBlock,
+    ListItemBlock,
+    Paragraph,
+    SeparatorBlock,
+    StrongTextBlock,
+    TextBlock,
 )
 from md_translate.document.parser.document import MarkdownDocument
-
-QUOTE = [
-    '> Dorothy followed her through many of the beautiful rooms in her castle.',
-    '''> Dorothy followed her through many of the beautiful rooms in her castle.
-    >
-    > The Witch bade her clean the pots and kettles and sweep the floor and keep the fire fed with wood.''',
-    '''> #### The quarterly results look great!
-    >
-    > - Revenue was off the chart.
-    > - Profits were higher than ever.
-    >
-    >  *Everything* is going according to **plan**.''',
-]
-
-ORDERED_LIST = [
-    '''1. First item
-2. Second item
-3. Third item
-4. Fourth item''',
-    '''1. First item
-1. Second item
-1. Third item
-1. Fourth item''',
-    '''1. First item
-8. Second item
-3. Third item
-5. Fourth item''',
-    '''1. First item
-2. Second item
-3. Third item
-    1. Indented item
-    2. Indented item
-4. Fourth item''',
-]
-
-UNORDERED_LIST = [
-    '''- First item
-- Second item
-- Third item
-- Fourth item''',
-    '''* First item
-* Second item
-* Third item
-* Fourth item''',
-    '''+ First item
-+ Second item
-+ Third item
-+ Fourth item''',
-    '''- First item
-- Second item
-- Third item
-    - Indented item
-    - Indented item
-- Fourth item''',
-    '''- 1968\. A great year!
-- I think 1969 was second best.''',
-]
-
-CODE = [
-    'Use `code` in your Markdown file.',
-    '``Use `code` in your Markdown file.``',
-]
-
-CODE_BLOCKS = [
-    '''```python
-def hello_world():
-    print("Hello world!")
-```''',
-    '''```
-def hello_world():
-    print("Hello world!")
-```''',
-]
-
-IMAGE = [
-    '![The San Juan Mountains are beautiful!](/ assets / images / san-juan-mountains.jpg "San Juan Mountains")',
-    '![Tux, the Linux mascot](https: // mdg.imgix.net / assets / images / tux.png)',
-]
-
-HORIZONTAL_LINE = [
-    '***',
-    '---',
-    '_________________',
-]
 
 
 class TestMarkdownDocument:
@@ -349,3 +271,344 @@ class TestMarkdownDocument:
     )
     def test_link_parsing(self, image, expected):
         assert MarkdownDocument.from_string(image).blocks == expected
+
+    @pytest.mark.parametrize(
+        'line, expected',
+        [
+            (
+                '---',
+                [
+                    SeparatorBlock(),
+                ],
+            ),
+            (
+                '***',
+                [
+                    SeparatorBlock(),
+                ],
+            ),
+            (
+                '___',
+                [
+                    SeparatorBlock(),
+                ],
+            ),
+        ],
+    )
+    def test_separator_parsing(self, line, expected):
+        assert MarkdownDocument.from_string(line).blocks == expected
+
+    @pytest.mark.parametrize(
+        'code, expected',
+        [
+            (
+                '```python\ndef hello_world():\n    print("Hello world!")\n```',
+                [
+                    CodeBlock(
+                        language='python', code='def hello_world():\n    print("Hello world!")\n'
+                    ),
+                ],
+            ),
+            (
+                '```\ndef hello_world():\n    print("Hello world!")\n```',
+                [
+                    CodeBlock(
+                        language=None, code='def hello_world():\n    print("Hello world!")\n'
+                    ),
+                ],
+            ),
+        ],
+    )
+    def test_code_parsing(self, code, expected):
+        assert MarkdownDocument.from_string(code).blocks == expected
+
+    @pytest.mark.parametrize(
+        'code_line, expected',
+        [
+            (
+                'Use `code` in your Markdown file.',
+                [
+                    Paragraph(
+                        children=[
+                            TextBlock(text='Use '),
+                            CodeSpanBlock(code='code'),
+                            TextBlock(text=' in your Markdown file.'),
+                        ]
+                    )
+                ],
+            ),
+            (
+                '``Use `code` in your Markdown file.``',
+                [Paragraph(children=[CodeSpanBlock(code='Use `code` in your Markdown file.')])],
+            ),
+        ],
+    )
+    def test_code_line_parsing(self, code_line, expected):
+        assert MarkdownDocument.from_string(code_line).blocks == expected
+
+    @pytest.mark.parametrize(
+        'ordered_list, expected',
+        [
+            (
+                '1. First item\n2. Second item\n3. Third item\n4. Fourth item',
+                [
+                    ListBlock(
+                        children=[
+                            ListItemBlock(children=[TextBlock(text='First item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Second item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Third item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Fourth item')], level=1),
+                        ],
+                        ordered=True,
+                        level=1,
+                        start=None,
+                    )
+                ],
+            ),
+            (
+                '1. First item\n1. Second item\n1. Third item\n1. Fourth item',
+                [
+                    ListBlock(
+                        children=[
+                            ListItemBlock(children=[TextBlock(text='First item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Second item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Third item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Fourth item')], level=1),
+                        ],
+                        ordered=True,
+                        level=1,
+                        start=None,
+                    )
+                ],
+            ),
+            (
+                '1. First item\n8. Second item\n3. Third item\n5. Fourth item',
+                [
+                    ListBlock(
+                        children=[
+                            ListItemBlock(children=[TextBlock(text='First item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Second item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Third item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Fourth item')], level=1),
+                        ],
+                        ordered=True,
+                        level=1,
+                        start=None,
+                    )
+                ],
+            ),
+            (
+                '1. First item\n2. Second item\n3. Third item\n    1. Indented item\n    2. Indented item\n4. Fourth item',
+                [
+                    ListBlock(
+                        children=[
+                            ListItemBlock(children=[TextBlock(text='First item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Second item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Third item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Fourth item')], level=1),
+                        ],
+                        ordered=True,
+                        level=1,
+                        start=None,
+                    )
+                ],
+            ),
+        ],
+    )
+    def test_ordered_list_parsing(self, ordered_list, expected):
+        assert MarkdownDocument.from_string(ordered_list).blocks == expected
+
+    @pytest.mark.parametrize(
+        'unordered_list, expected',
+        [
+            (
+                '- First item\n- Second item\n- Third item\n- Fourth item',
+                [
+                    ListBlock(
+                        children=[
+                            ListItemBlock(children=[TextBlock(text='First item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Second item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Third item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Fourth item')], level=1),
+                        ],
+                        ordered=False,
+                        level=1,
+                        start=None,
+                    )
+                ],
+            ),
+            (
+                '* First item\n* Second item\n* Third item\n* Fourth item',
+                [
+                    ListBlock(
+                        children=[
+                            ListItemBlock(children=[TextBlock(text='First item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Second item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Third item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Fourth item')], level=1),
+                        ],
+                        ordered=False,
+                        level=1,
+                        start=None,
+                    )
+                ],
+            ),
+            (
+                '+ First item\n+ Second item\n+ Third item\n+ Fourth item',
+                [
+                    ListBlock(
+                        children=[
+                            ListItemBlock(children=[TextBlock(text='First item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Second item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Third item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Fourth item')], level=1),
+                        ],
+                        ordered=False,
+                        level=1,
+                        start=None,
+                    )
+                ],
+            ),
+            (
+                '- First item\n- Second item\n- Third item\n    - Indented item\n    - Indented item\n- Fourth item',
+                [
+                    ListBlock(
+                        children=[
+                            ListItemBlock(children=[TextBlock(text='First item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Second item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Third item')], level=1),
+                            ListItemBlock(children=[TextBlock(text='Fourth item')], level=1),
+                        ],
+                        ordered=False,
+                        level=1,
+                        start=None,
+                    )
+                ],
+            ),
+            (
+                '- 1968\. A great year!\n- I think 1969 was second best.',
+                [
+                    ListBlock(
+                        children=[
+                            ListItemBlock(
+                                children=[
+                                    TextBlock(text='1968'),
+                                    TextBlock(text='.'),
+                                    TextBlock(text=' A great year!'),
+                                ],
+                                level=1,
+                            ),
+                            ListItemBlock(
+                                children=[
+                                    TextBlock(text='I think 1969 was second best.'),
+                                ],
+                                level=1,
+                            ),
+                        ],
+                        ordered=False,
+                        level=1,
+                        start=None,
+                    )
+                ],
+            ),
+        ],
+    )
+    def test_unordered_list_parsing(self, unordered_list, expected):
+        assert MarkdownDocument.from_string(unordered_list).blocks == expected
+
+    @pytest.mark.parametrize(
+        'quote, expected',
+        [
+            (
+                '> Dorothy followed her through many of the beautiful rooms in her castle.',
+                [
+                    BlockQuote(
+                        children=[
+                            Paragraph(
+                                children=[
+                                    TextBlock(
+                                        text='Dorothy followed her through many of the beautiful rooms in her castle.'
+                                    )
+                                ]
+                            )
+                        ]
+                    )
+                ],
+            ),
+            (
+                '> Dorothy followed her through many of the beautiful rooms in her castle.\n>\n> The Witch bade her clean the pots and kettles and sweep the floor and keep the fire fed with wood.',
+                [
+                    BlockQuote(
+                        children=[
+                            Paragraph(
+                                children=[
+                                    TextBlock(
+                                        text='Dorothy followed her through many of the beautiful rooms in her castle.'
+                                    )
+                                ]
+                            ),
+                            Paragraph(
+                                children=[
+                                    TextBlock(
+                                        text='The Witch bade her clean the pots and kettles and sweep the floor and keep the fire fed with wood.'
+                                    )
+                                ]
+                            ),
+                        ]
+                    )
+                ],
+            ),
+            (
+                '> #### The quarterly results look great!\n>\n> - Revenue was off the chart.\n> - Profits were higher than ever.\n>\n>  *Everything* is going according to **plan**.',
+                [
+                    BlockQuote(
+                        children=[
+                            HeadingBlock(
+                                children=[
+                                    TextBlock(text='The quarterly results look great!'),
+                                ],
+                                level=4,
+                            ),
+                            ListBlock(
+                                children=[
+                                    ListItemBlock(
+                                        children=[
+                                            TextBlock(text='Revenue was off the chart.'),
+                                        ],
+                                        level=1,
+                                    ),
+                                    ListItemBlock(
+                                        children=[
+                                            TextBlock(text='Profits were higher than ever.')
+                                        ],
+                                        level=1,
+                                    ),
+                                ],
+                                ordered=False,
+                                level=1,
+                                start=None,
+                            ),
+                            Paragraph(
+                                children=[
+                                    EmphasisTextBlock(
+                                        children=[
+                                            TextBlock(text='Everything'),
+                                        ]
+                                    ),
+                                    TextBlock(text=' is going according to '),
+                                    StrongTextBlock(
+                                        children=[
+                                            TextBlock(text='plan'),
+                                        ]
+                                    ),
+                                    TextBlock(text='.'),
+                                ]
+                            ),
+                        ]
+                    )
+                ],
+            ),
+        ],
+    )
+    def test_quote_parsing(self, quote, expected):
+        assert MarkdownDocument.from_string(quote).blocks == expected
