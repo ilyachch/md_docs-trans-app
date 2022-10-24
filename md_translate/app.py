@@ -51,6 +51,19 @@ def main(
         path = [
             path,
         ]
+    files_to_process = _get_files_to_process(path)
+
+    translation_provider = TRANSLATOR_BY_SERVICE_NAME[service]()
+    for file_to_process in files_to_process:
+        click.echo('Processing file: {}'.format(file_to_process.name))
+        document = MarkdownDocument.from_file(file_to_process, force_new=clear)
+        document.translate(translation_provider, from_lang, to_lang, new_file=new_file)
+        click.echo('Processed file: {}'.format(file_to_process.name))
+    click.echo('Done')
+    exit(0)
+
+
+def _get_files_to_process(path: List[Path]) -> List[Path]:
     files_to_process = []
     for path_to_process in path:
         if not path_to_process.exists():
@@ -63,15 +76,7 @@ def main(
             for found_file in found_files:
                 click.echo('Found file: {}'.format(found_file.name))
                 files_to_process.append(found_file)
-
-    translation_provider = TRANSLATOR_BY_SERVICE_NAME[service]()
-    for file_to_process in files_to_process:
-        click.echo('Processing file: {}'.format(file_to_process.name))
-        document = MarkdownDocument.from_file(file_to_process, force_new=clear)
-        document.translate(translation_provider, from_lang, to_lang, new_file=new_file)
-        click.echo('Processed file: {}'.format(file_to_process.name))
-    click.echo('Done')
-    exit(0)
+    return files_to_process
 
 
 if __name__ == "__main__":

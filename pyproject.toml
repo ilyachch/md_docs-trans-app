@@ -91,6 +91,7 @@ exclude = [
 
 [tool.flake8]
 extend-ignore = ['E501', ]
+max-complexity = 6
 
 [build-system]
 requires = ["poetry>=0.12"]

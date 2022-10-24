@@ -10,7 +10,7 @@ repos:
         types: [python]
         files: ^md_translate\/.*\.py$
         exclude: .*\/(tests)\/.*\.py$
-        require_serial: true
+        require_serial: false
         entry: .venv/bin/black --check --config pyproject.toml
 
       - id: check-isort
@@ -19,7 +19,7 @@ repos:
         types: [python]
         files: ^md_translate\/.*\.py$
         exclude: .*\/(tests)\/.*\.py$
-        require_serial: true
+        require_serial: false
         entry: .venv/bin/isort --check-only --settings-file pyproject.toml
 
       - id: check-mypy
@@ -28,7 +28,7 @@ repos:
         types: [python]
         files: ^md_translate\/.*\.py$
         exclude: .*\/(tests)\/.*\.py$
-        require_serial: true
+        require_serial: false
         entry: .venv/bin/mypy --config-file pyproject.toml
 
       - id: check-flake8
@@ -37,6 +37,6 @@ repos:
         types: [python]
         files: ^md_translate\/.*\.py$
         exclude: .*\/(tests)\/.*\.py$
-        require_serial: true
+        require_serial: false
         entry: .venv/bin/flake8
 
