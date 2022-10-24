@@ -31,3 +31,12 @@ repos:
         require_serial: true
         entry: .venv/bin/mypy --config-file pyproject.toml
 
+      - id: check-flake8
+        name: check flake8
+        language: python
+        types: [python]
+        files: ^md_translate\/.*\.py$
+        exclude: .*\/(tests)\/.*\.py$
+        require_serial: true
+        entry: .venv/bin/flake8
+

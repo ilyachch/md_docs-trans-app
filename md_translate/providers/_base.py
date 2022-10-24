@@ -39,10 +39,10 @@ class TranslationProvider(abc.ABC):
         if self.HEADLESS:
             options.add_argument('--headless')
             options.add_argument(
-                f'user-agent=Mozilla/5.0 (X11; Linux x86_64) '
-                f'AppleWebKit/537.36 (KHTML, like Gecko) '
-                f'Chrome/106.0.0.0 '
-                f'Safari/537.36'
+                'user-agent=Mozilla/5.0 (X11; Linux x86_64) '
+                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                'Chrome/106.0.0.0 '
+                'Safari/537.36'
             )
 
         self._driver = webdriver.Chrome(

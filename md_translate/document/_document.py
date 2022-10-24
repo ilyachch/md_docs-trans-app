@@ -31,13 +31,15 @@ class MarkdownDocument(pydantic.BaseModel):
         with translation_provider as provider:
             for counter, block in enumerate(self.blocks_data, start=1):
                 pass
-                # if block.IS_TRANSLATABLE and block.should_be_translated():
-                #     block.translated_text = provider.translate(
-                #         from_language=from_lang,
-                #         to_language=to_lang,
-                #         text=block.get_data_to_translate(),
-                #     )
-                #     click.echo(f'Translated: {counter} of {len(self.blocks_data)}')
+                if block.IS_TRANSLATABLE and block.should_be_translated():
+                    # block.translated_text = provider.translate(
+                    #     from_language=from_lang,
+                    #     to_language=to_lang,
+                    #     text=block.get_data_to_translate(),
+                    # )
+                    click.echo(
+                        f'Translated: {provider.__class__} {counter} of {len(self.blocks_data)}'
+                    )
                 self.__dump()
             self.__dump()
         self.__save(from_lang, to_lang, new_file)
@@ -83,7 +85,7 @@ class MarkdownDocument(pydantic.BaseModel):
     def __restore(cls, source: Path) -> 'MarkdownDocument':
         dump_file = Path(source.parent / (source.name + '.tmp'))
         if not dump_file.exists():
-            raise TempFileNotFoundError(f'Temp file not found: %s', str(dump_file))
+            raise TempFileNotFoundError('Temp file not found: %s', str(dump_file))
         content = json.loads(dump_file.read_text())
         return cls(
             source=content['source'],
