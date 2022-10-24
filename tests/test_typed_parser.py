@@ -180,15 +180,36 @@ class TestMarkdownDocument:
                     )
                 ],
             ),
-            # todo: fix it
             (
-                "This text is ***really important***.",
+                "This text is **_really important_**.",
                 [
                     Paragraph(
                         children=[
-                            TextBlock(text='This text is *'),
-                            StrongTextBlock(children=[TextBlock(text='really important')]),
-                            TextBlock(text='*.'),
+                            TextBlock(text='This text is '),
+                            StrongTextBlock(
+                                children=[
+                                    EmphasisTextBlock(
+                                        children=[TextBlock(text='really important')]
+                                    )
+                                ]
+                            ),
+                            TextBlock(text='.'),
+                        ]
+                    )
+                ],
+            ),
+            (
+                "This text is *__really important__*.",
+                [
+                    Paragraph(
+                        children=[
+                            TextBlock(text='This text is '),
+                            EmphasisTextBlock(
+                                children=[
+                                    StrongTextBlock(children=[TextBlock(text='really important')])
+                                ]
+                            ),
+                            TextBlock(text='.'),
                         ]
                     )
                 ],
@@ -531,6 +552,33 @@ class TestMarkdownDocument:
                                     )
                                 ]
                             )
+                        ]
+                    )
+                ],
+            ),
+            (
+                '> Dorothy followed her through many of the beautiful rooms in her castle.\n>\n>> The Witch bade her clean the pots and kettles and sweep the floor and keep the fire fed with wood.',
+                [
+                    BlockQuote(
+                        children=[
+                            Paragraph(
+                                children=[
+                                    TextBlock(
+                                        text='Dorothy followed her through many of the beautiful rooms in her castle.'
+                                    )
+                                ]
+                            ),
+                            BlockQuote(
+                                children=[
+                                    Paragraph(
+                                        children=[
+                                            TextBlock(
+                                                text='The Witch bade her clean the pots and kettles and sweep the floor and keep the fire fed with wood.'
+                                            )
+                                        ]
+                                    )
+                                ]
+                            ),
                         ]
                     )
                 ],

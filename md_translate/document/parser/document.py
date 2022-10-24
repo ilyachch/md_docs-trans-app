@@ -4,7 +4,7 @@ from typing import List, Optional
 import mistune
 import pydantic
 
-from .blocks import AbstractBlock
+from .blocks import AbstractBlock, NewlineBlock
 from .parser import TypedParser
 
 
@@ -12,6 +12,9 @@ class MarkdownDocument(pydantic.BaseModel):
     source: Optional[Path] = None
 
     blocks: List[AbstractBlock]
+
+    def render(self) -> str:
+        return '\n\n'.join(map(str, self.blocks))
 
     @classmethod
     def from_file(cls, path: Path) -> 'MarkdownDocument':
@@ -27,4 +30,5 @@ class MarkdownDocument(pydantic.BaseModel):
     @staticmethod
     def __parse_blocks(text: str) -> List[AbstractBlock]:
         markdown_parser = mistune.create_markdown(renderer=TypedParser())
-        return [b for b in markdown_parser(text) if b]
+        data = [b for b in markdown_parser(text) if b and not isinstance(b, NewlineBlock)]
+        return data

@@ -1,5 +1,5 @@
 import abc
-from typing import Generic, List, Optional, TypeVar
+from typing import Generic, List, Optional, TypeVar, ClassVar
 
 import pydantic
 
@@ -17,12 +17,19 @@ class Container(Generic[T], AbstractBlock):
     children: List[T]
 
     def __str__(self) -> str:
-        return '\n'.join(map(str, self.children))
+        return ''.join(map(str, self.children))
+
+
+class NestedContainer(Generic[T], Container[T]):
+    nested_children: List[T]
+
+    def __str__(self) -> str:
+        return ''.join(map(str, self.nested_children))
 
 
 class Paragraph(Container[AbstractBlock]):
     def __str__(self):
-        return '\n'.join(map(str, self.children))
+        return ''.join(map(str, self.children))
 
 
 class TextBlock(AbstractBlock):
@@ -56,7 +63,8 @@ class ImageBlock(AbstractBlock):
     title: Optional[str] = None
 
     def __str__(self) -> str:
-        return f'![{self.alt}]({self.url} "{self.title or ""}")'
+        title = f' "{self.title}"' if self.title else ''
+        return f'![{self.alt}]({self.url}{title})'
 
 
 class HeadingBlock(Container[AbstractBlock], AbstractBlock):
@@ -94,12 +102,18 @@ class HtmlBlock(AbstractBlock):
         return self.code
 
 
-class ListItemBlock(Container[AbstractBlock]):
+class ListItemBlock(NestedContainer[AbstractBlock]):
     level: int
 
     def __str__(self) -> str:
-        indent = ' ' * (self.level - 1) * 4
-        return f'{indent} {super().__str__()}'
+        result = ''.join(map(str, self.children))
+        if self.nested_children:
+            nested_lines = ''.join(map(str, self.nested_children)).splitlines()
+            processed_nested_lines = [
+                ' ' * 4 + line for line in nested_lines
+            ]
+            result += '\n' + '\n'.join(processed_nested_lines)
+        return result
 
 
 class ListBlock(Container[ListItemBlock], AbstractBlock):
@@ -107,18 +121,20 @@ class ListBlock(Container[ListItemBlock], AbstractBlock):
     level: int
     start: Optional[int] = None
 
+    _MARKS: ClassVar[str] = ['*', '-', '+']
+
     def __str__(self) -> str:
         rendered_children: List[str] = []
         if self.ordered:
             for i, child in enumerate(self.children, start=self.start):
-                rendered_children.append(f'{self.start + i}. {child}')
+                rendered_children.append(f'{i}. {child}')
+        else:
+            for child in self.children:
+                # indent = ' ' * (child.level - 1) * 4
+                mark = self._MARKS[(child.level - 1) % len(self._MARKS)]
+                rendered_children.append(f'{mark} {child}')
 
-        return '\n'.join(
-            [
-                f'{f"{counter}." if self.ordered else "*"} {str(item)}'
-                for counter, item in enumerate(self.children)
-            ]
-        )
+        return '\n'.join(rendered_children)
 
 
 class LineBreakBlock(AbstractBlock):
@@ -136,6 +152,17 @@ class NewlineBlock(AbstractBlock):
         return '\n'
 
 
-class BlockQuote(Container[AbstractBlock], AbstractBlock):
+class BlockQuote(NestedContainer[AbstractBlock]):
     def __str__(self):
-        return '> ' + super().__str__().replace('\n', '\n> ')
+        rendered_children = list(map(str, self.children))
+        result = []
+        for child in rendered_children:
+            if child == '\n':
+                result.append('>')
+            elif '\n' in child:
+                result.append('\n'.join(f'> {line}' for line in child.splitlines()))
+            elif child.startswith('>'):
+                result.append(f'>{child}')
+            else:
+                result.append(f'> {str(child)}')
+        return '\n'.join(result)

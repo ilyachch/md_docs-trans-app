@@ -7,7 +7,6 @@ class TypedParser(BaseRenderer):
     NAME = 'blocks'
 
     def text(self, text):
-        print(f'text. {text=}')
         return blocks.TextBlock(text=text)
 
     def paragraph(self, children):
@@ -15,11 +14,17 @@ class TypedParser(BaseRenderer):
 
     def block_text(self, text):
         return text
-        # print(f'block_text. {text=}')
-        # return blocks.TextBlock(text=text)
 
     def block_quote(self, children):
-        return blocks.BlockQuote(children=children)
+        if children and isinstance(children[0], list) and len(children) == 1:
+            children = children[0]
+        prepared_children = []
+        for i, child in enumerate(children):
+            prepared_children.append(child)
+            if i + 1 < len(children):
+                prepared_children.append(blocks.NewlineBlock())
+
+        return blocks.BlockQuote(children=prepared_children, nested_children=[])
 
     def strong(self, children):
         return blocks.StrongTextBlock(children=children)
@@ -58,12 +63,15 @@ class TypedParser(BaseRenderer):
         return blocks.HtmlBlock(code=text)
 
     def list(self, children, ordered, level=1, start=None):
+        if ordered:
+            start = start or 1
         return blocks.ListBlock(children=children, ordered=ordered, level=level, start=start)
 
     def list_item(self, children, level=1):
-        if isinstance(children, list) and isinstance(children[0], list):
-            children = children[0]
-        return blocks.ListItemBlock(children=children, level=level)
+        children, nested_children = children[0], children[1:]
+        return blocks.ListItemBlock(
+            children=children, nested_children=nested_children, level=level
+        )
 
     def finalize(self, data):
         return list(data)
