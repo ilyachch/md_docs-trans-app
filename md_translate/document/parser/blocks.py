@@ -1,5 +1,5 @@
 import abc
-from typing import Generic, List, Optional, TypeVar, ClassVar
+from typing import ClassVar, Generic, List, Optional, TypeVar
 
 import pydantic
 
@@ -117,9 +117,9 @@ class ListItemBlock(NestedContainer[AbstractBlock]):
 class ListBlock(Container[ListItemBlock], AbstractBlock):
     ordered: bool = False
     level: int
-    start: Optional[int] = None
+    start: int = pydantic.Field(default=1)
 
-    _MARKS: ClassVar[str] = ['*', '-', '+']
+    _MARKS: ClassVar[List[str]] = ['*', '-', '+']
 
     def __str__(self) -> str:
         rendered_children: List[str] = []

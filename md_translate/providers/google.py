@@ -22,3 +22,6 @@ class GoogleTranslateProvider(TranslationProvider):
         )
         data = result_element.text
         return self.get_cleaned_data(data)
+
+    def check_for_antispam(self) -> bool:
+        return False

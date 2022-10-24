@@ -11,11 +11,11 @@ from md_translate.document.parser.blocks import (
     LinkBlock,
     ListBlock,
     ListItemBlock,
+    NewlineBlock,
     Paragraph,
     SeparatorBlock,
     StrongTextBlock,
     TextBlock,
-    NewlineBlock,
 )
 from md_translate.document.parser.document import MarkdownDocument
 

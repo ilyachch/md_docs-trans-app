@@ -7,7 +7,7 @@ class BaseBlock(pydantic.BaseModel):
     IS_TRANSLATABLE: ClassVar[bool] = False
 
     @pydantic.root_validator(pre=True)
-    def validate(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+    def check(cls, values: Any) -> Any:
         if isinstance(values, dict):
             children = values.get('children')
             if children:
@@ -105,7 +105,12 @@ class LinkBlock(BaseBlock):
     text: Optional[List[BaseBlock]] = None
 
     def __str__(self) -> str:
-        return f'[{str(" ".join(map(str, self.text)) or self.title)}]({self.link})'
+        label = ''
+        if self.text:
+            label = ''.join(map(str, self.text))
+        elif self.title:
+            label = self.title
+        return f'[{label}]({self.link})'
 
 
 class ImageBlock(BaseBlock):

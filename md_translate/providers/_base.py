@@ -5,7 +5,7 @@ from typing import Dict, Optional
 
 import requests
 from selenium import webdriver
-from selenium.common import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -53,7 +53,6 @@ class TranslationProvider(abc.ABC):
     def __exit__(self, *args, **kwargs):
         self._driver.quit()
 
-    @abc.abstractmethod
     def translate(self, *, from_language: str, to_language: str, text: str) -> str:
         raise NotImplementedError()
 

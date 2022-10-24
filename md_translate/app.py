@@ -28,7 +28,7 @@ from md_translate.providers import TRANSLATOR_BY_SERVICE_NAME
 )
 @click.option(
     '--service',
-    type=click.Choice(TRANSLATOR_BY_SERVICE_NAME.keys()),
+    type=click.Choice(list(TRANSLATOR_BY_SERVICE_NAME.keys())),
     help='Translating service',
     required=True,
 )
@@ -64,11 +64,11 @@ def main(
                 click.echo('Found file: {}'.format(found_file.name))
                 files_to_process.append(found_file)
 
-    service = TRANSLATOR_BY_SERVICE_NAME[service]()
+    translation_provider = TRANSLATOR_BY_SERVICE_NAME[service]()
     for file_to_process in files_to_process:
         click.echo('Processing file: {}'.format(file_to_process.name))
         document = MarkdownDocument.from_file(file_to_process, force_new=clear)
-        document.translate(service, from_lang, to_lang, new_file=new_file)
+        document.translate(translation_provider, from_lang, to_lang, new_file=new_file)
         click.echo('Processed file: {}'.format(file_to_process.name))
     click.echo('Done')
     exit(0)
