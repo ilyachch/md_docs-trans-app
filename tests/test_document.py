@@ -43,7 +43,7 @@ class TestMarkdownDocument:
                 },
                 {
                     'block_type': 'CodeBlock',
-                    'code': 'def foo() -> bool:\n    return True\n',
+                    'code': 'def foo() -> bool:\n    return True',
                     'language': 'python',
                 },
             ],
@@ -61,7 +61,7 @@ class TestMarkdownDocument:
                     },
                     {
                         'block_type': 'CodeBlock',
-                        'code': 'def foo() -> bool:\n    return True\n',
+                        'code': 'def foo() -> bool:\n    return True',
                         'language': 'python',
                     },
                 ],

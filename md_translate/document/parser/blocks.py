@@ -126,9 +126,13 @@ class CodeBlock(BaseBlock):
     code: str
     language: Optional[str] = None
 
+    @pydantic.validator('code', pre=True)
+    def strip_code(cls, code: str) -> str:
+        return code.strip()
+
     def __str__(self) -> str:
         lang = self.language or ''
-        return f'```{lang}\n{self.code}\n```'
+        return f'```{lang}\n{self.code}\n```\n'
 
 
 @register
