@@ -22,12 +22,15 @@ check_black:
 	@$(VENV_BIN)/black --diff --check $(PROJECT_FOLDER)
 
 check_mypy:
-	@$(VENV_BIN)/mypy $(PROJECT_FOLDER)
+	@$(VENV_BIN)/mypy $(PROJECT_FOLDER) --config-file $(WORKING_DIRECTORY)/pyproject.toml
 
 check_isort:
 	@$(VENV_BIN)/isort --check-only $(PROJECT_FOLDER)
 
-check: check_black check_mypy check_isort
+check_flake8:
+	@$(VENV_BIN)/flake8 $(PROJECT_FOLDER)
+
+check: check_black check_mypy check_isort, check_flake8
 
 # Coverage section
 coverage:

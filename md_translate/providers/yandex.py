@@ -24,7 +24,7 @@ class YandexTranslateProvider(TranslationProvider):
         data = result_container.text
         return self.get_cleaned_data(data)
 
-    def check_for_antispam(self):
+    def check_for_antispam(self) -> bool:
         try:
             self._driver.find_element(
                 by=self.WEBDRIVER_BY.XPATH,

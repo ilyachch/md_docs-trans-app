@@ -61,28 +61,38 @@ IMAGE_LINK_WITHOUT_TITLE = (
 )
 
 MARKDOWN_DOCUMENTS = [
-    HEADER_1,
-    HEADER_2,
-    HEADER_3,
-    HEADER_4,
-    HEADER_5,
-    HEADER_6,
-    PARAGRAPH,
-    NEW_LINE,
-    BOLD_TEXT,
-    ITALIC_TEXT,
-    QUOTE,
-    MULTILINE_QUOTE,
-    NESTED_QUOTE,
-    LIST_INSIDE_QUOTE,
-    LIST,
-    LIST_WITH_NESTED_QUOTE,
-    IMAGE_LINK_WITH_TITLE,
-    IMAGE_LINK_WITHOUT_TITLE,
+    (HEADER_1, 'HEADER_1'),
+    (HEADER_2, 'HEADER_2'),
+    (HEADER_3, 'HEADER_3'),
+    (HEADER_4, 'HEADER_4'),
+    (HEADER_5, 'HEADER_5'),
+    (HEADER_6, 'HEADER_6'),
+    (PARAGRAPH, 'PARAGRAPH'),
+    (NEW_LINE, 'NEW_LINE'),
+    (BOLD_TEXT, 'BOLD_TEXT'),
+    (ITALIC_TEXT, 'ITALIC_TEXT'),
+    (QUOTE, 'QUOTE'),
+    (MULTILINE_QUOTE, 'MULTILINE_QUOTE'),
+    (NESTED_QUOTE, 'NESTED_QUOTE'),
+    (LIST_INSIDE_QUOTE, 'LIST_INSIDE_QUOTE'),
+    (LIST, 'LIST'),
+    (LIST_WITH_NESTED_QUOTE, 'LIST_WITH_NESTED_QUOTE'),
+    (IMAGE_LINK_WITH_TITLE, 'IMAGE_LINK_WITH_TITLE'),
+    (IMAGE_LINK_WITHOUT_TITLE, 'IMAGE_LINK_WITHOUT_TITLE'),
 ]
 
 
-@pytest.mark.parametrize('document', [*MARKDOWN_DOCUMENTS, '\n\n'.join(MARKDOWN_DOCUMENTS)])
-def test_rendering(document):
+@pytest.mark.parametrize(
+    'document, _',
+    [
+        *MARKDOWN_DOCUMENTS,
+        (
+            '\n\n'.join([document for document, _ in MARKDOWN_DOCUMENTS]),
+            'ALL',
+        ),
+    ],
+    ids=[name for _, name in MARKDOWN_DOCUMENTS] + ['ALL'],
+)
+def test_rendering(document, _):
     md_document = MarkdownDocument.from_string(document)
     assert md_document.render() == document

@@ -1,7 +1,7 @@
 import abc
 import pathlib
 import urllib.parse
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 import requests
 from selenium import webdriver
@@ -34,7 +34,7 @@ class TranslationProvider(abc.ABC):
         if self._host is None:
             raise ValueError('Host is not defined')
 
-    def __enter__(self):
+    def __enter__(self) -> 'TranslationProvider':
         options = Options()
         if self.HEADLESS:
             options.add_argument('--headless')
@@ -50,7 +50,7 @@ class TranslationProvider(abc.ABC):
         )
         return self
 
-    def __exit__(self, *args, **kwargs):
+    def __exit__(self, *args: Any, **kwargs: Any) -> None:
         self._driver.quit()
 
     def translate(self, *, from_language: str, to_language: str, text: str) -> str:
@@ -77,17 +77,21 @@ class TranslationProvider(abc.ABC):
         return '\n'.join(paragraphs)
 
     def check_for_antispam(self) -> bool:
+        """
+        Check if antispam is present on the page. Should return True if antispam is present.
+        """
+
         raise NotImplementedError()
 
     def wait_for_antispam(self) -> None:
-        def wait_for(driver):
+        def wait_for(driver: Any) -> bool:
             return not self.check_for_antispam()
 
         if self.check_for_antispam():
             self.WEBDRIVER_WAIT(self._driver, self.ANTISPAM_TIMEOUT).until(wait_for)
 
     def wait_for_page_load(self) -> None:
-        def wait_for(driver):
+        def wait_for(driver: Any) -> bool:
             return driver.execute_script('return document.readyState') == 'complete'
 
         self.WEBDRIVER_WAIT(self._driver, 10).until(wait_for)

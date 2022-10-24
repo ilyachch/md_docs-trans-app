@@ -1,19 +1,45 @@
-import abc
-from typing import ClassVar, Generic, List, Optional, TypeVar
+from typing import Any, ClassVar, Dict, Generic, List, Optional, Type, TypeVar, cast
 
 import pydantic
 
 
-class AbstractBlock(abc.ABC, pydantic.BaseModel):
-    @abc.abstractmethod
+class BaseBlock(pydantic.BaseModel):
     def __str__(self) -> str:
         raise NotImplementedError()
 
+    def dict(self, *args: Any, **kwargs: Any) -> dict:
+        data = super().dict(*args, **kwargs)
+        data['block_type'] = self.__class__.__name__
+        return data
 
-T = TypeVar('T', bound=AbstractBlock)
+    @classmethod
+    def restore(cls, values: Dict[str, Any]) -> 'BaseBlock':
+        block_type_name = values.pop('block_type')
+        if not block_type_name:
+            raise ValueError('Unknown data. No block type found')
+        block_type = blocks_registry.get(block_type_name)
+        if not block_type:
+            raise ValueError(f'Unknown block type: {block_type_name}')
+        children = values.get('children')
+        if children:
+            parsed_children = []
+            for child in children:
+                parsed_children.append(BaseBlock.restore(child))
+            values['children'] = parsed_children
+        return block_type(**values)
 
 
-class Container(Generic[T], AbstractBlock):
+blocks_registry: Dict[str, Type[BaseBlock]] = {}
+
+T = TypeVar('T', bound=BaseBlock)
+
+
+def register(cls: Type[T]) -> Type[T]:
+    blocks_registry[cls.__name__] = cls
+    return cls
+
+
+class Container(Generic[T], BaseBlock):
     children: List[T]
 
     def __str__(self) -> str:
@@ -27,29 +53,34 @@ class NestedContainer(Generic[T], Container[T]):
         return ''.join(map(str, self.nested_children))
 
 
-class Paragraph(Container[AbstractBlock]):
-    def __str__(self):
+@register
+class Paragraph(Container[BaseBlock]):
+    def __str__(self) -> str:
         return ''.join(map(str, self.children))
 
 
-class TextBlock(AbstractBlock):
+@register
+class TextBlock(BaseBlock):
     text: str
 
     def __str__(self) -> str:
         return self.text
 
 
-class StrongTextBlock(Container[AbstractBlock], AbstractBlock):
-    def __str__(self):
+@register
+class StrongTextBlock(Container[BaseBlock]):
+    def __str__(self) -> str:
         return f'**{super().__str__()}**'
 
 
-class EmphasisTextBlock(Container[AbstractBlock], AbstractBlock):
-    def __str__(self):
+@register
+class EmphasisTextBlock(Container[BaseBlock]):
+    def __str__(self) -> str:
         return f'*{super().__str__()}*'
 
 
-class LinkBlock(Container[AbstractBlock], AbstractBlock):
+@register
+class LinkBlock(Container[BaseBlock]):
     url: str
     title: Optional[str] = None
 
@@ -57,7 +88,8 @@ class LinkBlock(Container[AbstractBlock], AbstractBlock):
         return f'[{self.title or super().__str__()}]({self.url})'
 
 
-class ImageBlock(AbstractBlock):
+@register
+class ImageBlock(BaseBlock):
     url: str
     alt: str = pydantic.Field(default=str)
     title: Optional[str] = None
@@ -67,26 +99,30 @@ class ImageBlock(AbstractBlock):
         return f'![{self.alt}]({self.url}{title})'
 
 
-class HeadingBlock(Container[AbstractBlock], AbstractBlock):
+@register
+class HeadingBlock(Container[BaseBlock]):
     level: int
 
     def __str__(self) -> str:
         return f'{"#" * self.level} {"".join(map(str, self.children))}'
 
 
-class SeparatorBlock(AbstractBlock):
+@register
+class SeparatorBlock(BaseBlock):
     def __str__(self) -> str:
         return '---'
 
 
-class CodeSpanBlock(AbstractBlock):
+@register
+class CodeSpanBlock(BaseBlock):
     code: str
 
     def __str__(self) -> str:
         return f'`{self.code}`'
 
 
-class CodeBlock(AbstractBlock):
+@register
+class CodeBlock(BaseBlock):
     code: str
     language: Optional[str] = None
 
@@ -95,14 +131,16 @@ class CodeBlock(AbstractBlock):
         return f'```{lang}\n{self.code}\n```'
 
 
-class HtmlBlock(AbstractBlock):
+@register
+class HtmlBlock(BaseBlock):
     code: str
 
     def __str__(self) -> str:
         return self.code
 
 
-class ListItemBlock(NestedContainer[AbstractBlock]):
+@register
+class ListItemBlock(NestedContainer[BaseBlock]):
     level: int
 
     def __str__(self) -> str:
@@ -114,16 +152,18 @@ class ListItemBlock(NestedContainer[AbstractBlock]):
         return result
 
 
-class ListBlock(Container[ListItemBlock], AbstractBlock):
+@register
+class ListBlock(Container[ListItemBlock]):
     ordered: bool = False
     level: int
-    start: int = pydantic.Field(default=1)
+    start: Optional[int] = None
 
     _MARKS: ClassVar[List[str]] = ['*', '-', '+']
 
     def __str__(self) -> str:
         rendered_children: List[str] = []
         if self.ordered:
+            self.start = cast(int, self.start)
             for i, child in enumerate(self.children, start=self.start):
                 rendered_children.append(f'{i}. {child}')
         else:
@@ -135,23 +175,27 @@ class ListBlock(Container[ListItemBlock], AbstractBlock):
         return '\n'.join(rendered_children)
 
 
-class LineBreakBlock(AbstractBlock):
+@register
+class LineBreakBlock(BaseBlock):
     def __str__(self) -> str:
         return '  \n'
 
 
+@register
 class InlineHtmlBlock(HtmlBlock):
-    def __str__(self):
+    def __str__(self) -> str:
         return f'`{self.code}`'
 
 
-class NewlineBlock(AbstractBlock):
-    def __str__(self):
+@register
+class NewlineBlock(BaseBlock):
+    def __str__(self) -> str:
         return '\n'
 
 
-class BlockQuote(Container[AbstractBlock]):
-    def __str__(self):
+@register
+class BlockQuote(Container[BaseBlock]):
+    def __str__(self) -> str:
         rendered_children = list(map(str, self.children))
         result = []
         for child in rendered_children:

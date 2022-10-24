@@ -1,3 +1,5 @@
+from typing import Any
+
 from md_translate.providers._base import TranslationProvider
 
 
@@ -19,7 +21,7 @@ class DeeplTranslateProvider(TranslationProvider):
         current_result = result_container.get_attribute('value')
         textarea.send_keys(text)
 
-        def wait_for(driver):
+        def wait_for(driver: Any) -> bool:
             new_result = driver.find_element(
                 by=self.WEBDRIVER_BY.CSS_SELECTOR,
                 value='textarea[aria-labelledby="translation-results-heading"]',

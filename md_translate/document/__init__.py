@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from ._document import MarkdownDocument
+from .parser.document import MarkdownDocument
 
 __all__ = ['MarkdownDocument']
 

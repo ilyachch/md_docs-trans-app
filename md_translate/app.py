@@ -3,7 +3,7 @@ from typing import List, Union
 
 import click
 
-from md_translate.document import MarkdownDocument
+from md_translate.document.parser.document import MarkdownDocument
 from md_translate.providers import TRANSLATOR_BY_SERVICE_NAME
 
 

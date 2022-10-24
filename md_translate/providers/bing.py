@@ -1,3 +1,5 @@
+from typing import Any
+
 from md_translate.providers._base import TranslationProvider
 
 
@@ -19,7 +21,7 @@ class BingTranslateProvider(TranslationProvider):
 
         text_area.send_keys(text)
 
-        def wait_for_text(driver):
+        def wait_for_text(driver: Any) -> bool:
             new_text = result_container.get_attribute('value')
             if new_text != current_text and '...' not in new_text:
                 return True

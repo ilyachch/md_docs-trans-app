@@ -84,7 +84,9 @@ exclude_lines = [
 
 [tool.mypy]
 python_version = 3.8
+disallow_untyped_defs = true
 ignore_missing_imports = true
+warn_unused_configs = true
 exclude = [
     'tests',
 ]
