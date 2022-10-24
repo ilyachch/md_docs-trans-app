@@ -24,7 +24,7 @@ class TypedParser(BaseRenderer):
             if i + 1 < len(children):
                 prepared_children.append(blocks.NewlineBlock())
 
-        return blocks.BlockQuote(children=prepared_children, nested_children=[])
+        return blocks.BlockQuote(children=prepared_children)
 
     def strong(self, children):
         return blocks.StrongTextBlock(children=children)

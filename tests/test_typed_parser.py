@@ -15,6 +15,7 @@ from md_translate.document.parser.blocks import (
     SeparatorBlock,
     StrongTextBlock,
     TextBlock,
+    NewlineBlock,
 )
 from md_translate.document.parser.document import MarkdownDocument
 
@@ -382,7 +383,7 @@ class TestMarkdownDocument:
                         ],
                         ordered=True,
                         level=1,
-                        start=None,
+                        start=1,
                     )
                 ],
             ),
@@ -398,7 +399,7 @@ class TestMarkdownDocument:
                         ],
                         ordered=True,
                         level=1,
-                        start=None,
+                        start=1,
                     )
                 ],
             ),
@@ -414,7 +415,7 @@ class TestMarkdownDocument:
                         ],
                         ordered=True,
                         level=1,
-                        start=None,
+                        start=1,
                     )
                 ],
             ),
@@ -423,14 +424,48 @@ class TestMarkdownDocument:
                 [
                     ListBlock(
                         children=[
-                            ListItemBlock(children=[TextBlock(text='First item')], level=1),
-                            ListItemBlock(children=[TextBlock(text='Second item')], level=1),
-                            ListItemBlock(children=[TextBlock(text='Third item')], level=1),
-                            ListItemBlock(children=[TextBlock(text='Fourth item')], level=1),
+                            ListItemBlock(
+                                children=[TextBlock(text='First item')],
+                                nested_children=[],
+                                level=1,
+                            ),
+                            ListItemBlock(
+                                children=[TextBlock(text='Second item')],
+                                nested_children=[],
+                                level=1,
+                            ),
+                            ListItemBlock(
+                                children=[TextBlock(text='Third item')],
+                                nested_children=[
+                                    ListBlock(
+                                        children=[
+                                            ListItemBlock(
+                                                children=[TextBlock(text='Indented item')],
+                                                nested_children=[],
+                                                level=2,
+                                            ),
+                                            ListItemBlock(
+                                                children=[TextBlock(text='Indented item')],
+                                                nested_children=[],
+                                                level=2,
+                                            ),
+                                        ],
+                                        ordered=True,
+                                        level=2,
+                                        start=1,
+                                    )
+                                ],
+                                level=1,
+                            ),
+                            ListItemBlock(
+                                children=[TextBlock(text='Fourth item')],
+                                nested_children=[],
+                                level=1,
+                            ),
                         ],
                         ordered=True,
                         level=1,
-                        start=None,
+                        start=1,
                     )
                 ],
             ),
@@ -495,10 +530,44 @@ class TestMarkdownDocument:
                 [
                     ListBlock(
                         children=[
-                            ListItemBlock(children=[TextBlock(text='First item')], level=1),
-                            ListItemBlock(children=[TextBlock(text='Second item')], level=1),
-                            ListItemBlock(children=[TextBlock(text='Third item')], level=1),
-                            ListItemBlock(children=[TextBlock(text='Fourth item')], level=1),
+                            ListItemBlock(
+                                children=[TextBlock(text='First item')],
+                                nested_children=[],
+                                level=1,
+                            ),
+                            ListItemBlock(
+                                children=[TextBlock(text='Second item')],
+                                nested_children=[],
+                                level=1,
+                            ),
+                            ListItemBlock(
+                                children=[TextBlock(text='Third item')],
+                                nested_children=[
+                                    ListBlock(
+                                        children=[
+                                            ListItemBlock(
+                                                children=[TextBlock(text='Indented item')],
+                                                nested_children=[],
+                                                level=2,
+                                            ),
+                                            ListItemBlock(
+                                                children=[TextBlock(text='Indented item')],
+                                                nested_children=[],
+                                                level=2,
+                                            ),
+                                        ],
+                                        ordered=False,
+                                        level=2,
+                                        start=None,
+                                    )
+                                ],
+                                level=1,
+                            ),
+                            ListItemBlock(
+                                children=[TextBlock(text='Fourth item')],
+                                nested_children=[],
+                                level=1,
+                            ),
                         ],
                         ordered=False,
                         level=1,
@@ -568,6 +637,7 @@ class TestMarkdownDocument:
                                     )
                                 ]
                             ),
+                            NewlineBlock(),
                             BlockQuote(
                                 children=[
                                     Paragraph(
@@ -595,6 +665,7 @@ class TestMarkdownDocument:
                                     )
                                 ]
                             ),
+                            NewlineBlock(),
                             Paragraph(
                                 children=[
                                     TextBlock(
@@ -617,6 +688,7 @@ class TestMarkdownDocument:
                                 ],
                                 level=4,
                             ),
+                            NewlineBlock(),
                             ListBlock(
                                 children=[
                                     ListItemBlock(
@@ -636,6 +708,7 @@ class TestMarkdownDocument:
                                 level=1,
                                 start=None,
                             ),
+                            NewlineBlock(),
                             Paragraph(
                                 children=[
                                     EmphasisTextBlock(

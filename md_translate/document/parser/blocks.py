@@ -21,7 +21,7 @@ class Container(Generic[T], AbstractBlock):
 
 
 class NestedContainer(Generic[T], Container[T]):
-    nested_children: List[T]
+    nested_children: List[T] = pydantic.Field(default_factory=list)
 
     def __str__(self) -> str:
         return ''.join(map(str, self.nested_children))
@@ -109,9 +109,7 @@ class ListItemBlock(NestedContainer[AbstractBlock]):
         result = ''.join(map(str, self.children))
         if self.nested_children:
             nested_lines = ''.join(map(str, self.nested_children)).splitlines()
-            processed_nested_lines = [
-                ' ' * 4 + line for line in nested_lines
-            ]
+            processed_nested_lines = [' ' * 4 + line for line in nested_lines]
             result += '\n' + '\n'.join(processed_nested_lines)
         return result
 
@@ -152,7 +150,7 @@ class NewlineBlock(AbstractBlock):
         return '\n'
 
 
-class BlockQuote(NestedContainer[AbstractBlock]):
+class BlockQuote(Container[AbstractBlock]):
     def __str__(self):
         rendered_children = list(map(str, self.children))
         result = []
