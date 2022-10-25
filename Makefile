@@ -33,8 +33,11 @@ check_flake8:
 check: check_black check_mypy check_isort, check_flake8
 
 # Coverage section
-tests:
-	@$(VENV_BIN)/pytest tests
+tests: .PHONY
+	@$(VENV_BIN)/pytest tests --cov=md_translate \
+							  --cov-report=term-missing \
+							  --cov-report=html:.coverage_html \
+							  --cov-fail-under=80
 
 # Releasing
 major_release: bump_major_release commit_version

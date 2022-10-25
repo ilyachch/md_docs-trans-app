@@ -52,10 +52,10 @@ class MarkdownDocument(pydantic.BaseModel):
         return data
 
     def dump(self) -> str:
-        data = self.dict()
+        blocks_dump = [block.dump() for block in self.blocks]
         clean_data = {
-            'source': str(data['source']),
-            'blocks': data['blocks'],
+            'source': str(self.source),
+            'blocks': blocks_dump,
         }
         return json.dumps(clean_data)
 

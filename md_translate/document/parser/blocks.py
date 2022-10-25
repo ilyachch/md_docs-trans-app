@@ -7,8 +7,8 @@ class BaseBlock(pydantic.BaseModel):
     def __str__(self) -> str:
         raise NotImplementedError()
 
-    def dict(self, *args: Any, **kwargs: Any) -> dict:
-        data = super().dict(*args, **kwargs)
+    def dump(self) -> Dict:
+        data = self.dict()
         data['block_type'] = self.__class__.__name__
         return data
 
@@ -44,6 +44,11 @@ class Container(Generic[T], BaseBlock):
 
     def __str__(self) -> str:
         return ''.join(map(str, self.children))
+
+    def dump(self) -> Dict:
+        data = super().dump()
+        data['children'] = [child.dump() for child in self.children]
+        return data
 
 
 class NestedContainer(Generic[T], Container[T]):

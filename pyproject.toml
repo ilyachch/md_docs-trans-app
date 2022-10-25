@@ -63,12 +63,7 @@ line_length = 99
 src_paths = ["md_translate"]
 
 [tool.pytest.ini_options]
-addopts = """
-    --cov=md_translate
-    --cov-report=term-missing
-    --cov-report=html:.coverage_html
-    --cov-fail-under=80
-"""
+addopts = """"""
 
 [tool.coverage.run]
 source = [

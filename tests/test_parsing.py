@@ -49,6 +49,7 @@ class TestMarkdownParsing:
                 [HeadingBlock(children=[TextBlock(text='Heading level 6')], level=6)],
             ),
         ],
+        ids=[f'h{i}' for i in range(1, 7)],
     )
     def test_header_parsing(self, header, expected):
         assert MarkdownDocument.from_string(header).blocks == expected
@@ -86,6 +87,7 @@ class TestMarkdownParsing:
                 ],
             ),
         ],
+        ids=[f'p{i}' for i in range(1, 4)],
     )
     def test_paragraph_parsing(self, paragraph, expected):
         assert MarkdownDocument.from_string(paragraph).blocks == expected
@@ -106,6 +108,7 @@ class TestMarkdownParsing:
                 ],
             )
         ],
+        ids=['lb'],
     )
     def test_line_break_parsing(self, line_break, expected):
         assert MarkdownDocument.from_string(line_break).blocks == expected
@@ -150,6 +153,7 @@ class TestMarkdownParsing:
                 ],
             ),
         ],
+        ids=[f'b{i}' for i in range(1, 4)],
     )
     def test_bold_parsing(self, bold, expected):
         assert MarkdownDocument.from_string(bold).blocks == expected
@@ -216,6 +220,7 @@ class TestMarkdownParsing:
                 ],
             ),
         ],
+        ids=[f'i{i}' for i in range(1, 5)],
     )
     def test_italic_parsing(self, italic, expected):
         assert MarkdownDocument.from_string(italic).blocks == expected
@@ -255,6 +260,7 @@ class TestMarkdownParsing:
                 ],
             ),
         ],
+        ids=[f'a{i}' for i in range(1, 3)],
     )
     def test_link_parsing(self, link, expected):
         assert MarkdownDocument.from_string(link).blocks == expected
@@ -290,8 +296,9 @@ class TestMarkdownParsing:
                 ],
             ),
         ],
+        ids=[f'img{i}' for i in range(1, 3)],
     )
-    def test_link_parsing(self, image, expected):
+    def test_images_parsing(self, image, expected):
         assert MarkdownDocument.from_string(image).blocks == expected
 
     @pytest.mark.parametrize(
@@ -316,6 +323,7 @@ class TestMarkdownParsing:
                 ],
             ),
         ],
+        ids=[f'sep{i}' for i in range(1, 4)],
     )
     def test_separator_parsing(self, line, expected):
         assert MarkdownDocument.from_string(line).blocks == expected
@@ -340,6 +348,7 @@ class TestMarkdownParsing:
                 ],
             ),
         ],
+        ids=[f'code{i}' for i in range(1, 3)],
     )
     def test_code_parsing(self, code, expected):
         assert MarkdownDocument.from_string(code).blocks == expected
@@ -364,6 +373,7 @@ class TestMarkdownParsing:
                 [Paragraph(children=[CodeSpanBlock(code='Use `code` in your Markdown file.')])],
             ),
         ],
+        ids=[f'code_line{i}' for i in range(1, 3)],
     )
     def test_code_line_parsing(self, code_line, expected):
         assert MarkdownDocument.from_string(code_line).blocks == expected
@@ -470,6 +480,7 @@ class TestMarkdownParsing:
                 ],
             ),
         ],
+        ids=[f'ordered_list{i}' for i in range(1, 5)],
     )
     def test_ordered_list_parsing(self, ordered_list, expected):
         assert MarkdownDocument.from_string(ordered_list).blocks == expected
@@ -596,6 +607,7 @@ class TestMarkdownParsing:
                 ],
             ),
         ],
+        ids=[f'unordered_list{i}' for i in range(1, 6)],
     )
     def test_unordered_list_parsing(self, unordered_list, expected):
         assert MarkdownDocument.from_string(unordered_list).blocks == expected
@@ -723,6 +735,7 @@ class TestMarkdownParsing:
                 ],
             ),
         ],
+        ids=[f'quote{i}' for i in range(1, 5)],
     )
     def test_quote_parsing(self, quote, expected):
         assert MarkdownDocument.from_string(quote).blocks == expected
