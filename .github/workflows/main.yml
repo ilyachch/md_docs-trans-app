@@ -38,13 +38,13 @@ jobs:
       - name: Running tests
         run: make coverage
       - name: Running coverage check
-        if: ${{ matrix.python-version == 3.6 }}
+        if: ${{ matrix.python-version == 3.8 }}
         run: make coverage_cmd_report
       - name: Generate coverage report
-        if: ${{ matrix.python-version == 3.6 }}
+        if: ${{ matrix.python-version == 3.8 }}
         run: make coverage_xml_report
       - name: Upload coverage to Codecov
-        if: ${{ matrix.python-version == 3.6 }}
+        if: ${{ matrix.python-version == 3.8 }}
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
