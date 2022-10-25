@@ -33,17 +33,8 @@ check_flake8:
 check: check_black check_mypy check_isort, check_flake8
 
 # Coverage section
-coverage:
-	@$(VENV_BIN)/pytest --cov=$(PROJECT_FOLDER) tests
-
-coverage_html_report:
-	@$(VENV_BIN)/coverage html
-
-coverage_xml_report:
-	@$(VENV_BIN)/coverage xml
-
-coverage_cmd_report:
-	@$(VENV_BIN)/coverage report
+tests:
+	@$(VENV_BIN)/pytest tests
 
 # Releasing
 major_release: bump_major_release commit_version
@@ -70,8 +61,5 @@ release:
 clean:
 	@rm -rf dist
 	@rm -rf *.egg-info
-	@rm -rf ./coverage.xml
-	@rm -rf .mypy_cache
-	@rm -rf .coverage
-	@rm -rf .coverage_html
-	@rm -rf .pytest_cache
+	@rm -rf ./coverage.xml htmlcov .coverage .coverage_html
+	@rm -rf .mypy_cache .pytest_cache

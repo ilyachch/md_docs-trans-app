@@ -1,4 +1,4 @@
-from typing import Any, List, cast, Union, Tuple
+from typing import Any, List, Tuple
 
 from mistune.renderers import BaseRenderer
 

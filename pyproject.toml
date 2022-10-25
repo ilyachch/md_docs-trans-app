@@ -25,7 +25,7 @@ classifiers = [
 ]
 
 [tool.poetry.scripts]
-md-translate = 'md_translate.app:run'
+md-translate = "md_translate.app:run"
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -62,24 +62,28 @@ profile = "black"
 line_length = 99
 src_paths = ["md_translate"]
 
+[tool.pytest.ini_options]
+addopts = """
+    --cov=md_translate
+    --cov-report=term-missing
+    --cov-report=html:.coverage_html
+    --cov-fail-under=80
+"""
+
 [tool.coverage.run]
 source = [
-    'md_translate',
+    "md_translate",
 ]
 omit = [
-    'tests/*',
-    'md_translate/app.py'
+    "tests/*",
+    "md_translate/app.py"
 ]
 
-[tool.coverage.html]
-directory = '.coverage_html'
-
 [tool.coverage.report]
-fail_under = 80
 exclude_lines = [
-    '# pragma: no cover',
-    'raise NotImplementedError',
-    'if TYPE_CHECKING:'
+    "# pragma: no cover",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:"
 ]
 
 [tool.mypy]
@@ -88,11 +92,11 @@ disallow_untyped_defs = true
 ignore_missing_imports = true
 warn_unused_configs = true
 exclude = [
-    'tests',
+    "tests",
 ]
 
 [tool.flake8]
-extend-ignore = ['E501', ]
+extend-ignore = ["E501", ]
 max-complexity = 6
 
 [build-system]
