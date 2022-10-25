@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: [3.8, 3.9, 3.10, 3.11]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
     steps:
       - name: Getting code
         uses: actions/checkout@master
@@ -59,6 +59,8 @@ jobs:
         uses: actions/checkout@master
       - name: Getting Python
         uses: actions/setup-python@master
+        with:
+          python-version: "3.8"
       - name: Cache pip
         uses: actions/cache@v2
         with:
@@ -85,6 +87,8 @@ jobs:
         uses: actions/checkout@master
       - name: Getting Python
         uses: actions/setup-python@master
+        with:
+          python-version: "3.8"
       - name: Cache pip
         uses: actions/cache@v2
         with:
@@ -113,6 +117,8 @@ jobs:
         uses: actions/checkout@master
       - name: Getting Python
         uses: actions/setup-python@master
+        with:
+          python-version: "3.8"
       - name: Cache pip
         uses: actions/cache@v2
         with:
@@ -139,6 +145,8 @@ jobs:
         uses: actions/checkout@master
       - name: Getting Python
         uses: actions/setup-python@master
+        with:
+          python-version: "3.8"
       - name: Check if pyproject is changed
         uses: technote-space/get-diff-action@v1
         id: pyproject_is_changed
