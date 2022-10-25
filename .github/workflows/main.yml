@@ -7,7 +7,7 @@ on:
 jobs:
   test_pr:
     name: Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         python-version: [3.8, 3.9, 3.10, 3.11]
@@ -53,7 +53,7 @@ jobs:
 
   validate_typing:
     name: Validate Typing
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Getting code
         uses: actions/checkout@master
@@ -79,7 +79,7 @@ jobs:
 
   validate_codestyle:
     name: Validate Code Style
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Getting code
         uses: actions/checkout@master
@@ -106,8 +106,8 @@ jobs:
         run: make check_isort
 
   validate_linting:
-    name: Validate Code Style
-    runs-on: ubuntu-latest
+    name: Validate Linting
+    runs-on: ubuntu-20.04
     steps:
       - name: Getting code
         uses: actions/checkout@master
@@ -133,7 +133,7 @@ jobs:
 
   validate_version:
     name: Validate Version
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Getting code
         uses: actions/checkout@master
