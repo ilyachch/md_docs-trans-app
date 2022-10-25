@@ -13,8 +13,8 @@ jobs:
     name: Validate
     runs-on: ubuntu-20.04
     strategy:
+      fail-fast: false
       matrix:
-        fail-fast: false
         validation-command: [ "check_mypy", "check_isort", "check_flake8" ]
 
     steps:
