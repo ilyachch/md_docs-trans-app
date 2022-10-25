@@ -1,0 +1,66 @@
+name: Linting
+
+on:
+  pull_request:
+    branches: master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        validation-command: [ "check_mypy", "check_isort", "check_flake8" ]
+
+    steps:
+      - name: Getting code
+        uses: actions/checkout@master
+      - name: Getting Python
+        uses: actions/setup-python@master
+        with:
+          python-version: "3.8"
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Getting Poetry
+        run: pip install poetry
+      - name: Config Poetry
+        run: |
+          poetry config virtualenvs.create true
+          poetry config virtualenvs.in-project true
+      - name: Installing dependencies
+        run: poetry install
+      - name: Running types checks
+        run: make ${{ matrix.validation-command }}
+
+  validate_version:
+    name: Validate Version
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Getting code
+        uses: actions/checkout@master
+      - name: Getting Python
+        uses: actions/setup-python@master
+        with:
+          python-version: "3.8"
+      - name: Check if pyproject is changed
+        uses: technote-space/get-diff-action@v1
+        id: pyproject_is_changed
+        with:
+          SUFFIX_FILTER: .toml
+      - name: Check if python files are changed
+        uses: technote-space/get-diff-action@v1
+        id: python_files_are_changed
+        with:
+          SUFFIX_FILTER: .py
+      - name: Fail if pyproject is not changed and files are changed
+        if: ${{ steps.pyproject_is_changed.outputs.count != 1 && steps.python_files_are_changed.outputs.count > 0 }}
+        run: exit 1

@@ -1,0 +1,56 @@
+name: Testing
+
+on:
+  pull_request:
+    branches: master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test_pr:
+    name: Tests
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-version: [ "3.8", "3.9", "3.10", "3.11" ]
+    steps:
+      - name: Getting code
+        uses: actions/checkout@master
+      - name: Getting Python
+        uses: actions/setup-python@master
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+      - name: Getting Poetry
+        run: pip install poetry
+      - name: Config Poetry
+        run: |
+          poetry config virtualenvs.create true
+          poetry config virtualenvs.in-project true
+      - name: Installing dependencies
+        run: poetry install
+
+      - name: Running tests
+        run: make coverage
+      - name: Running coverage check
+        if: ${{ matrix.python-version == 3.8 }}
+        run: make coverage_cmd_report
+      - name: Generate coverage report
+        if: ${{ matrix.python-version == 3.8 }}
+        run: make coverage_xml_report
+      - name: Upload coverage to Codecov
+        if: ${{ matrix.python-version == 3.8 }}
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          flags: pull_requests
