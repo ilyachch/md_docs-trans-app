@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.8, 3.9, 3.10, 3.11]
     steps:
       - name: Getting code
         uses: actions/checkout@master
@@ -104,6 +104,32 @@ jobs:
         run: make check_black
       - name: Running imports check
         run: make check_isort
+
+  validate_linting:
+    name: Validate Code Style
+    runs-on: ubuntu-latest
+    steps:
+      - name: Getting code
+        uses: actions/checkout@master
+      - name: Getting Python
+        uses: actions/setup-python@master
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Getting Poetry
+        uses: dschep/install-poetry-action@v1.3
+      - name: Config Poetry
+        run: |
+          poetry config virtualenvs.create true
+          poetry config virtualenvs.in-project true
+      - name: Installing dependencies
+        run: poetry install
+      - name: Running lint checks
+        run: make check_flake8
 
   validate_version:
     name: Validate Version
