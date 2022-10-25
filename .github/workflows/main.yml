@@ -4,13 +4,17 @@ on:
   pull_request:
     branches: master
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test_pr:
     name: Tests
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: [ "3.8", "3.9", "3.10", "3.11" ]
     steps:
       - name: Getting code
         uses: actions/checkout@master
@@ -54,6 +58,10 @@ jobs:
   validate_typing:
     name: Validate Typing
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        validation-command: [ "check_mypy", "check_isort", "check_flake8" ]
+
     steps:
       - name: Getting code
         uses: actions/checkout@master
@@ -77,65 +85,65 @@ jobs:
       - name: Installing dependencies
         run: poetry install
       - name: Running types checks
-        run: make check_mypy
+        run: make ${{ matrix.validation-command }}
 
-  validate_codestyle:
-    name: Validate Code Style
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Getting code
-        uses: actions/checkout@master
-      - name: Getting Python
-        uses: actions/setup-python@master
-        with:
-          python-version: "3.8"
-      - name: Cache pip
-        uses: actions/cache@v2
-        with:
-          path: .venv
-          key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-      - name: Getting Poetry
-        run: pip install poetry
-      - name: Config Poetry
-        run: |
-          poetry config virtualenvs.create true
-          poetry config virtualenvs.in-project true
-      - name: Installing dependencies
-        run: poetry install
-      - name: Running codestyle checks
-        run: make check_black
-      - name: Running imports check
-        run: make check_isort
-
-  validate_linting:
-    name: Validate Linting
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Getting code
-        uses: actions/checkout@master
-      - name: Getting Python
-        uses: actions/setup-python@master
-        with:
-          python-version: "3.8"
-      - name: Cache pip
-        uses: actions/cache@v2
-        with:
-          path: .venv
-          key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-      - name: Getting Poetry
-        run: pip install poetry
-      - name: Config Poetry
-        run: |
-          poetry config virtualenvs.create true
-          poetry config virtualenvs.in-project true
-      - name: Installing dependencies
-        run: poetry install
-      - name: Running lint checks
-        run: make check_flake8
+#  validate_codestyle:
+#    name: Validate Code Style
+#    runs-on: ubuntu-20.04
+#    steps:
+#      - name: Getting code
+#        uses: actions/checkout@master
+#      - name: Getting Python
+#        uses: actions/setup-python@master
+#        with:
+#          python-version: "3.8"
+#      - name: Cache pip
+#        uses: actions/cache@v2
+#        with:
+#          path: .venv
+#          key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}
+#          restore-keys: |
+#            ${{ runner.os }}-pip-
+#      - name: Getting Poetry
+#        run: pip install poetry
+#      - name: Config Poetry
+#        run: |
+#          poetry config virtualenvs.create true
+#          poetry config virtualenvs.in-project true
+#      - name: Installing dependencies
+#        run: poetry install
+#      - name: Running codestyle checks
+#        run: make check_black
+#      - name: Running imports check
+#        run: make check_isort
+#
+#  validate_linting:
+#    name: Validate Linting
+#    runs-on: ubuntu-20.04
+#    steps:
+#      - name: Getting code
+#        uses: actions/checkout@master
+#      - name: Getting Python
+#        uses: actions/setup-python@master
+#        with:
+#          python-version: "3.8"
+#      - name: Cache pip
+#        uses: actions/cache@v2
+#        with:
+#          path: .venv
+#          key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}
+#          restore-keys: |
+#            ${{ runner.os }}-pip-
+#      - name: Getting Poetry
+#        run: pip install poetry
+#      - name: Config Poetry
+#        run: |
+#          poetry config virtualenvs.create true
+#          poetry config virtualenvs.in-project true
+#      - name: Installing dependencies
+#        run: poetry install
+#      - name: Running lint checks
+#        run: make check_flake8
 
   validate_version:
     name: Validate Version
