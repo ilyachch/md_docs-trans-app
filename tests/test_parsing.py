@@ -1,3 +1,5 @@
+from typing import Generator, Tuple
+
 import pytest
 
 from md_translate.document.parser.blocks import (
@@ -20,10 +22,15 @@ from md_translate.document.parser.blocks import (
 from md_translate.document.parser.document import MarkdownDocument
 
 
+def _params_shortener(*params, id_name) -> Generator[Tuple[str, ...], None, None]:
+    for num, param in enumerate(params):
+        yield pytest.param(*param, id=f'{id_name}_{num}')
+
+
 class TestMarkdownParsing:
     @pytest.mark.parametrize(
         'header, expected',
-        [
+        _params_shortener(
             (
                 '# Heading level 1',
                 [HeadingBlock(children=[TextBlock(text='Heading level 1')], level=1)],
@@ -48,15 +55,15 @@ class TestMarkdownParsing:
                 '###### Heading level 6',
                 [HeadingBlock(children=[TextBlock(text='Heading level 6')], level=6)],
             ),
-        ],
-        ids=[f'h{i}' for i in range(1, 7)],
+            id_name='heading',
+        ),
     )
     def test_header_parsing(self, header, expected):
         assert MarkdownDocument.from_string(header).blocks == expected
 
     @pytest.mark.parametrize(
         'paragraph, expected',
-        [
+        _params_shortener(
             (
                 'I really like using Markdown.',
                 [Paragraph(children=[TextBlock(text='I really like using Markdown.')])],
@@ -86,15 +93,15 @@ class TestMarkdownParsing:
                     ),
                 ],
             ),
-        ],
-        ids=[f'p{i}' for i in range(1, 4)],
+            id_name='paragraph',
+        ),
     )
     def test_paragraph_parsing(self, paragraph, expected):
         assert MarkdownDocument.from_string(paragraph).blocks == expected
 
     @pytest.mark.parametrize(
         'line_break, expected',
-        [
+        _params_shortener(
             (
                 'This is the first line.  \nAnd this is the second line.',
                 [
@@ -106,16 +113,16 @@ class TestMarkdownParsing:
                         ]
                     )
                 ],
-            )
-        ],
-        ids=['lb'],
+            ),
+            id_name='line_break',
+        ),
     )
     def test_line_break_parsing(self, line_break, expected):
         assert MarkdownDocument.from_string(line_break).blocks == expected
 
     @pytest.mark.parametrize(
         'bold, expected',
-        [
+        _params_shortener(
             (
                 'I just love **bold text**.',
                 [
@@ -152,15 +159,15 @@ class TestMarkdownParsing:
                     )
                 ],
             ),
-        ],
-        ids=[f'b{i}' for i in range(1, 4)],
+            id_name='bold',
+        ),
     )
     def test_bold_parsing(self, bold, expected):
         assert MarkdownDocument.from_string(bold).blocks == expected
 
     @pytest.mark.parametrize(
         'italic, expected',
-        [
+        _params_shortener(
             (
                 "Italicized text is the *cat's meow*.",
                 [
@@ -219,15 +226,15 @@ class TestMarkdownParsing:
                     )
                 ],
             ),
-        ],
-        ids=[f'i{i}' for i in range(1, 5)],
+            id_name='italic',
+        ),
     )
     def test_italic_parsing(self, italic, expected):
         assert MarkdownDocument.from_string(italic).blocks == expected
 
     @pytest.mark.parametrize(
         'link, expected',
-        [
+        _params_shortener(
             (
                 'My favorite search engine is [Duck Duck Go](https://duckduckgo.com).',
                 [
@@ -244,7 +251,8 @@ class TestMarkdownParsing:
                 ],
             ),
             (
-                'My favorite search engine is [Duck Duck Go](https://duckduckgo.com "The best search engine for privacy").',
+                'My favorite search engine is [Duck Duck Go]'
+                '(https://duckduckgo.com "The best search engine for privacy").',
                 [
                     Paragraph(
                         children=[
@@ -259,15 +267,15 @@ class TestMarkdownParsing:
                     )
                 ],
             ),
-        ],
-        ids=[f'a{i}' for i in range(1, 3)],
+            id_name='link',
+        ),
     )
     def test_link_parsing(self, link, expected):
         assert MarkdownDocument.from_string(link).blocks == expected
 
     @pytest.mark.parametrize(
         'image, expected',
-        [
+        _params_shortener(
             (
                 '![The San Juan Mountains are beautiful!](/assets/images/san-juan-mountains.jpg "San Juan Mountains")',
                 [
@@ -295,15 +303,15 @@ class TestMarkdownParsing:
                     )
                 ],
             ),
-        ],
-        ids=[f'img{i}' for i in range(1, 3)],
+            id_name='image',
+        ),
     )
     def test_images_parsing(self, image, expected):
         assert MarkdownDocument.from_string(image).blocks == expected
 
     @pytest.mark.parametrize(
         'line, expected',
-        [
+        _params_shortener(
             (
                 '---',
                 [
@@ -322,15 +330,15 @@ class TestMarkdownParsing:
                     SeparatorBlock(),
                 ],
             ),
-        ],
-        ids=[f'sep{i}' for i in range(1, 4)],
+            id_name='separator',
+        ),
     )
     def test_separator_parsing(self, line, expected):
         assert MarkdownDocument.from_string(line).blocks == expected
 
     @pytest.mark.parametrize(
         'code, expected',
-        [
+        _params_shortener(
             (
                 '```python\ndef hello_world():\n    print("Hello world!")\n```',
                 [
@@ -347,15 +355,15 @@ class TestMarkdownParsing:
                     ),
                 ],
             ),
-        ],
-        ids=[f'code{i}' for i in range(1, 3)],
+            id_name='code',
+        ),
     )
     def test_code_parsing(self, code, expected):
         assert MarkdownDocument.from_string(code).blocks == expected
 
     @pytest.mark.parametrize(
         'code_line, expected',
-        [
+        _params_shortener(
             (
                 'Use `code` in your Markdown file.',
                 [
@@ -372,15 +380,15 @@ class TestMarkdownParsing:
                 '``Use `code` in your Markdown file.``',
                 [Paragraph(children=[CodeSpanBlock(code='Use `code` in your Markdown file.')])],
             ),
-        ],
-        ids=[f'code_line{i}' for i in range(1, 3)],
+            id_name='code_line',
+        ),
     )
     def test_code_line_parsing(self, code_line, expected):
         assert MarkdownDocument.from_string(code_line).blocks == expected
 
     @pytest.mark.parametrize(
         'ordered_list, expected',
-        [
+        _params_shortener(
             (
                 '1. First item\n2. Second item\n3. Third item\n4. Fourth item',
                 [
@@ -479,15 +487,15 @@ class TestMarkdownParsing:
                     )
                 ],
             ),
-        ],
-        ids=[f'ordered_list{i}' for i in range(1, 5)],
+            id_name='ordered_list',
+        ),
     )
     def test_ordered_list_parsing(self, ordered_list, expected):
         assert MarkdownDocument.from_string(ordered_list).blocks == expected
 
     @pytest.mark.parametrize(
         'unordered_list, expected',
-        [
+        _params_shortener(
             (
                 '- First item\n- Second item\n- Third item\n- Fourth item',
                 [
@@ -606,15 +614,15 @@ class TestMarkdownParsing:
                     )
                 ],
             ),
-        ],
-        ids=[f'unordered_list{i}' for i in range(1, 6)],
+            id_name='unordered_list',
+        ),
     )
     def test_unordered_list_parsing(self, unordered_list, expected):
         assert MarkdownDocument.from_string(unordered_list).blocks == expected
 
     @pytest.mark.parametrize(
         'quote, expected',
-        [
+        _params_shortener(
             (
                 '> Dorothy followed her through many of the beautiful rooms in her castle.',
                 [
@@ -734,8 +742,8 @@ class TestMarkdownParsing:
                     )
                 ],
             ),
-        ],
-        ids=[f'quote{i}' for i in range(1, 5)],
+            id_name='quote',
+        ),
     )
     def test_quote_parsing(self, quote, expected):
         assert MarkdownDocument.from_string(quote).blocks == expected
