@@ -1,7 +1,7 @@
 import json
 import logging
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import TYPE_CHECKING, List, Optional, Union
 
 import mistune
 import pydantic
@@ -9,6 +9,9 @@ import pydantic
 from md_translate.document.parser import TypedParser
 
 from .blocks import BaseBlock, NewlineBlock
+
+if TYPE_CHECKING:
+    from md_translate.translators._base import TranslationProvider
 
 logger = logging.getLogger(__name__)
 
@@ -18,8 +21,34 @@ class MarkdownDocument(pydantic.BaseModel):
 
     blocks: List[BaseBlock] = pydantic.Field(default_factory=list)
 
+    def write(self, *, new_file: bool = False, translated: bool = True) -> None:
+        if not self.source:  # pragma: no cover
+            raise ValueError('Only documents with source can be written')
+        file_to_write = self.source if not new_file else self.__get_new_file_path(self.source)
+        if translated:
+            file_to_write.write_text(self.render_translated())
+        else:
+            file_to_write.write_text(self.render())
+
     def render(self) -> str:
         return '\n\n'.join(map(str, self.blocks))
+
+    def render_translated(self) -> str:
+        rendered_blocks = []
+        for block in self.blocks:
+            rendered_blocks.append(str(block))
+            if block.translated_data:
+                rendered_blocks.append(block.translated_data)
+        return '\n\n'.join(rendered_blocks)
+
+    def translate(self, translator: 'TranslationProvider', from_lang: str, to_lang: str) -> None:
+        for block in self.blocks:
+            translated_data = translator.translate(
+                from_language=from_lang, to_language=to_lang, text=str(block)
+            )
+            block.translated_data = translated_data
+            self.cache()
+            logger.info(f'Translated block: {block}')
 
     @classmethod
     def from_file(
@@ -36,29 +65,24 @@ class MarkdownDocument(pydantic.BaseModel):
         file_content = target_file.read_text()
         return cls(blocks=cls.__parse_blocks(file_content), source=target_file)
 
-    @staticmethod
-    def __get_file_path(path: Union[str, Path]) -> Path:
-        if isinstance(path, str):
-            return Path(path)
-        return path
-
     @classmethod
     def from_string(cls, text: str) -> 'MarkdownDocument':
         return cls(
             blocks=cls.__parse_blocks(text),
         )
 
-    @staticmethod
-    def __parse_blocks(text: str) -> List[BaseBlock]:
-        markdown_parser = mistune.create_markdown(renderer=TypedParser())
-        data = [b for b in markdown_parser(text) if b and not isinstance(b, NewlineBlock)]
-        return data
-
     def cache(self) -> None:
         if not self.source:
-            return
+            return  # pragma: no cover
         dump_file = self.__get_dump_file_path(self.source)
         dump_file.write_text(self._dump_data())
+
+    @classmethod
+    def restore(cls, source: Path) -> 'MarkdownDocument':
+        dump_file = cls.__get_dump_file_path(source)
+        if not dump_file.exists():
+            raise FileNotFoundError('Temp file not found: %s', str(dump_file))
+        return cls(blocks=cls._load_data(dump_file.read_text()), source=source)
 
     def _dump_data(self) -> str:
         blocks_dump = [block.dump() for block in self.blocks]
@@ -68,17 +92,25 @@ class MarkdownDocument(pydantic.BaseModel):
         }
         return json.dumps(clean_data)
 
-    @classmethod
-    def restore(cls, source: Path) -> 'MarkdownDocument':
-        dump_file = cls.__get_dump_file_path(source)
-        if not dump_file.exists():
-            raise FileNotFoundError('Temp file not found: %s', str(dump_file))
-        return cls(blocks=cls._load_data(dump_file.read_text()), source=source)
-
     @staticmethod
     def _load_data(cache_data: str) -> List[BaseBlock]:
         content = json.loads(cache_data)
         return [BaseBlock.restore(block_data) for block_data in content['blocks']]
+
+    @staticmethod
+    def __get_file_path(path: Union[str, Path]) -> Path:
+        if isinstance(path, str):
+            return Path(path)
+        return path
+
+    def __get_new_file_path(self, path: Path) -> Path:
+        return path.with_name(f'{path.stem}_translated{path.suffix}')
+
+    @staticmethod
+    def __parse_blocks(text: str) -> List[BaseBlock]:
+        markdown_parser = mistune.create_markdown(renderer=TypedParser())
+        data = [b for b in markdown_parser(text) if b and not isinstance(b, NewlineBlock)]
+        return data
 
     @staticmethod
     def __get_dump_file_path(source: Path) -> Path:

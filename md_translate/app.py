@@ -57,7 +57,9 @@ def main(
     for file_to_process in files_to_process:
         click.echo('Processing file: {}'.format(file_to_process.name))
         document = MarkdownDocument.from_file(file_to_process, ignore_cache=clear)
-        document.translate(translation_provider, from_lang, to_lang, new_file=new_file)  # type: ignore
+        with translation_provider as provider:
+            document.translate(provider, from_lang, to_lang)
+        document.write(new_file=new_file)
         click.echo('Processed file: {}'.format(file_to_process.name))
     click.echo('Done')
     exit(0)

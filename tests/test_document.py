@@ -6,19 +6,36 @@ import pytest
 from md_translate.document.document import MarkdownDocument
 
 
-@pytest.fixture()
-def test_document(tmp_path):
-    document_content = """
+class MockTranslator:
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args, **kwargs):
+        pass
+
+    def translate(self, from_language, to_language, text):
+        return f'{text}. translated'
+
+
+TEST_DOCUMENT = '''
 # Test document
 
 This is a test document.
-"""
+'''
+
+
+@pytest.fixture()
+def test_document(tmp_path):
     temp_document = tmp_path / 'test.md'
-    temp_document.write_text(document_content)
+    temp_document.write_text(TEST_DOCUMENT)
     try:
         yield temp_document
     finally:
         temp_document.unlink()
+
 
 @pytest.fixture()
 def test_document_with_cache(test_document):
@@ -28,7 +45,6 @@ def test_document_with_cache(test_document):
         yield test_document
     finally:
         (test_document.parent / f'{test_document.name}.tmp').unlink()
-
 
 
 class TestMarkdownDocument:
@@ -93,3 +109,44 @@ class TestMarkdownDocument:
         document = MarkdownDocument.from_file(test_document_with_cache)
         document_restored = MarkdownDocument.restore(test_document_with_cache)
         assert document_restored == document
+
+    def test_translate(self, test_document):
+        document = MarkdownDocument.from_file(test_document)
+        document.translate(MockTranslator(), 'en', 'ru')  # type: ignore
+        assert document.render_translated() == (
+            "# Test document\n\n"
+            "# Test document. translated\n\n"
+            "This is a test document.\n\n"
+            "This is a test document.. translated"
+        )
+        assert Path(test_document.parent / f'{test_document.name}.tmp').exists()
+
+    def test_write(self, test_document):
+        document = MarkdownDocument.from_file(test_document)
+        document.translate(MockTranslator(), 'en', 'ru')
+        document.write(translated=False)
+        assert test_document.read_text() == TEST_DOCUMENT.strip()
+
+    def test_write_translated(self, test_document):
+        document = MarkdownDocument.from_file(test_document)
+        document.translate(MockTranslator(), 'en', 'ru')
+        document.write()
+        assert test_document.read_text() == (
+            "# Test document\n\n"
+            "# Test document. translated\n\n"
+            "This is a test document.\n\n"
+            "This is a test document.. translated"
+        )
+
+    def test_write_new_file(self, test_document):
+        document = MarkdownDocument.from_file(test_document)
+        document.translate(MockTranslator(), 'en', 'ru')
+        document.write(new_file=True)
+        new_file = test_document.parent / f'{test_document.stem}_translated{test_document.suffix}'
+        assert new_file.exists()
+        assert new_file.read_text() == (
+            '# Test document\n\n'
+            '# Test document. translated\n\n'
+            'This is a test document.\n\n'
+            'This is a test document.. translated'
+        )

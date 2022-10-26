@@ -4,11 +4,13 @@ import pydantic
 
 
 class BaseBlock(pydantic.BaseModel):
+    translated_data: Optional[str] = None
+
     def __str__(self) -> str:
         raise NotImplementedError()
 
     def dump(self) -> Dict:
-        data = self.dict()
+        data = self.dict(exclude_unset=True)
         data['block_type'] = self.__class__.__name__
         return data
 
