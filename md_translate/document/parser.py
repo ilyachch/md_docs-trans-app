@@ -2,7 +2,7 @@ from typing import Any, List, Tuple
 
 from mistune.renderers import BaseRenderer
 
-from . import blocks
+from md_translate.document import blocks
 
 
 class TypedParser(BaseRenderer):

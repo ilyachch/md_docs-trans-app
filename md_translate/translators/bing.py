@@ -1,9 +1,9 @@
 from typing import Any
 
-from md_translate.providers._base import TranslationProvider
+from md_translate.translators._base import TranslationProvider
 
 
-class BingTranslateProvider(TranslationProvider):
+class BingTranslateProvider(TranslationProvider):  # pragma: no cover
     HOST = 'https://www.bing.com/translator/'
 
     def translate(self, from_language: str, to_language: str, text: str) -> str:

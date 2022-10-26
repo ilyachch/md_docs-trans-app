@@ -2,7 +2,7 @@ from typing import Generator, Tuple
 
 import pytest
 
-from md_translate.document.parser.blocks import (
+from md_translate.document.blocks import (
     BlockQuote,
     CodeBlock,
     CodeSpanBlock,
@@ -18,8 +18,10 @@ from md_translate.document.parser.blocks import (
     SeparatorBlock,
     StrongTextBlock,
     TextBlock,
+    InlineHtmlBlock,
+    HtmlBlock,
 )
-from md_translate.document.parser.document import MarkdownDocument
+from md_translate.document.document import MarkdownDocument
 
 
 def _params_shortener(*params, id_name) -> Generator[Tuple[str, ...], None, None]:
@@ -747,3 +749,38 @@ class TestMarkdownParsing:
     )
     def test_quote_parsing(self, quote, expected):
         assert MarkdownDocument.from_string(quote).blocks == expected
+
+    @pytest.mark.parametrize(
+        'text, expected',
+        _params_shortener(
+            (
+                'This is a paragraph with <hr>',
+                [
+                    Paragraph(
+                        children=[
+                            TextBlock(text='This is a paragraph with '),
+                            InlineHtmlBlock(code='<hr>'),
+                        ]
+                    )
+                ],
+            ),
+            id_name='inline_html',
+        ),
+    )
+    def test_inline_html(self, text, expected):
+        assert MarkdownDocument.from_string(text).blocks == expected
+
+    @pytest.mark.parametrize(
+        'text, expected',
+        _params_shortener(
+            (
+                '<div>\n\t<p>This is a paragraph with <hr></p>\n</div>',
+                [
+                    HtmlBlock(code='<div>\n    <p>This is a paragraph with <hr></p>\n</div>'),
+                ],
+            ),
+            id_name='html_code',
+        ),
+    )
+    def test_html_code(self, text, expected):
+        assert MarkdownDocument.from_string(text).blocks == expected

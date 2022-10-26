@@ -1,6 +1,6 @@
 TRANSLATE_API_KEY
-md_translate/providers/bin
-!md_translate/providers/bin/.gitkeep
+md_translate/translators/bin
+!md_translate/translators/bin/.gitkeep
 
 # IDE`s
 .vscode

@@ -3,8 +3,8 @@ from typing import List, Union
 
 import click
 
-from md_translate.document.parser.document import MarkdownDocument
-from md_translate.providers import TRANSLATOR_BY_SERVICE_NAME
+from md_translate.document.document import MarkdownDocument
+from md_translate.translators import TRANSLATOR_BY_SERVICE_NAME
 
 
 @click.command()
@@ -56,8 +56,8 @@ def main(
     translation_provider = TRANSLATOR_BY_SERVICE_NAME[service]()
     for file_to_process in files_to_process:
         click.echo('Processing file: {}'.format(file_to_process.name))
-        document = MarkdownDocument.from_file(file_to_process, force_new=clear)
-        document.translate(translation_provider, from_lang, to_lang, new_file=new_file)
+        document = MarkdownDocument.from_file(file_to_process, ignore_cache=clear)
+        document.translate(translation_provider, from_lang, to_lang, new_file=new_file)  # type: ignore
         click.echo('Processed file: {}'.format(file_to_process.name))
     click.echo('Done')
     exit(0)

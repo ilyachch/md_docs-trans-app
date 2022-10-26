@@ -1,10 +1,34 @@
 import json
 from contextlib import nullcontext as does_not_raise
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
-from md_translate.document.parser.document import MarkdownDocument
+from md_translate.document.document import MarkdownDocument
+
+
+@pytest.fixture()
+def test_document(tmp_path):
+    document_content = """
+# Test document
+
+This is a test document.
+"""
+    temp_document = tmp_path / 'test.md'
+    temp_document.write_text(document_content)
+    try:
+        yield temp_document
+    finally:
+        temp_document.unlink()
+
+@pytest.fixture()
+def test_document_with_cache(test_document):
+    document = MarkdownDocument.from_file(test_document)
+    document.cache()
+    try:
+        yield test_document
+    finally:
+        (test_document.parent / f'{test_document.name}.tmp').unlink()
+
 
 
 class TestMarkdownDocument:
@@ -21,20 +45,9 @@ class TestMarkdownDocument:
         with expected_result:
             MarkdownDocument.from_file(file_path)
 
-    @pytest.mark.parametrize(
-        'data, expected_result',
-        [
-            ('# Test', does_not_raise()),
-            ('', pytest.raises(ValueError)),
-        ],
-    )
-    def test_loading_string(self, data, expected_result):
-        with expected_result:
-            MarkdownDocument.from_string(data)
-
     def test_dump(self):
         document = MarkdownDocument.from_file('tests/assets/simple_document.md')
-        assert json.loads(document.dump()) == {
+        assert json.loads(document._dump_data()) == {
             'blocks': [
                 {
                     'block_type': 'HeadingBlock',
@@ -68,6 +81,15 @@ class TestMarkdownDocument:
                 'source': 'tests/assets/simple_document.md',
             }
         )
-        document = MarkdownDocument(blocks=[], allow_empty=True)
-        document.load(document_dump)
+        document = MarkdownDocument(blocks=MarkdownDocument._load_data(document_dump))
         assert document.render() == Path('tests/assets/simple_document.md').read_text()
+
+    def test_cache(self, test_document):
+        document = MarkdownDocument.from_file(test_document)
+        document.cache()
+        assert (test_document.parent / f'{test_document.name}.tmp').exists()
+
+    def test_restore(self, test_document_with_cache):
+        document = MarkdownDocument.from_file(test_document_with_cache)
+        document_restored = MarkdownDocument.restore(test_document_with_cache)
+        assert document_restored == document

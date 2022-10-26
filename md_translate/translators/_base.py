@@ -13,7 +13,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 current_dir = pathlib.Path(__file__).parent.absolute()
 
 
-class TranslationProvider(abc.ABC):
+class TranslationProvider(abc.ABC):  # pragma: no cover
     DEFAULT_DRIVER_NAME = 'chromedriver'
 
     HEADLESS = False

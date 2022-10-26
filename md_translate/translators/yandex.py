@@ -1,7 +1,7 @@
-from md_translate.providers._base import TranslationProvider
+from md_translate.translators._base import TranslationProvider
 
 
-class YandexTranslateProvider(TranslationProvider):
+class YandexTranslateProvider(TranslationProvider):  # pragma: no cover
     HOST = 'https://translate.yandex.com/'
 
     COOKIES_ACCEPT_BTN_TEXT = 'Accept'

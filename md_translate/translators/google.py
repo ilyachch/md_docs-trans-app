@@ -1,7 +1,7 @@
 from ._base import TranslationProvider
 
 
-class GoogleTranslateProvider(TranslationProvider):
+class GoogleTranslateProvider(TranslationProvider):  # pragma: no cover
     HOST = 'https://translate.google.com/'
 
     def translate(self, from_language: str, to_language: str, text: str) -> str:

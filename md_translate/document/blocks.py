@@ -16,10 +16,10 @@ class BaseBlock(pydantic.BaseModel):
     def restore(cls, values: Dict[str, Any]) -> 'BaseBlock':
         block_type_name = values.pop('block_type')
         if not block_type_name:
-            raise ValueError('Unknown data. No block type found')
+            raise ValueError('Unknown data. No block type found')  # pragma: no cover
         block_type = blocks_registry.get(block_type_name)
         if not block_type:
-            raise ValueError(f'Unknown block type: {block_type_name}')
+            raise ValueError(f'Unknown block type: {block_type_name}')  # pragma: no cover
         children = values.get('children')
         if children:
             parsed_children = []
@@ -54,7 +54,7 @@ class Container(Generic[T], BaseBlock):
 class NestedContainer(Generic[T], Container[T]):
     nested_children: List[T] = pydantic.Field(default_factory=list)
 
-    def __str__(self) -> str:
+    def __str__(self) -> str:  # pragma: no cover
         return ''.join(map(str, self.nested_children))
 
 
@@ -90,7 +90,8 @@ class LinkBlock(Container[BaseBlock]):
     title: Optional[str] = None
 
     def __str__(self) -> str:
-        return f'[{self.title or super().__str__()}]({self.url})'
+        title = f' "{self.title}"' if self.title else ''
+        return f'[{super().__str__()}]({self.url}{title})'
 
 
 @register
@@ -193,7 +194,7 @@ class LineBreakBlock(BaseBlock):
 @register
 class InlineHtmlBlock(HtmlBlock):
     def __str__(self) -> str:
-        return f'`{self.code}`'
+        return f'{self.code}'
 
 
 @register

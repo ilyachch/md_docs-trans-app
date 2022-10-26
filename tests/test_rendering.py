@@ -1,6 +1,6 @@
 import pytest
 
-from md_translate.document.parser.document import MarkdownDocument
+from md_translate.document.document import MarkdownDocument
 
 HEADER_1 = r'# Heading level 1'
 
@@ -18,8 +18,7 @@ PARAGRAPH = r'''I really like using Markdown.
 
 I think I'll use it to format all of my documents from now on.'''
 
-NEW_LINE = r'''This is the first line.
-And this is the second line.'''
+NEW_LINE = 'This is the first line.  \nAnd this is the second line.'
 
 BOLD_TEXT = 'I just love **bold text**.'
 
@@ -60,6 +59,20 @@ IMAGE_LINK_WITHOUT_TITLE = (
     r'![The San Juan Mountains are beautiful!](/assets/images/san-juan-mountains.jpg)'
 )
 
+LINK_WITH_TITLE = r'[Visit our HTML tutorial!](/tutorials/html/ "HTML Tutorial")'
+
+LINK_WITHOUT_TITLE = r'[Visit our HTML tutorial!](/tutorials/html/)'
+
+SEPARATOR = r'---'
+
+INLINE_HTML = r'<p>Raw HTML is not parsed.</p>'
+
+MIXED_INLINE_HTML = 'This is a paragraph with <hr>'
+
+HTML_BLOCK = r'<div class="footer">\n    &copy; 2004 Foo Corporation\n</div>'
+
+CODE_SPAN = r'Use the `printf()` function.'
+
 MARKDOWN_DOCUMENTS = [
     (HEADER_1, 'HEADER_1'),
     (HEADER_2, 'HEADER_2'),
@@ -79,6 +92,13 @@ MARKDOWN_DOCUMENTS = [
     (LIST_WITH_NESTED_QUOTE, 'LIST_WITH_NESTED_QUOTE'),
     (IMAGE_LINK_WITH_TITLE, 'IMAGE_LINK_WITH_TITLE'),
     (IMAGE_LINK_WITHOUT_TITLE, 'IMAGE_LINK_WITHOUT_TITLE'),
+    (LINK_WITH_TITLE, 'LINK_WITH_TITLE'),
+    (LINK_WITHOUT_TITLE, 'LINK_WITHOUT_TITLE'),
+    (SEPARATOR, 'SEPARATOR'),
+    (INLINE_HTML, 'INLINE_HTML'),
+    (MIXED_INLINE_HTML, 'MIXED_INLINE_HTML'),
+    (HTML_BLOCK, 'HTML_BLOCK'),
+    (CODE_SPAN, 'CODE_SPAN'),
 ]
 
 
