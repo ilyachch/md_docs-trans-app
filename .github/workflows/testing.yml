@@ -3,6 +3,10 @@ name: Testing
 on:
   pull_request:
     branches: master
+    paths:
+      - '**/*.py'
+      - 'pyproject.toml'
+      - 'poetry.lock'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
