@@ -15,8 +15,7 @@ jobs:
     steps:
       - name: Getting code
         uses: actions/checkout@master
-        with:
-          fetch-depth: 0
+      - run: git fetch master
       - name: Check version is changed
         run: |
           if ! git diff master HEAD -- pyproject.toml | grep -E "^[-+]version"; then
