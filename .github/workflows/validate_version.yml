@@ -38,8 +38,5 @@ jobs:
             exit 1
           fi
       - name: Check new version is greater than old version
-        run: |
-          if [[ ${{ steps.get_new_version.outputs.version }} <= ${{ steps.get_old_version.outputs.version }} ]]; then
-            echo "New version is not greater than old version"
-            exit 1
-          fi
+        if: ${{ steps.get_new_version.outputs.version <= steps.get_old_version.outputs.version }}
+        run: ${{ failure() }}
