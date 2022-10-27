@@ -14,8 +14,9 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Getting code
-        uses: actions/checkout@master
-      - run: git fetch origin master
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Check version is changed
         run: |
           if ! git diff master HEAD -- pyproject.toml | grep -E "^[-+]version"; then
