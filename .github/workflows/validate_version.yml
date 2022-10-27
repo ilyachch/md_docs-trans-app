@@ -39,4 +39,4 @@ jobs:
           fi
       - name: Check new version is greater than old version
         if: ${{ steps.get_new_version.outputs.version <= steps.get_old_version.outputs.version }}
-        run: ${{ failure() }}
+        run: exit 1
