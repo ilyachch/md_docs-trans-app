@@ -15,10 +15,8 @@ jobs:
     steps:
       - name: Getting code
         uses: actions/checkout@master
-      - name: Getting Python
-        uses: actions/setup-python@master
         with:
-          python-version: "3.8"
+          fetch-depth: 0
       - name: Check version is changed
         run: |
           if ! git diff master HEAD -- pyproject.toml | grep -E "^[-+]version"; then
