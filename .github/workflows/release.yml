@@ -16,7 +16,7 @@ jobs:
       - name: Getting code
         uses: actions/checkout@master
       - name: Getting Python
-        uses: actions/setup-python@master
+        uses: actions/setup-python@v4
       - name: Cache pip
         uses: actions/cache@v2
         with:
