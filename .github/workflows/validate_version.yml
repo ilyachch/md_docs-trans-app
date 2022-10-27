@@ -21,7 +21,7 @@ jobs:
           python-version: "3.8"
       - name: Check version is changed
         run: |
-          if ! git diff master HEAD pyproject.toml | grep -E "^[-+]version"; then
+          if ! git diff master HEAD -- pyproject.toml | grep -E "^[-+]version"; then
             echo "Version is not changed"
             exit 1
           fi
