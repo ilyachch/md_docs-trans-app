@@ -6,6 +6,12 @@ import pydantic
 class BaseBlock(pydantic.BaseModel):
     translated_data: Optional[str] = None
 
+    TRANSLATABLE: ClassVar[bool] = True
+
+    @property
+    def should_be_translated(self) -> bool:
+        return self.TRANSLATABLE and self.translated_data is None
+
     def __str__(self) -> str:
         raise NotImplementedError()
 
@@ -117,6 +123,8 @@ class HeadingBlock(Container[BaseBlock]):
 
 @register
 class SeparatorBlock(BaseBlock):
+    TRANSLATABLE = False
+
     def __str__(self) -> str:
         return '---'
 
@@ -131,6 +139,7 @@ class CodeSpanBlock(BaseBlock):
 
 @register
 class CodeBlock(BaseBlock):
+    TRANSLATABLE = False
     code: str
     language: Optional[str] = None
 
@@ -145,6 +154,7 @@ class CodeBlock(BaseBlock):
 
 @register
 class HtmlBlock(BaseBlock):
+    TRANSLATABLE = False
     code: str
 
     def __str__(self) -> str:

@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from typing import List, Union
 
@@ -5,6 +6,8 @@ import click
 
 from md_translate.document.document import MarkdownDocument
 from md_translate.translators import TRANSLATOR_BY_SERVICE_NAME
+
+logger = logging.getLogger(__name__)
 
 
 @click.command()
@@ -39,6 +42,9 @@ from md_translate.translators import TRANSLATOR_BY_SERVICE_NAME
     help='Create new file with translated content',
 )
 @click.option('--clear', is_flag=True, help='Start from scratch.')
+@click.option('--save-temp-on-complete', is_flag=True, help='Save temp files on complete.')
+@click.option('--overwrite', is_flag=True, help='Overwrite existing files.')
+@click.option('-v', '--verbose', count=True)
 def main(
     path: Union[Path, List[Path]],
     from_lang: str,
@@ -46,7 +52,11 @@ def main(
     service: str,
     new_file: bool,
     clear: bool,
+    save_temp_on_complete: bool,
+    overwrite: bool,
+    verbose: int,
 ) -> None:
+    _set_logging_level(verbose)
     if not isinstance(path, list):
         path = [
             path,
@@ -57,12 +67,24 @@ def main(
     for file_to_process in files_to_process:
         click.echo('Processing file: {}'.format(file_to_process.name))
         document = MarkdownDocument.from_file(file_to_process, ignore_cache=clear)
+        if not document.should_be_translated(new_file=new_file, overwrite=overwrite):
+            logging.info('Skipping file: %s. Already translated', file_to_process.name)
+            continue
         with translation_provider as provider:
             document.translate(provider, from_lang, to_lang)
-        document.write(new_file=new_file)
+        document.write(new_file=new_file, save_temp_on_complete=save_temp_on_complete)
         click.echo('Processed file: {}'.format(file_to_process.name))
     click.echo('Done')
     exit(0)
+
+
+def _set_logging_level(verbose: int) -> None:
+    if verbose == 0:
+        logging.basicConfig(level=logging.WARNING)
+    elif verbose == 1:
+        logging.basicConfig(level=logging.INFO)
+    else:
+        logging.basicConfig(level=logging.DEBUG)
 
 
 def _get_files_to_process(path: List[Path]) -> List[Path]:

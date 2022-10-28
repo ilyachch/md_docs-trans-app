@@ -21,12 +21,21 @@ class MarkdownDocument(pydantic.BaseModel):
 
     blocks: List[BaseBlock] = pydantic.Field(default_factory=list)
 
-    def write(self, *, new_file: bool = False, translated: bool = True) -> None:
+    def write(
+        self,
+        *,
+        new_file: bool = False,
+        translated: bool = True,
+        save_temp_on_complete: bool = False,
+    ) -> None:
         if not self.source:  # pragma: no cover
             raise ValueError('Only documents with source can be written')
         file_to_write = self.source if not new_file else self.__get_new_file_path(self.source)
         if translated:
             file_to_write.write_text(self.render_translated())
+            if not save_temp_on_complete:
+                temp_file = self.__get_dump_file_path(self.source)
+                temp_file.unlink(missing_ok=True)
         else:
             file_to_write.write_text(self.render())
 
@@ -42,13 +51,24 @@ class MarkdownDocument(pydantic.BaseModel):
         return '\n\n'.join(rendered_blocks)
 
     def translate(self, translator: 'TranslationProvider', from_lang: str, to_lang: str) -> None:
-        for block in self.blocks:
+        blocks_to_translate = [block for block in self.blocks if block.should_be_translated]
+        logger.info('Found %s blocks to translate', len(blocks_to_translate))
+        for number, block in enumerate(blocks_to_translate, start=1):
             translated_data = translator.translate(
                 from_language=from_lang, to_language=to_lang, text=str(block)
             )
             block.translated_data = translated_data
             self.cache()
-            logger.info(f'Translated block: {block}')
+            logger.info('Translated block %s of %s', number, len(blocks_to_translate))
+            logger.debug(f'Translated block: {block}')
+
+    def should_be_translated(self, new_file: bool = False, overwrite: bool = False) -> bool:
+        if overwrite:
+            return True
+        if not self.source:
+            return False
+        target_file = self.source if not new_file else self.__get_new_file_path(self.source)
+        return not target_file.exists()
 
     @classmethod
     def from_file(

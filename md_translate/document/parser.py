@@ -81,6 +81,8 @@ class TypedParser(BaseRenderer):
         self, children: Tuple[List[blocks.BaseBlock], blocks.BaseBlock], level: int = 1
     ) -> blocks.ListItemBlock:
         base_children: List[blocks.BaseBlock] = children[0]
+        if not isinstance(base_children, list):
+            base_children = [base_children]
         nested_children: List[blocks.BaseBlock] = list(children[1:]) if len(children) > 1 else []
         return blocks.ListItemBlock(
             children=base_children, nested_children=nested_children, level=level
