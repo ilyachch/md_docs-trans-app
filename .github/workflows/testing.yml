@@ -22,27 +22,29 @@ jobs:
         python-version: [ "3.8", "3.9", "3.10", "3.11" ]
     steps:
       - name: Getting code
-        uses: actions/checkout@master
+        uses: actions/checkout@v3
       - name: Getting Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
-
+          python-version: "3.8"
+      - name: Load cached poetry
+        uses: actions/cache@v3
+        with:
+          path: ~/.local
+          key: ${{ runner.os }}-poetry-${{ steps.setup-python.outputs.python-version }}
       - name: Cache pip
         uses: actions/cache@v3
         with:
           path: .venv
-          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+          key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}-${{ steps.setup-python.outputs.python-version }}
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
+
       - name: Installing dependencies
         run: poetry install
-
       - name: Running tests
         run: make tests

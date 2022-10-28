@@ -20,21 +20,23 @@ jobs:
       fail-fast: false
       matrix:
         validation-command: [ "check_mypy", "check_isort", "check_flake8" ]
-
     steps:
       - name: Getting code
-        uses: actions/checkout@master
+        uses: actions/checkout@v3
       - name: Getting Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.8"
+      - name: Load cached poetry
+        uses: actions/cache@v3
+        with:
+          path: ~/.local
+          key: ${{ runner.os }}-poetry-${{ steps.setup-python.outputs.python-version }}
       - name: Cache pip
         uses: actions/cache@v3
         with:
           path: .venv
-          key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}-${{ steps.setup-python.outputs.python-version }}
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
