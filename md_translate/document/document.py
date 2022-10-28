@@ -63,10 +63,10 @@ class MarkdownDocument(pydantic.BaseModel):
             logger.debug(f'Translated block: {block}')
 
     def should_be_translated(self, new_file: bool = False, overwrite: bool = False) -> bool:
-        if overwrite:
-            return True
         if not self.source:
             return False
+        if overwrite:
+            return True
         target_file = self.source if not new_file else self.__get_new_file_path(self.source)
         return not target_file.exists()
 

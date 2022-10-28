@@ -14,37 +14,59 @@ logger = logging.getLogger(__name__)
 @click.argument(
     'path',
     type=click.Path(exists=True, path_type=Path),
-    # help='Path to folder or file to process.',
     required=True,
 )
 @click.option(
+    '-F',
     '--from-lang',
     type=click.STRING,
     help='Source language code',
     required=True,
 )
 @click.option(
+    '-T',
     '--to-lang',
     type=click.STRING,
     help='Target language code',
     required=True,
 )
 @click.option(
+    '-P',
     '--service',
     type=click.Choice(list(TRANSLATOR_BY_SERVICE_NAME.keys())),
     help='Translating service',
     required=True,
 )
 @click.option(
+    '-N',
     '--new-file',
     is_flag=True,
     default=False,
     help='Create new file with translated content',
 )
-@click.option('--clear', is_flag=True, help='Start from scratch.')
-@click.option('--save-temp-on-complete', is_flag=True, help='Save temp files on complete.')
-@click.option('--overwrite', is_flag=True, help='Overwrite existing files.')
-@click.option('-v', '--verbose', count=True)
+@click.option(
+    '-I',
+    '--ignore-cache',
+    is_flag=True,
+    help='Ignore cache',
+)
+@click.option(
+    '-S',
+    '--save-temp-on-complete',
+    is_flag=True,
+    help='Save temp files on complete.',
+)
+@click.option(
+    '-O',
+    '--overwrite',
+    is_flag=True,
+    help='Overwrite existing files.',
+)
+@click.option(
+    '-v',
+    '--verbose',
+    count=True,
+)
 def main(
     path: Union[Path, List[Path]],
     from_lang: str,
@@ -62,16 +84,22 @@ def main(
             path,
         ]
     files_to_process = _get_files_to_process(path)
-
+    logging.info('Found %s files to process', len(files_to_process))
+    logging.debug('Files to process: %s', files_to_process)
     translation_provider = TRANSLATOR_BY_SERVICE_NAME[service]()
     for file_to_process in files_to_process:
-        click.echo('Processing file: {}'.format(file_to_process.name))
         document = MarkdownDocument.from_file(file_to_process, ignore_cache=clear)
+        click.echo('Processing file: {}'.format(file_to_process.name))
         if not document.should_be_translated(new_file=new_file, overwrite=overwrite):
             logging.info('Skipping file: %s. Already translated', file_to_process.name)
             continue
         with translation_provider as provider:
-            document.translate(provider, from_lang, to_lang)
+            try:
+                document.translate(provider, from_lang, to_lang)
+            except Exception as e:
+                logging.error('Error while translating file: %s', file_to_process.name)
+                logging.exception(e)
+                continue
         document.write(new_file=new_file, save_temp_on_complete=save_temp_on_complete)
         click.echo('Processed file: {}'.format(file_to_process.name))
     click.echo('Done')
