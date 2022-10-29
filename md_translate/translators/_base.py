@@ -13,9 +13,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 current_dir = pathlib.Path(__file__).parent.absolute()
 
 
-class TranslationProvider(abc.ABC):  # pragma: no cover
-    DEFAULT_DRIVER_NAME = 'chromedriver'
-
+class TranslationProvider(metaclass=abc.ABCMeta):  # pragma: no cover
     HEADLESS = False
 
     WEBDRIVER_WAIT = WebDriverWait
@@ -27,10 +25,12 @@ class TranslationProvider(abc.ABC):  # pragma: no cover
 
     ANTISPAM_TIMEOUT = 60 * 10  # 10 minutes
 
-    def __init__(self, host: Optional[str] = None) -> None:
+    def __init__(
+        self, webdriver_path: Optional[pathlib.Path] = None, host: Optional[str] = None
+    ) -> None:
         self._session = requests.Session()
-        self._selected_driver = self.DEFAULT_DRIVER_NAME
         self._host = host or self.HOST
+        self._webdriver_path = webdriver_path
         if self._host is None:
             raise ValueError('Host is not defined')
 
@@ -45,9 +45,13 @@ class TranslationProvider(abc.ABC):  # pragma: no cover
                 'Safari/537.36'
             )
 
-        self._driver = webdriver.Chrome(
-            executable_path=str(current_dir / 'bin' / self._selected_driver), options=options
-        )
+        if self._webdriver_path:
+            self._driver = webdriver.Chrome(
+                executable_path=str(self._webdriver_path), options=options
+            )
+        else:
+            self._driver = webdriver.Chrome(options=options)
+
         return self
 
     def __exit__(self, *args: Any, **kwargs: Any) -> None:
@@ -77,10 +81,6 @@ class TranslationProvider(abc.ABC):  # pragma: no cover
         return '\n'.join(paragraphs)
 
     def check_for_antispam(self) -> bool:
-        """
-        Check if antispam is present on the page. Should return True if antispam is present.
-        """
-
         raise NotImplementedError()
 
     def wait_for_antispam(self) -> None:

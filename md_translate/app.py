@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import List, Union
+from typing import List, Optional, Union
 
 import click
 
@@ -38,6 +38,18 @@ logger = logging.getLogger(__name__)
     required=True,
 )
 @click.option(
+    '--service-host',
+    type=click.STRING,
+    help='Translating service host override',
+)
+@click.option(
+    '-W',
+    '--webdriver',
+    type=click.Path(exists=True, path_type=Path),
+    help='Path to webdriver',
+    envvar='WEBDRIVER_PATH',
+)
+@click.option(
     '-N',
     '--new-file',
     is_flag=True,
@@ -72,8 +84,10 @@ def main(
     from_lang: str,
     to_lang: str,
     service: str,
+    service_host: Optional[str],
+    webdriver: Optional[Path],
     new_file: bool,
-    clear: bool,
+    ignore_cache: bool,
     save_temp_on_complete: bool,
     overwrite: bool,
     verbose: int,
@@ -86,9 +100,11 @@ def main(
     files_to_process = _get_files_to_process(path)
     logging.info('Found %s files to process', len(files_to_process))
     logging.debug('Files to process: %s', files_to_process)
-    translation_provider = TRANSLATOR_BY_SERVICE_NAME[service]()
+    translation_provider = TRANSLATOR_BY_SERVICE_NAME[service](
+        host=service_host or None, webdriver_path=webdriver or None
+    )
     for file_to_process in files_to_process:
-        document = MarkdownDocument.from_file(file_to_process, ignore_cache=clear)
+        document = MarkdownDocument.from_file(file_to_process, ignore_cache=ignore_cache)
         click.echo('Processing file: {}'.format(file_to_process.name))
         if not document.should_be_translated(new_file=new_file, overwrite=overwrite):
             logging.info('Skipping file: %s. Already translated', file_to_process.name)
