@@ -71,14 +71,15 @@ source = [
 ]
 omit = [
     "tests/*",
-    "md_translate/app.py"
+    "md_translate/app.py",
+    "md_translate/translators/*",
 ]
 
 [tool.coverage.report]
 exclude_lines = [
     "# pragma: no cover",
     "raise NotImplementedError",
-    "if TYPE_CHECKING:"
+    "if TYPE_CHECKING:",
 ]
 
 [tool.mypy]

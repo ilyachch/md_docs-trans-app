@@ -149,7 +149,7 @@ class CodeBlock(BaseBlock):
 
     def __str__(self) -> str:
         lang = self.language or ''
-        return f'```{lang}\n{self.code}\n```\n'
+        return f'```{lang}\n{self.code}\n```'
 
 
 @register

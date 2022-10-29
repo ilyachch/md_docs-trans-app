@@ -1,28 +1,38 @@
-from md_translate.translators._base import TranslationProvider
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.remote.webelement import WebElement
+
+from ._base import TranslationProvider
 
 
-class YandexTranslateProvider(TranslationProvider):  # pragma: no cover
+class YandexTranslateProvider(TranslationProvider):
     HOST = 'https://translate.yandex.com/'
 
     COOKIES_ACCEPT_BTN_TEXT = 'Accept'
 
-    def translate(self, from_language: str, to_language: str, text: str) -> str:
+    def get_url(self) -> str:
         params = {
-            'lang': f'{from_language}-{to_language}',
+            'lang': f'{self.from_language}-{self.to_language}',
         }
-        self._driver.get(self.get_url(params))
-        self.wait_for_page_load()
-        if self.check_for_antispam():
-            self.wait_for_antispam()
-        textarea = self._driver.find_element(by=self.WEBDRIVER_BY.CLASS_NAME, value='textinput')
-        result_container = self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='textbox2')
-        textarea.send_keys(text)
-        if self.check_for_antispam():
-            self.wait_for_antispam()
+        return f'{self._host}?{self.build_params(params)}'
 
-        self.WEBDRIVER_WAIT(self._driver, 10).until(lambda driver: result_container.text != '')
-        data = result_container.text
-        return self.get_cleaned_data(data)
+    def get_input_element(self) -> WebElement:
+        return self._driver.find_element(by=self.WEBDRIVER_BY.CLASS_NAME, value='textinput')
+
+    def get_output_element(self) -> WebElement:
+        return self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='translation')
+
+    def check_for_translation(self) -> bool:
+        try:
+            container = self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='textbox2')
+            if 'fetching' in container.get_attribute('class'):
+                return False
+            element = self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='translation')
+            return element.text != ''
+        except NoSuchElementException:
+            return False
+
+    def accept_cookies(self) -> None:
+        self.click_cookies_accept('Accept')
 
     def check_for_antispam(self) -> bool:
         try:

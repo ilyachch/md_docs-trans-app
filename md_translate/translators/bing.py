@@ -1,33 +1,40 @@
-from typing import Any
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.remote.webelement import WebElement
 
-from md_translate.translators._base import TranslationProvider
+from ._base import TranslationProvider
 
 
-class BingTranslateProvider(TranslationProvider):  # pragma: no cover
+class BingTranslateProvider(TranslationProvider):
     HOST = 'https://www.bing.com/translator/'
 
-    def translate(self, from_language: str, to_language: str, text: str) -> str:
+    def get_url(self) -> str:
         params = {
-            'from': from_language,
-            'to': to_language,
+            'from': self.from_language,
+            'to': self.to_language,
         }
-        self._driver.get(self.get_url(params))
-        text_area = self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='tta_input_ta')
-        result_container = self._driver.find_element(
-            by=self.WEBDRIVER_BY.ID, value='tta_output_ta'
-        )
+        return f'{self._host}?{self.build_params(params)}'
 
-        current_text = result_container.get_attribute('value')
+    def get_input_element(self) -> WebElement:
+        return self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='tta_input_ta')
 
-        text_area.send_keys(text)
+    def get_output_element(self) -> WebElement:
+        return self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='tta_output_ta')
 
-        def wait_for_text(driver: Any) -> bool:
-            new_text = result_container.get_attribute('value')
-            if new_text != current_text and '...' not in new_text:
+    def check_for_translation(self) -> bool:
+        try:
+            container = self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='rich_tta')
+            if 'ttastable' in container.get_attribute('class'):
                 return True
             return False
+        except NoSuchElementException:
+            return False
 
-        self.WEBDRIVER_WAIT(self._driver, 10).until(wait_for_text)
+    def accept_cookies(self) -> None:
+        self.click_cookies_accept('Accept')
 
-        data = result_container.get_attribute('value')
-        return self.get_cleaned_data(data)
+    def check_for_antispam(self) -> bool:
+        return False
+
+    @staticmethod
+    def get_translated_data(output_element: WebElement) -> str:
+        return output_element.get_attribute('value')

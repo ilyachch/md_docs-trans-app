@@ -1,27 +1,40 @@
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.remote.webelement import WebElement
+
 from ._base import TranslationProvider
 
 
-class GoogleTranslateProvider(TranslationProvider):  # pragma: no cover
+class GoogleTranslateProvider(TranslationProvider):
     HOST = 'https://translate.google.com/'
 
-    def translate(self, from_language: str, to_language: str, text: str) -> str:
+    def get_url(self) -> str:
         params = {
-            'sl': from_language,
-            'tl': to_language,
+            'sl': self.from_language,
+            'tl': self.to_language,
         }
-        self._driver.get(self.get_url(params))
-        self.cookies_accept()
-        textarea = self._driver.find_element(by=self.WEBDRIVER_BY.TAG_NAME, value='textarea')
-        result_container = self._driver.find_element(
+        return f'{self._host}?{self.build_params(params)}'
+
+    def get_input_element(self) -> WebElement:
+        return self._driver.find_element(
+            by=self.WEBDRIVER_BY.CSS_SELECTOR, value=f'span[lang="{self.from_language}"]'
+        ).find_element(by=self.WEBDRIVER_BY.TAG_NAME, value='textarea')
+
+    def get_output_element(self) -> WebElement:
+        return self._driver.find_element(
             by=self.WEBDRIVER_BY.XPATH, value='//div[@aria-live="polite"]'
-        )
-        textarea.send_keys(text)
-        self.WEBDRIVER_WAIT(self._driver, 10).until(lambda driver: result_container.text != '')
-        result_element = result_container.find_element(
-            by=self.WEBDRIVER_BY.CSS_SELECTOR, value=f'span[lang="{to_language}"]'
-        )
-        data = result_element.text
-        return self.get_cleaned_data(data)
+        ).find_element(by=self.WEBDRIVER_BY.CSS_SELECTOR, value=f'span[lang="{self.to_language}"]')
+
+    def check_for_translation(self) -> bool:
+        try:
+            element = self.get_output_element()
+            return element.text != ''
+        except NoSuchElementException:
+            return False
+
+    def accept_cookies(self) -> None:
+        if 'consent.google.com' in self._driver.current_url:
+            buttons = self._driver.find_elements(by=self.WEBDRIVER_BY.TAG_NAME, value='button')
+            buttons[1].click()
 
     def check_for_antispam(self) -> bool:
         return False

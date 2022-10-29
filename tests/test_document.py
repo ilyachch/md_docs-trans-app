@@ -16,7 +16,7 @@ class MockTranslator:
     def __exit__(self, *args, **kwargs):
         pass
 
-    def translate(self, from_language, to_language, text):
+    def translate(self, text):
         return f'{text}. translated'
 
 
@@ -112,7 +112,7 @@ class TestMarkdownDocument:
 
     def test_translate(self, test_document):
         document = MarkdownDocument.from_file(test_document)
-        document.translate(MockTranslator(), 'en', 'ru')  # type: ignore
+        document.translate(MockTranslator())  # type: ignore
         assert document.render_translated() == (
             "# Test document\n\n"
             "# Test document. translated\n\n"
@@ -123,13 +123,13 @@ class TestMarkdownDocument:
 
     def test_write(self, test_document):
         document = MarkdownDocument.from_file(test_document)
-        document.translate(MockTranslator(), 'en', 'ru')
+        document.translate(MockTranslator())
         document.write(translated=False)
         assert test_document.read_text() == TEST_DOCUMENT.strip()
 
     def test_write_translated(self, test_document):
         document = MarkdownDocument.from_file(test_document)
-        document.translate(MockTranslator(), 'en', 'ru')
+        document.translate(MockTranslator())
         document.write()
         assert test_document.read_text() == (
             "# Test document\n\n"
@@ -140,7 +140,7 @@ class TestMarkdownDocument:
 
     def test_write_new_file(self, test_document):
         document = MarkdownDocument.from_file(test_document)
-        document.translate(MockTranslator(), 'en', 'ru')
+        document.translate(MockTranslator())
         document.write(new_file=True)
         new_file = test_document.parent / f'{test_document.stem}_translated{test_document.suffix}'
         assert new_file.exists()

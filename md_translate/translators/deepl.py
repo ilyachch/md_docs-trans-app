@@ -1,39 +1,51 @@
-from typing import Any
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.remote.webelement import WebElement
 
-from md_translate.translators._base import TranslationProvider
+from ._base import TranslationProvider
 
 
-class DeeplTranslateProvider(TranslationProvider):  # pragma: no cover
+class DeeplTranslateProvider(TranslationProvider):
     HOST = 'https://www.deepl.com/translator/'
 
-    def translate(self, from_language: str, to_language: str, text: str) -> str:
-        url = f'{self._host}l/{from_language}/{to_language}/'
-        self._driver.get(url)
-        self.cookies_accept()
-        textarea = self._driver.find_element(
+    def get_url(self) -> str:
+        return f'{self._host}l/{self.from_language}/{self.to_language}/'
+
+    def get_input_element(self) -> WebElement:
+        return self._driver.find_element(
             by=self.WEBDRIVER_BY.CSS_SELECTOR,
             value='textarea[aria-labelledby="translation-source-heading"]',
         )
-        result_container = self._driver.find_element(
+
+    def get_output_element(self) -> WebElement:
+        return self._driver.find_element(
             by=self.WEBDRIVER_BY.CSS_SELECTOR,
             value='textarea[aria-labelledby="translation-results-heading"]',
         )
-        current_result = result_container.get_attribute('value')
-        textarea.send_keys(text)
 
-        def wait_for(driver: Any) -> bool:
-            new_result = driver.find_element(
-                by=self.WEBDRIVER_BY.CSS_SELECTOR,
-                value='textarea[aria-labelledby="translation-results-heading"]',
-            ).get_attribute('value')
-            if (
-                new_result not in [current_result, '']
-                and '[...]' not in new_result
-                and len(new_result) > len(text) // 2
-            ):
-                return True
+    def check_for_translation(self) -> bool:
+        # lmt--active_translation_request
+        try:
+            container = self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='dl_translator')
+            return 'lmt--active_translation_request' not in container.get_attribute('class')
+        except NoSuchElementException:
             return False
 
-        self.WEBDRIVER_WAIT(self._driver, 10).until(wait_for)
-        data = result_container.get_attribute('value')
-        return self.get_cleaned_data(data)
+    def accept_cookies(self) -> None:
+        self.click_cookies_accept('Accept')
+
+    def click_cookies_accept(self, btn_text: str) -> None:
+        try:
+            cookies_accept_button = self._driver.find_element(
+                by=self.WEBDRIVER_BY.CLASS_NAME, value='dl_cookieBanner--buttonAll'
+            )
+            if cookies_accept_button:
+                cookies_accept_button.click()
+        except NoSuchElementException:
+            return
+
+    def check_for_antispam(self) -> bool:
+        return False
+
+    @staticmethod
+    def get_translated_data(output_element: WebElement) -> str:
+        return output_element.get_attribute('value')

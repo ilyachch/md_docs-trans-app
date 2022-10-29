@@ -1,17 +1,15 @@
 import json
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Optional, Union
+from typing import List, Optional, Union
 
 import mistune
 import pydantic
 
 from md_translate.document.parser import TypedParser
+from md_translate.translators import PTranslator
 
 from .blocks import BaseBlock, NewlineBlock
-
-if TYPE_CHECKING:
-    from md_translate.translators._base import TranslationProvider
 
 logger = logging.getLogger(__name__)
 
@@ -50,13 +48,11 @@ class MarkdownDocument(pydantic.BaseModel):
                 rendered_blocks.append(block.translated_data)
         return '\n\n'.join(rendered_blocks)
 
-    def translate(self, translator: 'TranslationProvider', from_lang: str, to_lang: str) -> None:
+    def translate(self, translator: PTranslator) -> None:
         blocks_to_translate = [block for block in self.blocks if block.should_be_translated]
         logger.info('Found %s blocks to translate', len(blocks_to_translate))
         for number, block in enumerate(blocks_to_translate, start=1):
-            translated_data = translator.translate(
-                from_language=from_lang, to_language=to_lang, text=str(block)
-            )
+            translated_data = translator.translate(text=str(block))
             block.translated_data = translated_data
             self.cache()
             logger.info('Translated block %s of %s', number, len(blocks_to_translate))

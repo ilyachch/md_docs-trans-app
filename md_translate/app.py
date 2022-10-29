@@ -101,17 +101,20 @@ def main(
     logging.info('Found %s files to process', len(files_to_process))
     logging.debug('Files to process: %s', files_to_process)
     translation_provider = TRANSLATOR_BY_SERVICE_NAME[service](
-        host=service_host or None, webdriver_path=webdriver or None
+        host=service_host or None,
+        webdriver_path=webdriver or None,
+        from_language=from_lang,
+        to_language=to_lang,
     )
-    for file_to_process in files_to_process:
+    for file_num, file_to_process in enumerate(files_to_process, start=1):
         document = MarkdownDocument.from_file(file_to_process, ignore_cache=ignore_cache)
-        click.echo('Processing file: {}'.format(file_to_process.name))
+        click.echo(f'Processing file {file_num}/{len(files_to_process)}: {file_to_process.name}')
         if not document.should_be_translated(new_file=new_file, overwrite=overwrite):
             logging.info('Skipping file: %s. Already translated', file_to_process.name)
             continue
         with translation_provider as provider:
             try:
-                document.translate(provider, from_lang, to_lang)
+                document.translate(provider)
             except Exception as e:
                 logging.error('Error while translating file: %s', file_to_process.name)
                 logging.exception(e)
@@ -127,6 +130,12 @@ def _set_logging_level(verbose: int) -> None:
         logging.basicConfig(level=logging.WARNING)
     elif verbose == 1:
         logging.basicConfig(level=logging.INFO)
+    elif verbose == 2:
+        pass
+    elif verbose == 3:
+        pass
+    elif verbose == 4:
+        pass
     else:
         logging.basicConfig(level=logging.DEBUG)
 
@@ -140,11 +149,15 @@ def _get_files_to_process(path: List[Path]) -> List[Path]:
             click.echo('Found file: {}'.format(path_to_process.name))
             files_to_process.append(path_to_process)
         else:
-            found_files = path_to_process.glob('*.md')
+            found_files = path_to_process.glob('**/*.md')
             for found_file in found_files:
                 click.echo('Found file: {}'.format(found_file.name))
                 files_to_process.append(found_file)
-    return files_to_process
+    return [
+        file_to_process
+        for file_to_process in files_to_process
+        if '_translated' not in file_to_process.name
+    ]
 
 
 if __name__ == "__main__":
