@@ -93,13 +93,7 @@ def main(
     verbose: int,
 ) -> None:
     _set_logging_level(verbose)
-    if not isinstance(path, list):
-        path = [
-            path,
-        ]
-    files_to_process = _get_files_to_process(path)
-    logging.info('Found %s files to process', len(files_to_process))
-    logging.debug('Files to process: %s', files_to_process)
+    files_to_process = get_files_to_process(path)
     translation_provider = TRANSLATOR_BY_SERVICE_NAME[service](
         host=service_host or None,
         webdriver_path=webdriver or None,
@@ -131,33 +125,41 @@ def _set_logging_level(verbose: int) -> None:
     elif verbose == 1:
         logging.basicConfig(level=logging.INFO)
     elif verbose == 2:
-        pass
+        logging.basicConfig(level=logging.INFO)
     elif verbose == 3:
-        pass
+        logging.basicConfig(level=logging.INFO)
     elif verbose == 4:
-        pass
+        logging.basicConfig(level=logging.INFO)
     else:
         logging.basicConfig(level=logging.DEBUG)
 
 
-def _get_files_to_process(path: List[Path]) -> List[Path]:
+def get_files_to_process(path: Union[List[Path], Path]) -> List[Path]:
+    if not isinstance(path, list):
+        path = [
+            path,
+        ]
     files_to_process = []
     for path_to_process in path:
         if not path_to_process.exists():
             raise click.ClickException(f'Path not found: {path_to_process}')
         if path_to_process.is_file():
-            click.echo('Found file: {}'.format(path_to_process.name))
+            logger.debug('Found file: %s', path_to_process)
             files_to_process.append(path_to_process)
         else:
             found_files = path_to_process.glob('**/*.md')
             for found_file in found_files:
-                click.echo('Found file: {}'.format(found_file.name))
+                logger.debug('Found file: %s', found_file)
                 files_to_process.append(found_file)
-    return [
+
+    source_files = [
         file_to_process
         for file_to_process in files_to_process
         if '_translated' not in file_to_process.name
     ]
+
+    logger.info('Found %s files to process: %s', len(source_files), source_files)
+    return source_files
 
 
 if __name__ == "__main__":

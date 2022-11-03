@@ -1,5 +1,6 @@
 import abc
 import pathlib
+import time
 import urllib.parse
 from typing import Any, Dict, Optional, Union
 
@@ -10,6 +11,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
+
+from md_translate.translators.randomizer.randomizer import Randomizer
 
 current_dir = pathlib.Path(__file__).parent.absolute()
 
@@ -38,6 +41,7 @@ class TranslationProvider(metaclass=abc.ABCMeta):
         self._host = self.__get_host(host)
         self.from_language = from_language
         self.to_language = to_language
+        self.randomizer = Randomizer()
 
     def __get_host(self, host: Optional[str] = None) -> str:
         host = host or self.HOST
@@ -46,15 +50,16 @@ class TranslationProvider(metaclass=abc.ABCMeta):
         return host
 
     def __enter__(self) -> 'TranslationProvider':
-        options = Options()
-        if self.HEADLESS:
-            options.add_argument('--headless')
-            options.add_argument(
-                'user-agent=Mozilla/5.0 (X11; Linux x86_64) '
-                'AppleWebKit/537.36 (KHTML, like Gecko) '
-                'Chrome/106.0.0.0 '
-                'Safari/537.36'
-            )
+        # options = Options()
+        options = self.randomizer.make_options()
+        # if self.HEADLESS:
+        #     options.add_argument('--headless')
+        #     options.add_argument(
+        #         'user-agent=Mozilla/5.0 (X11; Linux x86_64) '
+        #         'AppleWebKit/537.36 (KHTML, like Gecko) '
+        #         'Chrome/106.0.0.0 '
+        #         'Safari/537.36'
+        #     )
 
         if self._webdriver_path:
             self._driver = webdriver.Chrome(
@@ -69,6 +74,7 @@ class TranslationProvider(metaclass=abc.ABCMeta):
         self._driver.quit()
 
     def translate(self, *, text: str) -> str:
+        time.sleep(self.randomizer.get_random_sleep_time())
         self.load_page()
         if self.check_for_antispam():
             self.wait_for_antispam()

@@ -13,7 +13,7 @@ class BaseBlock(pydantic.BaseModel):
         return self.TRANSLATABLE and self.translated_data is None
 
     def __str__(self) -> str:
-        raise NotImplementedError()
+        raise NotImplementedError(self.__class__.__name__)
 
     def dump(self) -> Dict:
         data = self.dict(exclude_unset=True)
