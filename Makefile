@@ -5,9 +5,6 @@ PROJECT_FOLDER = md_translate
 WORKING_DIRECTORY = $(shell pwd)
 VENV_BIN = .venv/bin/
 
-go_to_project_folder:
-	@cd $(WORKING_DIRECTORY)
-
 # Tools section
 black:
 	@$(VENV_BIN)/black $(PROJECT_FOLDER)
@@ -30,7 +27,7 @@ check_isort:
 check_flake8:
 	@$(VENV_BIN)/flake8 $(PROJECT_FOLDER)
 
-check: check_black check_mypy check_isort, check_flake8
+check: check_black check_mypy check_isort check_flake8
 
 # Coverage section
 tests: .PHONY

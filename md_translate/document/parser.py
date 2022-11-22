@@ -1,4 +1,4 @@
-from typing import Any, List, Tuple
+from typing import Any, List
 
 from mistune.renderers import BaseRenderer
 
@@ -78,7 +78,7 @@ class TypedParser(BaseRenderer):
         return blocks.ListBlock(children=children, ordered=ordered, level=level, start=start)
 
     def list_item(
-        self, children: Tuple[List[blocks.BaseBlock], blocks.BaseBlock], level: int = 1
+        self, children: tuple[List[blocks.BaseBlock], blocks.BaseBlock], level: int = 1
     ) -> blocks.ListItemBlock:
         base_children: List[blocks.BaseBlock] = children[0]
         if not isinstance(base_children, list):

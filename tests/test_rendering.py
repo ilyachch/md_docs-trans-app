@@ -115,4 +115,4 @@ MARKDOWN_DOCUMENTS = [
 )
 def test_rendering(document, _):
     md_document = MarkdownDocument.from_string(document)
-    assert md_document.render() == document
+    assert md_document.render() == document + '\n'

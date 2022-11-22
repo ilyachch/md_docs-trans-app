@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 import click
 
@@ -80,7 +80,7 @@ logger = logging.getLogger(__name__)
     count=True,
 )
 def main(
-    path: Union[Path, List[Path]],
+    path: Union[Path, list[Path]],
     from_lang: str,
     to_lang: str,
     service: str,
@@ -134,7 +134,7 @@ def _set_logging_level(verbose: int) -> None:
         logging.basicConfig(level=logging.DEBUG)
 
 
-def get_files_to_process(path: Union[List[Path], Path]) -> List[Path]:
+def get_files_to_process(path: Union[list[Path], Path]) -> list[Path]:
     if not isinstance(path, list):
         path = [
             path,

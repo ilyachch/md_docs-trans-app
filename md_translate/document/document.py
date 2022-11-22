@@ -1,7 +1,7 @@
 import json
 import logging
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 import mistune
 import pydantic
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class MarkdownDocument(pydantic.BaseModel):
     source: Optional[Path] = None
 
-    blocks: List[BaseBlock] = pydantic.Field(default_factory=list)
+    blocks: list[BaseBlock] = pydantic.Field(default_factory=list)
 
     def write(
         self,
@@ -38,7 +38,7 @@ class MarkdownDocument(pydantic.BaseModel):
             file_to_write.write_text(self.render())
 
     def render(self) -> str:
-        return '\n\n'.join(map(str, self.blocks))
+        return '\n\n'.join(map(str, self.blocks)) + '\n'
 
     def render_translated(self) -> str:
         rendered_blocks = []
@@ -109,7 +109,7 @@ class MarkdownDocument(pydantic.BaseModel):
         return json.dumps(clean_data)
 
     @staticmethod
-    def _load_data(cache_data: str) -> List[BaseBlock]:
+    def _load_data(cache_data: str) -> list[BaseBlock]:
         content = json.loads(cache_data)
         return [BaseBlock.restore(block_data) for block_data in content['blocks']]
 
@@ -123,7 +123,7 @@ class MarkdownDocument(pydantic.BaseModel):
         return path.with_name(f'{path.stem}_translated{path.suffix}')
 
     @staticmethod
-    def __parse_blocks(text: str) -> List[BaseBlock]:
+    def __parse_blocks(text: str) -> list[BaseBlock]:
         markdown_parser = mistune.create_markdown(renderer=TypedParser())
         data = [b for b in markdown_parser(text) if b and not isinstance(b, NewlineBlock)]
         return data

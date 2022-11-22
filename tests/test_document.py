@@ -20,8 +20,7 @@ class MockTranslator:
         return f'{text}. translated'
 
 
-TEST_DOCUMENT = '''
-# Test document
+TEST_DOCUMENT = '''# Test document
 
 This is a test document.
 '''
@@ -125,7 +124,7 @@ class TestMarkdownDocument:
         document = MarkdownDocument.from_file(test_document)
         document.translate(MockTranslator())
         document.write(translated=False)
-        assert test_document.read_text() == TEST_DOCUMENT.strip()
+        assert test_document.read_text() == TEST_DOCUMENT
 
     def test_write_translated(self, test_document):
         document = MarkdownDocument.from_file(test_document)

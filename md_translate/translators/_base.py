@@ -2,12 +2,11 @@ import abc
 import pathlib
 import time
 import urllib.parse
-from typing import Any, Dict, Optional, Union
+from typing import Any, Optional, Union
 
 import requests
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
@@ -161,5 +160,5 @@ class TranslationProvider(metaclass=abc.ABCMeta):
         return '\n'.join(paragraphs)
 
     @staticmethod
-    def build_params(params: Dict[str, str]) -> str:
+    def build_params(params: dict[str, str]) -> str:
         return urllib.parse.urlencode(params)

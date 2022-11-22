@@ -1,5 +1,5 @@
 import pathlib
-from typing import Any, Dict, Optional, Protocol, Type, Union, runtime_checkable
+from typing import Any, Optional, Protocol, Type, Union, runtime_checkable
 
 from .bing import BingTranslateProvider
 from .deepl import DeeplTranslateProvider
@@ -33,7 +33,7 @@ class PTranslator(Protocol):
         ...
 
 
-TRANSLATOR_BY_SERVICE_NAME: Dict[str, Type[PTranslator]] = {
+TRANSLATOR_BY_SERVICE_NAME: dict[str, Type[PTranslator]] = {
     TRANSLATION_SERVICE_YANDEX: YandexTranslateProvider,
     TRANSLATION_SERVICE_GOOGLE: GoogleTranslateProvider,
     TRANSLATION_SERVICE_BING: BingTranslateProvider,

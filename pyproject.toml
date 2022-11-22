@@ -27,8 +27,12 @@ classifiers = [
 [tool.poetry.scripts]
 md-translate = "md_translate.app:run"
 
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 requests = "^2.24.0"
 selenium = "^4.5.0"
 mistune = "^2.0.4"
@@ -83,7 +87,7 @@ exclude_lines = [
 ]
 
 [tool.mypy]
-python_version = 3.8
+python_version = "3.10"
 disallow_untyped_defs = true
 ignore_missing_imports = true
 warn_unused_configs = true
@@ -94,7 +98,3 @@ exclude = [
 [tool.flake8]
 extend-ignore = ["E501", ]
 max-complexity = 6
-
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"

@@ -1,4 +1,4 @@
-from typing import Any, ClassVar, Dict, Generic, List, Optional, Type, TypeVar, cast
+from typing import Any, ClassVar, Generic, Optional, Type, TypeVar, cast
 
 import pydantic
 
@@ -15,13 +15,13 @@ class BaseBlock(pydantic.BaseModel):
     def __str__(self) -> str:
         raise NotImplementedError(self.__class__.__name__)
 
-    def dump(self) -> Dict:
+    def dump(self) -> dict:
         data = self.dict(exclude_unset=True)
         data['block_type'] = self.__class__.__name__
         return data
 
     @classmethod
-    def restore(cls, values: Dict[str, Any]) -> 'BaseBlock':
+    def restore(cls, values: dict[str, Any]) -> 'BaseBlock':
         block_type_name = values.pop('block_type')
         if not block_type_name:
             raise ValueError('Unknown data. No block type found')  # pragma: no cover
@@ -37,7 +37,7 @@ class BaseBlock(pydantic.BaseModel):
         return block_type(**values)
 
 
-blocks_registry: Dict[str, Type[BaseBlock]] = {}
+blocks_registry: dict[str, Type[BaseBlock]] = {}
 
 T = TypeVar('T', bound=BaseBlock)
 
@@ -48,19 +48,19 @@ def register(cls: Type[T]) -> Type[T]:
 
 
 class Container(Generic[T], BaseBlock):
-    children: List[T]
+    children: list[T]
 
     def __str__(self) -> str:
         return ''.join(map(str, self.children))
 
-    def dump(self) -> Dict:
+    def dump(self) -> dict:
         data = super().dump()
         data['children'] = [child.dump() for child in self.children]
         return data
 
 
 class NestedContainer(Generic[T], Container[T]):
-    nested_children: List[T] = pydantic.Field(default_factory=list)
+    nested_children: list[T] = pydantic.Field(default_factory=list)
 
     def __str__(self) -> str:  # pragma: no cover
         return ''.join(map(str, self.nested_children))
@@ -180,10 +180,10 @@ class ListBlock(Container[ListItemBlock]):
     level: int
     start: Optional[int] = None
 
-    _MARKS: ClassVar[List[str]] = ['*', '-', '+']
+    _MARKS: ClassVar[list[str]] = ['*', '-', '+']
 
     def __str__(self) -> str:
-        rendered_children: List[str] = []
+        rendered_children: list[str] = []
         if self.ordered:
             self.start = cast(int, self.start)
             for i, child in enumerate(self.children, start=self.start):
