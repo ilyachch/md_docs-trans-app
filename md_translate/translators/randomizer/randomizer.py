@@ -24,9 +24,6 @@ class Randomizer:
     def get_random_window_position(self) -> tuple[int, int]:
         return random.randint(0, 100), random.randint(0, 100)
 
-    # def get_random_device_metrics(self) -> Tuple[int, int, float]:
-    #     return random.randint(300, 500), random.randint(300, 500), random.uniform(1, 2)
-
     def get_random_proxy(self) -> str:
         return random.choice(self.PROXIES)
 

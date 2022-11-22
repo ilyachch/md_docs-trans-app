@@ -23,7 +23,6 @@ class DeeplTranslateProvider(TranslationProvider):
         )
 
     def check_for_translation(self) -> bool:
-        # lmt--active_translation_request
         try:
             container = self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='dl_translator')
             return 'lmt--active_translation_request' not in container.get_attribute('class')

@@ -37,14 +37,22 @@ class BaseBlock(pydantic.BaseModel):
         return block_type(**values)
 
 
-blocks_registry: dict[str, Type[BaseBlock]] = {}
-
 T = TypeVar('T', bound=BaseBlock)
 
 
-def register(cls: Type[T]) -> Type[T]:
-    blocks_registry[cls.__name__] = cls
-    return cls
+class BlocksRegistry:
+    def __init__(self) -> None:
+        self._registry: dict[str, Type[BaseBlock]] = {}
+
+    def get(self, block_type_name: str) -> Optional[Type[BaseBlock]]:
+        return self._registry.get(block_type_name)
+
+    def register(self, block_type: Type[T]) -> Type[T]:
+        self._registry[block_type.__name__] = block_type
+        return block_type
+
+
+blocks_registry = BlocksRegistry()
 
 
 class Container(Generic[T], BaseBlock):
@@ -66,13 +74,13 @@ class NestedContainer(Generic[T], Container[T]):
         return ''.join(map(str, self.nested_children))
 
 
-@register
+@blocks_registry.register
 class Paragraph(Container[BaseBlock]):
     def __str__(self) -> str:
         return ''.join(map(str, self.children))
 
 
-@register
+@blocks_registry.register
 class TextBlock(BaseBlock):
     text: str
 
@@ -80,19 +88,19 @@ class TextBlock(BaseBlock):
         return self.text
 
 
-@register
+@blocks_registry.register
 class StrongTextBlock(Container[BaseBlock]):
     def __str__(self) -> str:
         return f'**{super().__str__()}**'
 
 
-@register
+@blocks_registry.register
 class EmphasisTextBlock(Container[BaseBlock]):
     def __str__(self) -> str:
         return f'*{super().__str__()}*'
 
 
-@register
+@blocks_registry.register
 class LinkBlock(Container[BaseBlock]):
     url: str
     title: Optional[str] = None
@@ -102,7 +110,7 @@ class LinkBlock(Container[BaseBlock]):
         return f'[{super().__str__()}]({self.url}{title})'
 
 
-@register
+@blocks_registry.register
 class ImageBlock(BaseBlock):
     url: str
     alt: str = pydantic.Field(default=str)
@@ -113,7 +121,7 @@ class ImageBlock(BaseBlock):
         return f'![{self.alt}]({self.url}{title})'
 
 
-@register
+@blocks_registry.register
 class HeadingBlock(Container[BaseBlock]):
     level: int
 
@@ -121,7 +129,7 @@ class HeadingBlock(Container[BaseBlock]):
         return f'{"#" * self.level} {"".join(map(str, self.children))}'
 
 
-@register
+@blocks_registry.register
 class SeparatorBlock(BaseBlock):
     TRANSLATABLE = False
 
@@ -129,7 +137,7 @@ class SeparatorBlock(BaseBlock):
         return '---'
 
 
-@register
+@blocks_registry.register
 class CodeSpanBlock(BaseBlock):
     code: str
 
@@ -137,7 +145,7 @@ class CodeSpanBlock(BaseBlock):
         return f'`{self.code}`'
 
 
-@register
+@blocks_registry.register
 class CodeBlock(BaseBlock):
     TRANSLATABLE = False
     code: str
@@ -152,7 +160,7 @@ class CodeBlock(BaseBlock):
         return f'```{lang}\n{self.code}\n```'
 
 
-@register
+@blocks_registry.register
 class HtmlBlock(BaseBlock):
     TRANSLATABLE = False
     code: str
@@ -161,7 +169,7 @@ class HtmlBlock(BaseBlock):
         return self.code
 
 
-@register
+@blocks_registry.register
 class ListItemBlock(NestedContainer[BaseBlock]):
     level: int
 
@@ -174,7 +182,7 @@ class ListItemBlock(NestedContainer[BaseBlock]):
         return result
 
 
-@register
+@blocks_registry.register
 class ListBlock(Container[ListItemBlock]):
     ordered: bool = False
     level: int
@@ -197,25 +205,25 @@ class ListBlock(Container[ListItemBlock]):
         return '\n'.join(rendered_children)
 
 
-@register
+@blocks_registry.register
 class LineBreakBlock(BaseBlock):
     def __str__(self) -> str:
         return '  \n'
 
 
-@register
+@blocks_registry.register
 class InlineHtmlBlock(HtmlBlock):
     def __str__(self) -> str:
         return f'{self.code}'
 
 
-@register
+@blocks_registry.register
 class NewlineBlock(BaseBlock):
     def __str__(self) -> str:
         return '\n'
 
 
-@register
+@blocks_registry.register
 class BlockQuote(Container[BaseBlock]):
     def __str__(self) -> str:
         rendered_children = list(map(str, self.children))

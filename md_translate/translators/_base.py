@@ -49,17 +49,7 @@ class TranslationProvider(metaclass=abc.ABCMeta):
         return host
 
     def __enter__(self) -> 'TranslationProvider':
-        # options = Options()
         options = self.randomizer.make_options()
-        # if self.HEADLESS:
-        #     options.add_argument('--headless')
-        #     options.add_argument(
-        #         'user-agent=Mozilla/5.0 (X11; Linux x86_64) '
-        #         'AppleWebKit/537.36 (KHTML, like Gecko) '
-        #         'Chrome/106.0.0.0 '
-        #         'Safari/537.36'
-        #     )
-
         if self._webdriver_path:
             self._driver = webdriver.Chrome(
                 executable_path=str(self._webdriver_path), options=options
@@ -97,23 +87,23 @@ class TranslationProvider(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def get_url(self) -> str:
-        raise NotImplementedError
+        ...
 
     @abc.abstractmethod
     def check_for_antispam(self) -> bool:
-        raise NotImplementedError()
+        ...
 
     @abc.abstractmethod
     def accept_cookies(self) -> None:
-        raise NotImplementedError()
+        ...
 
     @abc.abstractmethod
     def get_input_element(self) -> WebElement:
-        raise NotImplementedError()
+        ...
 
     @abc.abstractmethod
     def get_output_element(self) -> WebElement:
-        raise NotImplementedError()
+        ...
 
     @staticmethod
     def get_translated_data(output_element: WebElement) -> str:
@@ -121,7 +111,7 @@ class TranslationProvider(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def check_for_translation(self) -> bool:
-        raise NotImplementedError()
+        ...
 
     def wait_for_page_load(self) -> None:
         def wait_for(driver: Any) -> bool:
