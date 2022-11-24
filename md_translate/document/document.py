@@ -119,7 +119,8 @@ class MarkdownDocument(pydantic.BaseModel):
             return Path(path)
         return path
 
-    def __get_new_file_path(self, path: Path) -> Path:
+    @staticmethod
+    def __get_new_file_path(path: Path) -> Path:
         return path.with_name(f'{path.stem}_translated{path.suffix}')
 
     @staticmethod
