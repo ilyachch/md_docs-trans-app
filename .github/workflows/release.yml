@@ -17,12 +17,26 @@ on:
 jobs:
   lint:
     uses: ./.github/workflows/linting.yml
+    strategy:
+      fail-fast: false
+      matrix:
+        validation-command: [ "make check_mypy", "make check_isort", "make check_flake8" ]
+        system: [ "ubuntu-20.04", "ubuntu-22.04" ]
+        python-version: [ "3.10", "3.11" ]
     name: Linting
+    with:
+      python-version: ${{ matrix.python-version }}
+      command: ${{ matrix.validation-command }}
+      system: ${{ matrix.system }}
   test:
     uses: ./.github/workflows/testing.yml
     name: Testing
+    strategy:
+      fail-fast: false
+      matrix:
+        system: [ "ubuntu-20.04", "ubuntu-22.04" ]
+        python-version: [ "3.10", "3.11" ]
   release:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     name: Release
     runs-on: ubuntu-latest
     needs: [lint, test]

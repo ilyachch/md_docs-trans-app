@@ -1,24 +1,35 @@
 name: Testing
 on:
   workflow_call:
+    inputs:
+      python-version:
+        description: 'Python version to use'
+        required: true
+        type: string
+      system:
+        description: 'System to run on'
+        required: false
+        type: string
+        default: ubuntu-20.04
+      command:
+        description: 'Command to run'
+        required: false
+        type: string
+        default: "make test"
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   test_pr:
     name: Tests
-    runs-on: ubuntu-20.04
-    strategy:
-      fail-fast: true
-      matrix:
-        python-version: ["3.10", "3.11"]
+    runs-on: ${{ inputs.system }}
     steps:
       - name: Getting code
         uses: actions/checkout@v3
       - name: Getting Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ inputs.python-version }}
       - name: Load cached poetry
         uses: actions/cache@v3
         with:
@@ -38,4 +49,4 @@ jobs:
       - name: Installing dependencies
         run: poetry install
       - name: Running tests
-        run: make tests
+        run: ${{ inputs.command }}

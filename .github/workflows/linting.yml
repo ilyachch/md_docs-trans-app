@@ -1,24 +1,34 @@
 name: Linting
 on:
   workflow_call:
+    inputs:
+      python-version:
+        description: 'Python version to use'
+        required: true
+        type: string
+      command:
+        description: 'Command to run'
+        required: true
+        type: string
+      system:
+        description: 'System to run on'
+        required: false
+        type: string
+        default: ubuntu-20.04
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   validate:
     name: Validate
-    runs-on: ubuntu-20.04
-    strategy:
-      fail-fast: false
-      matrix:
-        validation-command: ["check_mypy", "check_isort", "check_flake8"]
+    runs-on: ${{ inputs.system }}
     steps:
       - name: Getting code
         uses: actions/checkout@v3
       - name: Getting Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: ${{ inputs.python-version }}
       - name: Load cached poetry
         uses: actions/cache@v3
         with:
@@ -38,4 +48,4 @@ jobs:
       - name: Installing dependencies
         run: poetry install
       - name: Running types checks
-        run: make ${{ matrix.validation-command }}
+        run: ${{ inputs.command }}
