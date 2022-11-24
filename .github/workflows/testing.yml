@@ -15,7 +15,7 @@ on:
         description: 'Command to run'
         required: false
         type: string
-        default: "make test"
+        default: "make tests"
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
