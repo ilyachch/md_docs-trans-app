@@ -1,11 +1,12 @@
 name: Release
-
 on:
   push:
     branches:
       - master
     paths:
-      - '**.py'
+      - '**/*.py'
+      - 'pyproject.toml'
+      - 'poetry.lock'
   workflow_dispatch:
     inputs:
       dry-run:
@@ -13,7 +14,6 @@ on:
         required: false
         default: false
         type: boolean
-
 jobs:
   lint:
     uses: ./.github/workflows/linting.yml
@@ -21,7 +21,6 @@ jobs:
   test:
     uses: ./.github/workflows/testing.yml
     name: Testing
-
   release:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     name: Release
@@ -42,19 +41,15 @@ jobs:
           installer-parallel: true
       - name: Installing dependencies
         run: poetry install
-
       - name: Getting package clear version
         id: get_clear_version
         run: echo "clear_version=$(poetry version -s)" >> $GITHUB_OUTPUT
-
       - name: Get asset name
         id: get_asset_name
         run: echo "name=asset_name=$(ls dist | grep gz)" >> $GITHUB_OUTPUT
-
       - name: Make release and publish
         if: ${{ !inputs.dry-run }}
         run: make release USERNAME=${{ secrets.PYPI_USERNAME }} TOKEN=${{ secrets.PYPI_TOKEN }}
-
       - name: Create Release
         if: ${{ !inputs.dry-run }}
         id: create_release
@@ -66,7 +61,6 @@ jobs:
           release_name: ${{ steps.get_version.outputs.version }}
           draft: false
           prerelease: false
-
       - name: Upload Release assets
         if: ${{ !inputs.dry-run }}
         id: upload_gz

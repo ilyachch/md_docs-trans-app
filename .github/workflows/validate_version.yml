@@ -1,13 +1,6 @@
 name: Validate Version change
-
 on:
-  pull_request:
-    branches: master
-    paths:
-      - '**/*.py'
-      - 'pyproject.toml'
-      - 'poetry.lock'
-
+  workflow_call:
 jobs:
   validate_version:
     name: Validate Version
@@ -30,7 +23,7 @@ jobs:
       - name: Get old version
         id: get_old_version
         run: |
-           echo "version=$(git diff origin/master HEAD pyproject.toml | grep -E "^\-version" | grep -Eo "[0-9]+\.[0-9]+\.[0-9]+")" >> $GITHUB_OUTPUT
+          echo "version=$(git diff origin/master HEAD pyproject.toml | grep -E "^\-version" | grep -Eo "[0-9]+\.[0-9]+\.[0-9]+")" >> $GITHUB_OUTPUT
       - name: Check version format
         run: |
           if ! echo "${{ steps.get_new_version.outputs.version }}" | grep -E "^[0-9]+\.[0-9]+\.[0-9]+$"; then

@@ -1,18 +1,9 @@
 name: Linting
-
 on:
-  pull_request:
-    branches: master
-    paths:
-      - '**/*.py'
-      - 'pyproject.toml'
-      - 'poetry.lock'
   workflow_call:
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   validate:
     name: Validate
@@ -20,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        validation-command: [ "check_mypy", "check_isort", "check_flake8" ]
+        validation-command: ["check_mypy", "check_isort", "check_flake8"]
     steps:
       - name: Getting code
         uses: actions/checkout@v3

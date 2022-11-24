@@ -1,0 +1,19 @@
+name: Pull request checking
+on:
+  pull_request:
+    branches: master
+    paths:
+      - '**/*.py'
+      - 'pyproject.toml'
+      - 'poetry.lock'
+jobs:
+  lint:
+    uses: ./.github/workflows/linting.yml
+    name: Linting
+  test:
+    uses: ./.github/workflows/testing.yml
+    name: Testing
+  validate_version:
+    uses: ./.github/workflows/validate_version.yml
+    name: Validate Version
+    needs: [lint, test]

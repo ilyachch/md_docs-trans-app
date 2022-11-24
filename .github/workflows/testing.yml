@@ -1,18 +1,9 @@
 name: Testing
-
 on:
-  pull_request:
-    branches: master
-    paths:
-      - '**/*.py'
-      - 'pyproject.toml'
-      - 'poetry.lock'
   workflow_call:
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   test_pr:
     name: Tests
@@ -20,7 +11,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: [ "3.10", "3.11" ]
+        python-version: ["3.10", "3.11"]
     steps:
       - name: Getting code
         uses: actions/checkout@v3
@@ -44,7 +35,6 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
-
       - name: Installing dependencies
         run: poetry install
       - name: Running tests
