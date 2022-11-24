@@ -6,67 +6,57 @@ on:
       - master
     paths:
       - '**.py'
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: 'Dry run'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
+  lint:
+    uses: ./.github/workflows/linting.yml
+    name: Linting
+  test:
+    uses: ./.github/workflows/testing.yml
+    name: Testing
+
   release:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     name: Release
     runs-on: ubuntu-latest
+    needs: [lint, test]
     steps:
       - name: Getting code
-        uses: actions/checkout@master
+        uses: actions/checkout@v3.1.0
       - name: Getting Python
         uses: actions/setup-python@v4
-      - name: Cache pip
-        uses: actions/cache@v3
         with:
-          path: .venv
-          key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-      - name: Getting Poetry
-        uses: dschep/install-poetry-action@v1.3
-      - name: Config Poetry
-        run: |
-          poetry config virtualenvs.create true
-          poetry config virtualenvs.in-project true
+          python-version: "3.10"
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
       - name: Installing dependencies
         run: poetry install
-      - name: Running tests
-        run: make coverage
-      - name: Running coverage check
-        run: make coverage_cmd_report
-      - name: Running codestyle checks
-        run: make check_black
-      - name: Running types checks
-        run: make check_mypy
-      - name: Running imports check
-        run: make check_imports
-
-      - name: Generate coverage report
-        run: make coverage_xml_report
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
-
-      - name: Getting package version
-        id: get_version
-        run: echo "::set-output name=version::$(poetry version)"
 
       - name: Getting package clear version
         id: get_clear_version
-        run: echo "::set-output name=clear_version::$(poetry version | cut -d ' ' -f 2)"
-
-      - name: Make release and publish
-        run: make release USERNAME=${{ secrets.PYPI_USERNAME }} TOKEN=${{ secrets.PYPI_TOKEN }}
+        run: echo "clear_version=$(poetry version -s)" >> $GITHUB_OUTPUT
 
       - name: Get asset name
         id: get_asset_name
-        run: echo "::set-output name=assert_name::$(ls dist | grep gz)"
+        run: echo "name=asset_name=$(ls dist | grep gz)" >> $GITHUB_OUTPUT
+
+      - name: Make release and publish
+        if: ${{ !inputs.dry-run }}
+        run: make release USERNAME=${{ secrets.PYPI_USERNAME }} TOKEN=${{ secrets.PYPI_TOKEN }}
 
       - name: Create Release
+        if: ${{ !inputs.dry-run }}
         id: create_release
         uses: actions/create-release@latest
         env:
@@ -78,12 +68,13 @@ jobs:
           prerelease: false
 
       - name: Upload Release assets
+        if: ${{ !inputs.dry-run }}
         id: upload_gz
         uses: actions/upload-release-asset@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/${{ steps.get_asset_name.outputs.assert_name }}
-          asset_name: ${{ steps.get_asset_name.outputs.assert_name }}
+          asset_path: dist/${{ steps.get_asset_name.outputs.asset_name }}
+          asset_name: ${{ steps.get_asset_name.outputs.asset_name }}
           asset_content_type: application/tar+gzip

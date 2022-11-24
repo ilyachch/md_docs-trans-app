@@ -7,6 +7,7 @@ on:
       - '**/*.py'
       - 'pyproject.toml'
       - 'poetry.lock'
+  workflow_call:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -26,7 +27,7 @@ jobs:
       - name: Getting Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.8"
+          python-version: "3.10"
       - name: Load cached poetry
         uses: actions/cache@v3
         with:
