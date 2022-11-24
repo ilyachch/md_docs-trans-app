@@ -51,6 +51,10 @@ class Settings:
     def path(self) -> Path:
         return self.params.path
 
+    @property
+    def replace(self) -> bool:
+        return self.params.replace
+
     def __get_property_by_name(self, prop_name: str) -> str:
         property_value = getattr(self.params, prop_name, None) or self.config.get(
             prop_name
@@ -89,5 +93,8 @@ class Settings:
         )
         arg_parser.add_argument(
             '-T', '--target_lang', help='Target language code',
+        )
+        arg_parser.add_argument(
+            '-R', '--replace', help='Replace original lines with translated text instead of appending it', action='store_true'
         )
         return arg_parser

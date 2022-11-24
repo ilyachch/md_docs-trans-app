@@ -28,14 +28,19 @@ class FileTranslator:
         lines = self._get_lines()
         for counter, _line in enumerate(lines):
             line = Line(self.settings, _line)
-            self.file_contents_with_translation.append(line.original)
             self.code_block = (
                 not self.code_block if line.is_code_block_border() else self.code_block
             )
             if line.can_be_translated() and not self.code_block:
-                self.file_contents_with_translation.append('\n')
+                if not self.settings.replace:
+                    self.file_contents_with_translation.append(line.original)
+                    self.file_contents_with_translation.append('\n')
+
                 self.file_contents_with_translation.append(line.fixed)
                 logger.info(f'Processed {counter+1} lines')
+            else:
+                self.file_contents_with_translation.append(line.original)
+
         self._write_translated_data_to_file()
 
     def _get_lines(self) -> List[str]:

@@ -26,6 +26,7 @@ def ru_en_settings():
         source_lang = 'ru'
         target_lang = 'en'
         service_name = const.TRANSLATION_SERVICE_YANDEX
+        replace = False
 
     return MockedSettings()
 
@@ -109,4 +110,3 @@ class TestLineProcessorUniversal:
             assert line_ints.original == line
             assert line_ints.fixed == line
             assert line_ints.translated == line
-
