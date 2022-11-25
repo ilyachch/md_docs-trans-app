@@ -106,7 +106,7 @@ jobs:
       - name: Getting Python
         uses: actions/setup-python@master
       - name: Check if pyproject is changed
-        uses: technote-space/get-diff-action@v1
+        uses: technote-space/get-diff-action@v6.1.1
         id: pyproject_is_changed
         with:
           SUFFIX_FILTER: .toml
