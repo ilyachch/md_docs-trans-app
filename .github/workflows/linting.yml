@@ -6,8 +6,8 @@ on:
         description: 'Python version to use'
         required: true
         type: string
-      command:
-        description: 'Command to run'
+      commands:
+        description: 'Commands to run'
         required: true
         type: string
       system:
