@@ -6,10 +6,7 @@ on:
         description: 'Python version to use'
         required: true
         type: string
-      commands:
-        description: 'Commands to run'
-        required: true
-        type: string
+        default: "3.10"
       system:
         description: 'System to run on'
         required: false
@@ -25,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        command: ${{ fromJSON(inputs.commands) }}
+        command: [ "make check_mypy", "make check_isort", "make check_flake8" ]
     steps:
       - name: Getting code
         uses: actions/checkout@v3

@@ -10,10 +10,6 @@ jobs:
   lint:
     uses: ./.github/workflows/linting.yml
     name: Linting
-    with:
-      python-version: "3.10"
-      commands: ${{ toJSON([ "make check_mypy", "make check_isort", "make check_flake8" ]) }}
-      system: "ubuntu-20.04"
   test:
     uses: ./.github/workflows/testing.yml
     name: Testing
