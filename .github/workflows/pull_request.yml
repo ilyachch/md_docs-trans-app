@@ -9,14 +9,10 @@ on:
 jobs:
   lint:
     uses: ./.github/workflows/linting.yml
-    strategy:
-      fail-fast: false
-      matrix:
-        validation-command: [ "make check_mypy", "make check_isort", "make check_flake8" ]
     name: Linting
     with:
       python-version: "3.10"
-      command: ${{ matrix.validation-command }}
+      commands: ${{ toJSON([ "make check_mypy", "make check_isort", "make check_flake8" ]) }}
       system: "ubuntu-20.04"
   test:
     uses: ./.github/workflows/testing.yml

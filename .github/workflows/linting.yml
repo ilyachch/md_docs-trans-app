@@ -22,6 +22,10 @@ jobs:
   validate:
     name: Validate
     runs-on: ${{ inputs.system }}
+    strategy:
+      fail-fast: false
+      matrix:
+        command: ${{ fromJSON(inputs.commands) }}
     steps:
       - name: Getting code
         uses: actions/checkout@v3
@@ -48,4 +52,4 @@ jobs:
       - name: Installing dependencies
         run: poetry install
       - name: Running types checks
-        run: ${{ inputs.command }}
+        run: ${{ matrix.command }}
