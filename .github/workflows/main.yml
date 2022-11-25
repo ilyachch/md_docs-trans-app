@@ -111,7 +111,7 @@ jobs:
         with:
           SUFFIX_FILTER: .toml
       - name: Check if python files are changed
-        uses: technote-space/get-diff-action@v1
+        uses: technote-space/get-diff-action@v6.1.1
         id: python_files_are_changed
         with:
           SUFFIX_FILTER: .py

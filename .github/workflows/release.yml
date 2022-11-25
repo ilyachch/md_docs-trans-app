@@ -53,18 +53,18 @@ jobs:
 
       - name: Getting package version
         id: get_version
-        run: echo "::set-output name=version::$(poetry version)"
+        run: echo "version=$(poetry version)" >> $GITHUB_ENV
 
       - name: Getting package clear version
         id: get_clear_version
-        run: echo "::set-output name=clear_version::$(poetry version | cut -d ' ' -f 2)"
+        run: echo "clear_version=$(poetry version -s)" >> $GITHUB_OUTPUT
 
       - name: Make release and publish
         run: make release USERNAME=${{ secrets.PYPI_USERNAME }} TOKEN=${{ secrets.PYPI_TOKEN }}
 
       - name: Get asset name
         id: get_asset_name
-        run: echo "::set-output name=assert_name::$(ls dist | grep gz)"
+        run: echo "assert_name=$(ls dist | grep gz)" >> $GITHUB_OUTPUT
 
       - name: Create Release
         id: create_release
