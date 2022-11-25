@@ -1,4 +1,4 @@
-name: Validate Version change
+name: Check Version
 on:
   workflow_call:
 jobs:

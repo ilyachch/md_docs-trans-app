@@ -1,4 +1,4 @@
-name: Linting
+name: Lint
 on:
   workflow_call:
     inputs:
