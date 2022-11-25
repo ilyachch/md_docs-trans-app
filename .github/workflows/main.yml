@@ -65,12 +65,12 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-      - name: Getting Poetry
-        uses: dschep/install-poetry-action@v1.3
-      - name: Config Poetry
-        run: |
-          poetry config virtualenvs.create true
-          poetry config virtualenvs.in-project true
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
       - name: Installing dependencies
         run: poetry install
       - name: Running types checks
@@ -91,12 +91,12 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-      - name: Getting Poetry
-        uses: dschep/install-poetry-action@v1.3
-      - name: Config Poetry
-        run: |
-          poetry config virtualenvs.create true
-          poetry config virtualenvs.in-project true
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
       - name: Installing dependencies
         run: poetry install
       - name: Running codestyle checks
