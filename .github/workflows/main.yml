@@ -8,24 +8,20 @@ jobs:
   test_pr:
     name: Tests
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.8", "3.9", "3.10"]
     steps:
       - name: Getting code
         uses: actions/checkout@master
       - name: Getting Python
         uses: actions/setup-python@master
         with:
-          python-version: ${{ matrix.python-version }}
-
+          python-version: "3.8"
       - name: Cache pip
         uses: actions/cache@v2
         with:
           path: .venv
-          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
+          key: ${{ runner.os }}-pip-3.8-${{ hashFiles('poetry.lock') }}
           restore-keys: |
-            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+            ${{ runner.os }}-pip-3.8-
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
@@ -37,13 +33,10 @@ jobs:
       - name: Running tests
         run: make coverage
       - name: Running coverage check
-        if: ${{ matrix.python-version == 3.8 }}
         run: make coverage_cmd_report
       - name: Generate coverage report
-        if: ${{ matrix.python-version == 3.8 }}
         run: make coverage_xml_report
       - name: Upload coverage to Codecov
-        if: ${{ matrix.python-version == 3.8 }}
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
