@@ -13,7 +13,7 @@ on:
         type: string
         default: "make tests"
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.python-version }}-${{ github.event.inputs.system }}-${{ github.event.inputs.command }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.python-version }}-${{ github.event.inputs.system }}-${{ inputs.command }}
   cancel-in-progress: true
 jobs:
   test_pr:

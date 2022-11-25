@@ -13,7 +13,7 @@ on:
         type: string
         default: ubuntu-20.04
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.python-version }}-${{ github.event.inputs.system }}-${{ github.event.inputs.command }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.python-version }}-${{ inputs.system }}
   cancel-in-progress: true
 jobs:
   validate:
