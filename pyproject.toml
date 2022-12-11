@@ -25,7 +25,7 @@ classifiers = [
 ]
 
 [tool.poetry.scripts]
-md-translate = "md_translate.app:run"
+md-translate = "md_translate.main:main"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
