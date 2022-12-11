@@ -134,6 +134,7 @@ class TranslationProvider(metaclass=abc.ABCMeta):
             return not self.check_for_antispam()
 
         if self.check_for_antispam():
+            self._driver.execute_script('alert("Antispam detected");')
             self.WEBDRIVER_WAIT(self._driver, self.ANTISPAM_TIMEOUT).until(wait_for)
 
     def wait_for_translation(self) -> None:

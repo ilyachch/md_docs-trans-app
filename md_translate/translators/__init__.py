@@ -1,15 +1,11 @@
+import enum
 import pathlib
-from typing import Any, Optional, Protocol, Type, Union, runtime_checkable
+from typing import Any, Optional, Protocol, Union, runtime_checkable
 
 from .bing import BingTranslateProvider
 from .deepl import DeeplTranslateProvider
 from .google import GoogleTranslateProvider
 from .yandex import YandexTranslateProvider
-
-TRANSLATION_SERVICE_YANDEX = 'yandex'
-TRANSLATION_SERVICE_GOOGLE = 'google'
-TRANSLATION_SERVICE_BING = 'bing'
-TRANSLATION_SERVICE_DEEPL = 'deepl'
 
 
 @runtime_checkable
@@ -33,9 +29,8 @@ class PTranslator(Protocol):
         ...
 
 
-TRANSLATOR_BY_SERVICE_NAME: dict[str, Type[PTranslator]] = {
-    TRANSLATION_SERVICE_YANDEX: YandexTranslateProvider,
-    TRANSLATION_SERVICE_GOOGLE: GoogleTranslateProvider,
-    TRANSLATION_SERVICE_BING: BingTranslateProvider,
-    TRANSLATION_SERVICE_DEEPL: DeeplTranslateProvider,
-}
+class Translator(enum.Enum):
+    yandex = YandexTranslateProvider
+    google = GoogleTranslateProvider
+    bing = BingTranslateProvider
+    deepl = DeeplTranslateProvider
