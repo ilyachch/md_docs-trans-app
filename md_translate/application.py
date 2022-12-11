@@ -1,7 +1,7 @@
+import logging
+import multiprocessing
 from pathlib import Path
 from typing import TYPE_CHECKING
-import multiprocessing
-import logging
 
 import click
 

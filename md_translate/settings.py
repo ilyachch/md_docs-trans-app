@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Union, Optional, Type
+from typing import Any, Optional, Type, Union
 
 from translators import PTranslator, Translator
 from translators._base import TranslationProvider

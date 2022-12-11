@@ -131,6 +131,7 @@ class TestMarkdownDocument:
         document.translate(MockTranslator())
         document.write()
         assert test_document.read_text() == (
+            '<!-- TRANSLATED by md-translate -->\n'
             "# Test document\n\n"
             "# Test document. translated\n\n"
             "This is a test document.\n\n"
@@ -144,6 +145,7 @@ class TestMarkdownDocument:
         new_file = test_document.parent / f'{test_document.stem}_translated{test_document.suffix}'
         assert new_file.exists()
         assert new_file.read_text() == (
+            '<!-- TRANSLATED by md-translate -->\n'
             '# Test document\n\n'
             '# Test document. translated\n\n'
             'This is a test document.\n\n'

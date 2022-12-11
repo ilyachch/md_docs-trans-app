@@ -37,4 +37,11 @@ class GoogleTranslateProvider(TranslationProvider):
             buttons[1].click()
 
     def check_for_antispam(self) -> bool:
-        return False
+        try:
+            element = self._driver.find_element(
+                by=self.WEBDRIVER_BY.XPATH, value='//div[text()="Translation error"]'
+            )
+            parent = element.find_element(by=self.WEBDRIVER_BY.XPATH, value='..')
+            return parent.is_displayed()
+        except NoSuchElementException:
+            return False

@@ -1,4 +1,5 @@
 import abc
+import logging
 import pathlib
 import time
 import urllib.parse
@@ -14,6 +15,11 @@ from selenium.webdriver.support.wait import WebDriverWait
 from md_translate.translators.randomizer.randomizer import Randomizer
 
 current_dir = pathlib.Path(__file__).parent.absolute()
+logger = logging.getLogger(__name__)
+
+
+class AntiSpamException(Exception):
+    pass
 
 
 class TranslationProvider(metaclass=abc.ABCMeta):
@@ -69,7 +75,11 @@ class TranslationProvider(metaclass=abc.ABCMeta):
             self.wait_for_antispam()
         input_element = self.get_input_element()
         input_element.send_keys(text)
-        self.wait_for_translation()
+        try:
+            self.wait_for_translation()
+        except AntiSpamException:
+            self.wait_for_antispam()
+            self.wait_for_translation()
         output_element = self.get_output_element()
         if self.check_for_antispam():
             self.wait_for_antispam()
@@ -130,15 +140,19 @@ class TranslationProvider(metaclass=abc.ABCMeta):
             return
 
     def wait_for_antispam(self) -> None:
+        logger.debug('Waiting for antispam')
+        self._driver.switch_to.window(self._driver.window_handles[0])
+
         def wait_for(driver: Any) -> bool:
             return not self.check_for_antispam()
 
         if self.check_for_antispam():
-            self._driver.execute_script('alert("Antispam detected");')
             self.WEBDRIVER_WAIT(self._driver, self.ANTISPAM_TIMEOUT).until(wait_for)
 
     def wait_for_translation(self) -> None:
         def wait_for(driver: Any) -> bool:
+            if self.check_for_antispam():
+                raise AntiSpamException('Antispam detected')
             return self.check_for_translation()
 
         self.WEBDRIVER_WAIT(self._driver, 10).until(wait_for)

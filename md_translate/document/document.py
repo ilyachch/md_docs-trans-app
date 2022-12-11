@@ -19,6 +19,8 @@ class MarkdownDocument(pydantic.BaseModel):
 
     blocks: list[BaseBlock] = pydantic.Field(default_factory=list)
 
+    _TRANSLATED_MARK = '<!-- TRANSLATED by md-translate -->'
+
     def write(
         self,
         *,
@@ -30,7 +32,7 @@ class MarkdownDocument(pydantic.BaseModel):
             raise ValueError('Only documents with source can be written')
         file_to_write = self.source if not new_file else self.__get_new_file_path(self.source)
         if translated:
-            file_to_write.write_text(self.render_translated())
+            file_to_write.write_text('\n'.join([self._TRANSLATED_MARK, self.render_translated()]))
             if not save_temp_on_complete:
                 temp_file = self.__get_dump_file_path(self.source)
                 temp_file.unlink(missing_ok=True)
@@ -63,8 +65,14 @@ class MarkdownDocument(pydantic.BaseModel):
             return False
         if overwrite:
             return True
-        target_file = self.source if not new_file else self.__get_new_file_path(self.source)
-        return not target_file.exists()
+        if new_file:
+            target_file = self.__get_new_file_path(self.source)
+            if not target_file.exists():
+                return True
+            else:
+                return self._TRANSLATED_MARK not in target_file.read_text()
+        else:
+            return self._TRANSLATED_MARK not in self.source.read_text()
 
     @classmethod
     def from_file(
