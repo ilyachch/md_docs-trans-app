@@ -39,21 +39,18 @@ class Application:
             )
 
     def _set_logging_level(self):
-        match self._settings.verbose:
-            case 0:
-                logging.basicConfig(level=logging.WARNING)
-            case 1:
-                logging.basicConfig(level=logging.DEBUG)
-            case _:
-                logging.basicConfig(level=logging.INFO)
+        if self._settings.verbose == 0:
+            logging.basicConfig(level=logging.WARNING)
+        elif self._settings.verbose == 1:
+            logging.basicConfig(level=logging.DEBUG)
+        else:
+            logging.basicConfig(level=logging.INFO)
 
     def _get_files_to_process(self) -> list[Path]:
         path = self._settings.path
 
         if not isinstance(path, list):
-            path = [
-                path,
-            ]
+            path = [path]
         files_to_process = []
         for path_to_process in path:
             if not path_to_process.exists():
@@ -73,7 +70,19 @@ class Application:
             if '_translated' not in file_to_process.name
         ]
 
-        self._logger.info('Found %s files to process: %s', len(source_files), source_files)
+        common_path_part = Path(
+            *(
+                part
+                for part in source_files[0].parts
+                if all(part in file.parts for file in source_files)
+            )
+        )
+
+        self._logger.info(
+            'Found %s files to process: %s',
+            len(source_files),
+            ', '.join([str(f.relative_to(common_path_part)) for f in source_files]),
+        )
         return source_files
 
     def _get_translation_provider(self):
