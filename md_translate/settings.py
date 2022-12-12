@@ -1,19 +1,18 @@
 from pathlib import Path
 from typing import Any, Optional, Type, Union
 
-from translators import PTranslator, Translator
-from translators._base import TranslationProvider
+from translators import PTranslator
 
 
 class Settings:
     _instance = None
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args: Any, **kwargs: Any) -> 'Settings':
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def set_option(self, option_name: str, value: Any):
+    def set_option(self, option_name: str, value: Any) -> None:
         setattr(self, f'_{option_name}', value)
 
     @property

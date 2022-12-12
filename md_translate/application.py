@@ -9,6 +9,7 @@ from document import MarkdownDocument
 
 if TYPE_CHECKING:
     from md_translate.settings import Settings
+    from md_translate.translators import PTranslator
 
 
 class Application:
@@ -16,14 +17,14 @@ class Application:
         self._settings = settings_obj
         self._logger = logging.getLogger(__name__)
 
-    def run(self):
+    def run(self) -> None:
         self._set_logging_level()
         if self._settings.processes == 1:
             self.run_single_process()
         else:
             self.run_multiple_processes()
 
-    def run_single_process(self):
+    def run_single_process(self) -> None:
         files_to_process = self._get_files_to_process()
         translation_provider = self._get_translation_provider()
         for file_to_process in files_to_process:
@@ -38,7 +39,7 @@ class Application:
                 [(translation_provider, file_to_process) for file_to_process in files_to_process],
             )
 
-    def _set_logging_level(self):
+    def _set_logging_level(self) -> None:
         if self._settings.verbose == 0:
             logging.basicConfig(level=logging.WARNING)
         elif self._settings.verbose == 1:
@@ -85,7 +86,7 @@ class Application:
         )
         return source_files
 
-    def _get_translation_provider(self):
+    def _get_translation_provider(self) -> 'PTranslator':
         return self._settings.service(
             host=self._settings.service_host,
             webdriver_path=self._settings.webdriver,
@@ -93,7 +94,7 @@ class Application:
             to_language=self._settings.to_lang,
         )
 
-    def process_file(self, translation_provider, file_to_process: Path) -> None:
+    def process_file(self, translation_provider: 'PTranslator', file_to_process: Path) -> None:
         self._logger.info('Processing file: %s', file_to_process)
         try:
             document = MarkdownDocument.from_file(

@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 
 import click
 
@@ -30,7 +31,7 @@ from md_translate.translators import Translator
 @click.option(
     '-P',
     '--service',
-    type=click.Choice(Translator.__members__),
+    type=click.Choice(Translator.__members__),  # type: ignore
     callback=lambda ctx, param, value: Translator[value],
     help='Translating service',
     required=True,
@@ -85,7 +86,7 @@ from md_translate.translators import Translator
     count=True,
 )
 def main(
-    **kwargs,
+    **kwargs: Any,
 ) -> None:
     for key, value in kwargs.items():
         settings.set_option(key, value)
