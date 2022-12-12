@@ -33,7 +33,13 @@ class BingTranslateProvider(TranslationProvider):
         self.click_cookies_accept('Accept')
 
     def check_for_antispam(self) -> bool:
-        return False
+        try:
+            container = self._driver.find_element(
+                by=self.WEBDRIVER_BY.ID, value='t_enter_captcha'
+            )
+            return container.is_displayed()
+        except NoSuchElementException:
+            return False
 
     @staticmethod
     def get_translated_data(output_element: WebElement) -> str:

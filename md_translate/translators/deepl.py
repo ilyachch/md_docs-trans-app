@@ -7,6 +7,8 @@ from ._base import TranslationProvider
 class DeeplTranslateProvider(TranslationProvider):
     HOST = 'https://www.deepl.com/translator/'
 
+    TRANSLATION_TIMEOUT = 30
+
     def get_url(self) -> str:
         return f'{self._host}l/{self.from_language}/{self.to_language}/'
 
@@ -43,7 +45,14 @@ class DeeplTranslateProvider(TranslationProvider):
             return
 
     def check_for_antispam(self) -> bool:
-        return False
+        try:
+            container = self._driver.find_element(
+                by=self.WEBDRIVER_BY.XPATH,
+                value='//*[text()="You’ve reached your free usage limit.*"]',
+            )
+            return container.is_displayed()
+        except NoSuchElementException:
+            return False
 
     @staticmethod
     def get_translated_data(output_element: WebElement) -> str:

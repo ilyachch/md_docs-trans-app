@@ -33,6 +33,8 @@ class TranslationProvider(metaclass=abc.ABCMeta):
     COOKIES_ACCEPT_BTN_TEXT = 'Accept all'
 
     ANTISPAM_TIMEOUT = 60 * 60  # 1 hour
+    PAGE_LOAD_TIMEOUT = 10
+    TRANSLATION_TIMEOUT = 10
 
     def __init__(
         self,
@@ -127,7 +129,7 @@ class TranslationProvider(metaclass=abc.ABCMeta):
         def wait_for(driver: Any) -> bool:
             return driver.execute_script('return document.readyState') == 'complete'
 
-        self.WEBDRIVER_WAIT(self._driver, 10).until(wait_for)
+        self.WEBDRIVER_WAIT(self._driver, self.PAGE_LOAD_TIMEOUT).until(wait_for)
 
     def click_cookies_accept(self, btn_text: str) -> None:
         try:
@@ -140,7 +142,7 @@ class TranslationProvider(metaclass=abc.ABCMeta):
             return
 
     def wait_for_antispam(self) -> None:
-        logger.debug('Waiting for antispam')
+        logger.warning('Waiting for antispam')
         self._driver.switch_to.window(self._driver.window_handles[0])
 
         def wait_for(driver: Any) -> bool:
@@ -155,7 +157,7 @@ class TranslationProvider(metaclass=abc.ABCMeta):
                 raise AntiSpamException('Antispam detected')
             return self.check_for_translation()
 
-        self.WEBDRIVER_WAIT(self._driver, 10).until(wait_for)
+        self.WEBDRIVER_WAIT(self._driver, self.TRANSLATION_TIMEOUT).until(wait_for)
 
     @staticmethod
     def clear(data: str) -> str:
