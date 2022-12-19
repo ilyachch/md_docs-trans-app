@@ -91,10 +91,10 @@ def main(
     for key, value in kwargs.items():
         settings.set_option(key, value)
 
-    Application(settings).run()
+    exit_code = Application(settings).run()
 
-    exit(0)
+    exit(exit_code)
 
 
 if __name__ == "__main__":
-    main()
+    main()  # pragma: no cover

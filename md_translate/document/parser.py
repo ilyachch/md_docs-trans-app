@@ -82,7 +82,7 @@ class TypedParser(BaseRenderer):
     ) -> blocks.ListItemBlock:
         base_children: List[blocks.BaseBlock] = children[0]
         if not isinstance(base_children, list):
-            base_children = [base_children]  # type: ignore
+            base_children = [base_children]  # type: ignore  # pragma: no cover
         nested_children: List[blocks.BaseBlock] = list(children[1:]) if len(children) > 1 else []
         return blocks.ListItemBlock(
             children=base_children, nested_children=nested_children, level=level

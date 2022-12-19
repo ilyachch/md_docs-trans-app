@@ -109,6 +109,28 @@ class TestMarkdownDocument:
         document_restored = MarkdownDocument.restore(test_document_with_cache)
         assert document_restored == document
 
+    @pytest.mark.parametrize(
+        'document, params, expected_result',
+        [
+            (MarkdownDocument.from_string(TEST_DOCUMENT), {}, False),
+            (
+                MarkdownDocument.from_file('tests/assets/simple_document.md'),
+                {'overwrite': True},
+                True,
+            ),
+            (MarkdownDocument.from_file('tests/assets/simple_document.md'), {}, True),
+            (
+                MarkdownDocument.from_file('tests/assets/simple_document.md'),
+                {'new_file': True},
+                True,
+            ),
+            (MarkdownDocument.from_file('tests/assets/test_document.md'), {'new_file': True}, False),
+            (MarkdownDocument.from_file('tests/assets/test_document_translated.md'), {}, False),
+        ],
+    )
+    def test_should_be_translated(self, document, params, expected_result):
+        assert document.should_be_translated(**params) == expected_result
+
     def test_translate(self, test_document):
         document = MarkdownDocument.from_file(test_document)
         document.translate(MockTranslator())  # type: ignore
