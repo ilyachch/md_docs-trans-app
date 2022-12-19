@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any, Optional, Type, Union
 
-from translators import PTranslator
+from md_translate.translators import PTranslator
 
 
 class Settings:

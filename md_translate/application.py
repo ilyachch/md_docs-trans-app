@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 import click
 
-from document import MarkdownDocument
+from md_translate.document import MarkdownDocument
 
 if TYPE_CHECKING:
     from md_translate.settings import Settings
