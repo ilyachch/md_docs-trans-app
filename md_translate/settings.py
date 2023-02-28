@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any, Optional, Type, Union
 
-from md_translate.translators import PTranslator
+from md_translate.translators import BaseTranslator
 
 
 class Settings:
@@ -28,40 +28,44 @@ class Settings:
         return getattr(self, '_to_lang')
 
     @property
-    def service(self) -> Type[PTranslator]:
+    def service(self) -> Type[BaseTranslator]:
         return getattr(self, '_service').value
 
     @property
     def service_host(self) -> Optional[str]:
-        return getattr(self, '_service_host')
+        return getattr(self, '_service_host', None)
 
     @property
     def processes(self) -> int:
-        return getattr(self, '_processes')
+        return getattr(self, '_processes', 1)
 
     @property
     def webdriver(self) -> Optional[Path]:
-        return getattr(self, '_webdriver')
+        return getattr(self, '_webdriver', None)
 
     @property
     def new_file(self) -> bool:
-        return getattr(self, '_new_file')
+        return getattr(self, '_new_file', False)
 
     @property
     def ignore_cache(self) -> bool:
-        return getattr(self, '_ignore_cache')
+        return getattr(self, '_ignore_cache', False)
 
     @property
     def save_temp_on_complete(self) -> bool:
-        return getattr(self, '_save_temp_on_complete')
+        return getattr(self, '_save_temp_on_complete', False)
 
     @property
     def overwrite(self) -> bool:
-        return getattr(self, '_overwrite')
+        return getattr(self, '_overwrite', False)
 
     @property
     def verbose(self) -> int:
-        return getattr(self, '_verbose')
+        return getattr(self, '_verbose', 0)
+
+    @property
+    def drop_original(self) -> bool:
+        return getattr(self, '_drop_original', False)
 
 
 settings = Settings()

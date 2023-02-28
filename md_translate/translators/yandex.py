@@ -1,7 +1,7 @@
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.remote.webelement import WebElement
 
-from ._base import TranslationProvider
+from ._selenium_base import TranslationProvider
 
 
 class YandexTranslateProvider(TranslationProvider):

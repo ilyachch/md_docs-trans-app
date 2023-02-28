@@ -81,6 +81,12 @@ from md_translate.translators import Translator
     help='Overwrite existing files.',
 )
 @click.option(
+    '-D',
+    '--drop-original',
+    is_flag=True,
+    help='Drop original lines after translation.',
+)
+@click.option(
     '-v',
     '--verbose',
     count=True,

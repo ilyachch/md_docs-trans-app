@@ -1,25 +1,33 @@
 import json
 import logging
 from pathlib import Path
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 import mistune
-import pydantic
 
+from md_translate.document.blocks import BaseBlock, NewlineBlock
 from md_translate.document.parser import TypedParser
-from md_translate.translators import PTranslator
+from md_translate.translators import BaseTranslator
 
-from .blocks import BaseBlock, NewlineBlock
+if TYPE_CHECKING:
+    from md_translate.settings import Settings
 
 logger = logging.getLogger(__name__)
 
 
-class MarkdownDocument(pydantic.BaseModel):
-    source: Optional[Path] = None
-
-    blocks: list[BaseBlock] = pydantic.Field(default_factory=list)
-
+class MarkdownDocument:
     _TRANSLATED_MARK = '<!-- TRANSLATED by md-translate -->'
+
+    def __init__(
+        self,
+        settings: 'Settings',
+        *,
+        source: Optional[Path] = None,
+        blocks: Optional[list[BaseBlock]] = None,
+    ) -> None:
+        self._settings = settings
+        self.source = source
+        self.blocks = blocks or []
 
     def write(
         self,
@@ -45,12 +53,18 @@ class MarkdownDocument(pydantic.BaseModel):
     def render_translated(self) -> str:
         rendered_blocks = []
         for block in self.blocks:
-            rendered_blocks.append(str(block))
-            if block.translated_data:
-                rendered_blocks.append(block.translated_data)
+            if not self._settings.drop_original:
+                rendered_blocks.append(str(block))
+                if block.translated_data:
+                    rendered_blocks.append(block.translated_data)
+            else:
+                if block.translated_data:
+                    rendered_blocks.append(block.translated_data)
+                else:
+                    rendered_blocks.append(str(block))
         return '\n\n'.join(rendered_blocks)
 
-    def translate(self, translator: PTranslator) -> None:
+    def translate(self, translator: BaseTranslator) -> None:
         blocks_to_translate = [block for block in self.blocks if block.should_be_translated]
         logger.info('Found %s blocks to translate', len(blocks_to_translate))
         for number, block in enumerate(blocks_to_translate, start=1):
@@ -77,21 +91,22 @@ class MarkdownDocument(pydantic.BaseModel):
     @classmethod
     def from_file(
         cls,
+        settings: 'Settings',
         path: Union[str, Path],
-        ignore_cache: bool = False,
     ) -> 'MarkdownDocument':
         target_file = cls.__get_file_path(path)
-        if not ignore_cache:
+        if not settings.ignore_cache:
             try:
-                return cls.restore(target_file)
+                return cls.restore(settings, source=target_file)
             except FileNotFoundError:
                 logger.info('Cache file not found. Loading from source')
         file_content = target_file.read_text()
-        return cls(blocks=cls.__parse_blocks(file_content), source=target_file)
+        return cls(settings, blocks=cls.__parse_blocks(file_content), source=target_file)
 
     @classmethod
-    def from_string(cls, text: str) -> 'MarkdownDocument':
+    def from_string(cls, settings: 'Settings', text: str) -> 'MarkdownDocument':
         return cls(
+            settings,
             blocks=cls.__parse_blocks(text),
         )
 
@@ -102,11 +117,11 @@ class MarkdownDocument(pydantic.BaseModel):
         dump_file.write_text(self._dump_data())
 
     @classmethod
-    def restore(cls, source: Path) -> 'MarkdownDocument':
+    def restore(cls, settings: 'Settings', source: Path) -> 'MarkdownDocument':
         dump_file = cls.__get_dump_file_path(source)
         if not dump_file.exists():
             raise FileNotFoundError('Temp file not found: %s', str(dump_file))
-        return cls(blocks=cls._load_data(dump_file.read_text()), source=source)
+        return cls(settings, blocks=cls._load_data(dump_file.read_text()), source=source)
 
     def _dump_data(self) -> str:
         blocks_dump = [block.dump() for block in self.blocks]

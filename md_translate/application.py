@@ -9,7 +9,7 @@ from md_translate.document import MarkdownDocument
 
 if TYPE_CHECKING:
     from md_translate.settings import Settings
-    from md_translate.translators import PTranslator
+    from md_translate.translators import BaseTranslator
 
 
 class Application:
@@ -43,11 +43,15 @@ class Application:
 
     def _set_logging_level(self) -> None:
         if self._settings.verbose == 0:
-            logging.basicConfig(level=logging.WARNING)
+            logging.basicConfig(level=logging.CRITICAL)
         elif self._settings.verbose == 1:
-            logging.basicConfig(level=logging.DEBUG)
-        else:
+            logging.basicConfig(level=logging.ERROR)
+        elif self._settings.verbose == 2:
+            logging.basicConfig(level=logging.WARNING)
+        elif self._settings.verbose == 3:
             logging.basicConfig(level=logging.INFO)
+        elif self._settings.verbose >= 4:
+            logging.basicConfig(level=logging.DEBUG)
 
     def _get_files_to_process(self) -> list[Path]:
         path = self._settings.path
@@ -88,19 +92,15 @@ class Application:
         )
         return source_files
 
-    def _get_translation_provider(self) -> 'PTranslator':
-        return self._settings.service(
-            host=self._settings.service_host,
-            webdriver_path=self._settings.webdriver,
-            from_language=self._settings.from_lang,
-            to_language=self._settings.to_lang,
-        )
+    def _get_translation_provider(self) -> 'BaseTranslator':
+        return self._settings.service(self._settings)
 
-    def process_file(self, translation_provider: 'PTranslator', file_to_process: Path) -> None:
+    def process_file(self, translation_provider: 'BaseTranslator', file_to_process: Path) -> None:
         self._logger.info('Processing file: %s', file_to_process)
         try:
             document = MarkdownDocument.from_file(
-                file_to_process, ignore_cache=self._settings.ignore_cache
+                self._settings,
+                file_to_process,
             )
         except Exception as e:
             self._logger.error('Error processing file: %s', file_to_process)

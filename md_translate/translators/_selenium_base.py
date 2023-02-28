@@ -3,7 +3,7 @@ import logging
 import pathlib
 import time
 import urllib.parse
-from typing import Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional
 
 import requests
 from selenium import webdriver
@@ -13,6 +13,10 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
 
 from md_translate.translators.randomizer.randomizer import Randomizer
+from translators._base_translator import BaseTranslator
+
+if TYPE_CHECKING:
+    from settings import Settings
 
 current_dir = pathlib.Path(__file__).parent.absolute()
 logger = logging.getLogger(__name__)
@@ -22,7 +26,7 @@ class AntiSpamException(Exception):
     pass
 
 
-class TranslationProvider(metaclass=abc.ABCMeta):
+class TranslationProvider(BaseTranslator):
     HEADLESS = False
 
     WEBDRIVER_WAIT = WebDriverWait
@@ -38,16 +42,14 @@ class TranslationProvider(metaclass=abc.ABCMeta):
 
     def __init__(
         self,
-        from_language: str,
-        to_language: str,
-        webdriver_path: Optional[Union[str, pathlib.Path]] = None,
-        host: Optional[str] = None,
+        settings: 'Settings',
     ) -> None:
+        self._settings = settings
         self._session = requests.Session()
-        self._webdriver_path = webdriver_path
-        self._host = self.__get_host(host)
-        self.from_language = from_language
-        self.to_language = to_language
+        self._webdriver_path = self._settings.webdriver
+        self._host = self.__get_host(self._settings.service_host)
+        self.from_language = self._settings.from_lang
+        self.to_language = self._settings.to_lang
         self.randomizer = Randomizer()
 
     def __get_host(self, host: Optional[str] = None) -> str:
@@ -56,7 +58,7 @@ class TranslationProvider(metaclass=abc.ABCMeta):
             raise ValueError('Host is not defined')
         return host
 
-    def __enter__(self) -> 'TranslationProvider':
+    def __enter__(self) -> 'BaseTranslator':
         options = self.randomizer.make_options()
         if self._webdriver_path:
             self._driver = webdriver.Chrome(

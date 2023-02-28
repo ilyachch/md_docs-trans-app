@@ -3,7 +3,7 @@ import random
 
 from selenium.webdriver.chrome.options import Options
 
-from .const import USER_AGENTS
+from md_translate.translators.randomizer.const import USER_AGENTS
 
 logger = logging.getLogger(__name__)
 

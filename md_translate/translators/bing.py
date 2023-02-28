@@ -1,7 +1,7 @@
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.remote.webelement import WebElement
 
-from ._base import TranslationProvider
+from ._selenium_base import TranslationProvider
 
 
 class BingTranslateProvider(TranslationProvider):
@@ -34,9 +34,7 @@ class BingTranslateProvider(TranslationProvider):
 
     def check_for_antispam(self) -> bool:
         try:
-            container = self._driver.find_element(
-                by=self.WEBDRIVER_BY.ID, value='t_enter_captcha'
-            )
+            container = self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='t_enter_captcha')
             return container.is_displayed()
         except NoSuchElementException:
             return False
