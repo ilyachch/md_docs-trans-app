@@ -1,10 +1,10 @@
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.remote.webelement import WebElement
 
-from ._selenium_base import TranslationProvider
+from ._selenium_base import SeleniumBaseTranslator
 
 
-class GoogleTranslateProvider(TranslationProvider):
+class GoogleTranslateProvider(SeleniumBaseTranslator):
     HOST = 'https://translate.google.com/'
 
     def get_url(self) -> str:

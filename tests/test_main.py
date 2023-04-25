@@ -2,13 +2,13 @@ from pathlib import Path
 from typing import cast
 from unittest.mock import patch
 
+import pytest
 from click import Command
 from click.testing import CliRunner
+
 import md_translate.main as md_translate_main
 from md_translate.settings import settings
-
 from md_translate.translators.google import GoogleTranslateProvider
-import pytest
 
 
 class FakeApplication:

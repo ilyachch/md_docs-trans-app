@@ -16,7 +16,7 @@ from md_translate.translators.randomizer.randomizer import Randomizer
 from translators._base_translator import BaseTranslator
 
 if TYPE_CHECKING:
-    from settings import Settings
+    from md_translate.settings import SettingsProtocol
 
 current_dir = pathlib.Path(__file__).parent.absolute()
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ class AntiSpamException(Exception):
     pass
 
 
-class TranslationProvider(BaseTranslator):
+class SeleniumBaseTranslator(BaseTranslator):
     HEADLESS = False
 
     WEBDRIVER_WAIT = WebDriverWait
@@ -40,16 +40,13 @@ class TranslationProvider(BaseTranslator):
     PAGE_LOAD_TIMEOUT = 10
     TRANSLATION_TIMEOUT = 10
 
-    def __init__(
-        self,
-        settings: 'Settings',
-    ) -> None:
-        self._settings = settings
+    def __init__(self, settings: 'Settings') -> None:
+        self._seetings = settings
         self._session = requests.Session()
-        self._webdriver_path = self._settings.webdriver
-        self._host = self.__get_host(self._settings.service_host)
-        self.from_language = self._settings.from_lang
-        self.to_language = self._settings.to_lang
+        self._webdriver_path = settings.webdriver
+        self._host = self.__get_host(settings.service_host)
+        self.from_language = settings.from_lang
+        self.to_language = settings.to_lang
         self.randomizer = Randomizer()
 
     def __get_host(self, host: Optional[str] = None) -> str:

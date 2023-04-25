@@ -1,6 +1,6 @@
 import enum
 
-from ._base_translator import BaseTranslator  # NOQA
+from ._base_translator import BaseTranslator, BaseTranslatorProtocol  # noqa: F401
 from .bing import BingTranslateProvider
 from .deepl import DeeplTranslateProvider
 from .google import GoogleTranslateProvider

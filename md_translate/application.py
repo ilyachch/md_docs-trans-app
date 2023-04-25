@@ -8,13 +8,12 @@ import click
 from md_translate.document import MarkdownDocument
 
 if TYPE_CHECKING:
-    from md_translate.settings import Settings
-    from md_translate.translators import BaseTranslator
+    from md_translate.settings import SettingsProtocol
 
 
 class Application:
-    def __init__(self, settings_obj: 'Settings'):
-        self._settings = settings_obj
+    def __init__(self, settings: 'Settings'):
+        self._settings = settings
         self._logger = logging.getLogger(__name__)
 
     def run(self) -> int:
@@ -28,17 +27,15 @@ class Application:
 
     def run_single_process(self) -> None:
         files_to_process = self._get_files_to_process()
-        translation_provider = self._get_translation_provider()
         for file_to_process in files_to_process:
-            self.process_file(translation_provider, file_to_process)
+            self.process_file(file_to_process)
 
     def run_multiple_processes(self) -> None:
         files_to_process = self._get_files_to_process()
-        translation_provider = self._get_translation_provider()
         with multiprocessing.Pool(self._settings.processes) as pool:
             pool.starmap(
                 self.process_file,
-                [(translation_provider, file_to_process) for file_to_process in files_to_process],
+                [(file_to_process,) for file_to_process in files_to_process],
             )
 
     def _set_logging_level(self) -> None:
@@ -92,23 +89,19 @@ class Application:
         )
         return source_files
 
-    def _get_translation_provider(self) -> 'BaseTranslator':
-        return self._settings.service(self._settings)
-
-    def process_file(self, translation_provider: 'BaseTranslator', file_to_process: Path) -> None:
+    def process_file(self, file_to_process: Path) -> None:
+        translation_provider = self._settings.service(self._settings)
         self._logger.info('Processing file: %s', file_to_process)
         try:
             document = MarkdownDocument.from_file(
-                self._settings,
                 file_to_process,
+                settings=self._settings,
             )
         except Exception as e:
             self._logger.error('Error processing file: %s', file_to_process)
             self._logger.error(e)
             return
-        if not document.should_be_translated(
-            new_file=self._settings.new_file, overwrite=self._settings.overwrite
-        ):
+        if not document.should_be_translated():
             self._logger.info('Skipping file: %s. Already translated', file_to_process.name)
             return
         with translation_provider as provider:
@@ -118,8 +111,5 @@ class Application:
                 self._logger.error('Error while translating file: %s', file_to_process.name)
                 self._logger.exception(e)
                 return
-        document.write(
-            new_file=self._settings.new_file,
-            save_temp_on_complete=self._settings.save_temp_on_complete,
-        )
+        document.write()
         click.echo('Processed file: {}'.format(file_to_process.name))

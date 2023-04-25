@@ -1,10 +1,26 @@
 from pathlib import Path
-from typing import Any, Optional, Type, Union
+from typing import Protocol, Union, Type, Optional, Any
 
-from md_translate.translators import BaseTranslator
+from translators import BaseTranslator
 
 
-class Settings:
+class SettingsProtocol(Protocol):
+    path: Union[Path, list[Path]]
+    from_lang: str
+    to_lang: str
+    service: Type[BaseTranslator]
+    service_host: Optional[str]
+    processes: int
+    webdriver: Optional[Path]
+    new_file: bool
+    ignore_cache: bool
+    save_temp_on_complete: bool
+    overwrite: bool
+    verbose: int
+    drop_original: bool
+
+
+class Settings(SettingsProtocol):
     _instance = None
 
     def __new__(cls, *args: Any, **kwargs: Any) -> 'Settings':
@@ -66,6 +82,3 @@ class Settings:
     @property
     def drop_original(self) -> bool:
         return getattr(self, '_drop_original', False)
-
-
-settings = Settings()

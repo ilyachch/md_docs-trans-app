@@ -8,7 +8,9 @@ from md_translate.document.blocks import (
     CodeSpanBlock,
     EmphasisTextBlock,
     HeadingBlock,
+    HtmlBlock,
     ImageBlock,
+    InlineHtmlBlock,
     LineBreakBlock,
     LinkBlock,
     ListBlock,
@@ -18,10 +20,11 @@ from md_translate.document.blocks import (
     SeparatorBlock,
     StrongTextBlock,
     TextBlock,
-    InlineHtmlBlock,
-    HtmlBlock,
 )
 from md_translate.document.document import MarkdownDocument
+from md_translate.settings import Settings
+
+test_settings = Settings()
 
 
 def _params_shortener(*params, id_name) -> Generator[Tuple[str, ...], None, None]:
@@ -61,7 +64,7 @@ class TestMarkdownParsing:
         ),
     )
     def test_header_parsing(self, header, expected):
-        assert MarkdownDocument.from_string(header).blocks == expected
+        assert MarkdownDocument.from_string(header, settings=test_settings).blocks == expected
 
     @pytest.mark.parametrize(
         'paragraph, expected',
@@ -99,7 +102,7 @@ class TestMarkdownParsing:
         ),
     )
     def test_paragraph_parsing(self, paragraph, expected):
-        assert MarkdownDocument.from_string(paragraph).blocks == expected
+        assert MarkdownDocument.from_string(paragraph, settings=test_settings).blocks == expected
 
     @pytest.mark.parametrize(
         'line_break, expected',
@@ -120,7 +123,7 @@ class TestMarkdownParsing:
         ),
     )
     def test_line_break_parsing(self, line_break, expected):
-        assert MarkdownDocument.from_string(line_break).blocks == expected
+        assert MarkdownDocument.from_string(line_break, settings=test_settings).blocks == expected
 
     @pytest.mark.parametrize(
         'bold, expected',
@@ -165,7 +168,7 @@ class TestMarkdownParsing:
         ),
     )
     def test_bold_parsing(self, bold, expected):
-        assert MarkdownDocument.from_string(bold).blocks == expected
+        assert MarkdownDocument.from_string(bold, settings=test_settings).blocks == expected
 
     @pytest.mark.parametrize(
         'italic, expected',
@@ -232,7 +235,7 @@ class TestMarkdownParsing:
         ),
     )
     def test_italic_parsing(self, italic, expected):
-        assert MarkdownDocument.from_string(italic).blocks == expected
+        assert MarkdownDocument.from_string(italic, settings=test_settings).blocks == expected
 
     @pytest.mark.parametrize(
         'link, expected',
@@ -273,7 +276,7 @@ class TestMarkdownParsing:
         ),
     )
     def test_link_parsing(self, link, expected):
-        assert MarkdownDocument.from_string(link).blocks == expected
+        assert MarkdownDocument.from_string(link, settings=test_settings).blocks == expected
 
     @pytest.mark.parametrize(
         'image, expected',
@@ -309,7 +312,7 @@ class TestMarkdownParsing:
         ),
     )
     def test_images_parsing(self, image, expected):
-        assert MarkdownDocument.from_string(image).blocks == expected
+        assert MarkdownDocument.from_string(image, settings=test_settings).blocks == expected
 
     @pytest.mark.parametrize(
         'line, expected',
@@ -336,7 +339,7 @@ class TestMarkdownParsing:
         ),
     )
     def test_separator_parsing(self, line, expected):
-        assert MarkdownDocument.from_string(line).blocks == expected
+        assert MarkdownDocument.from_string(line, settings=test_settings).blocks == expected
 
     @pytest.mark.parametrize(
         'code, expected',
@@ -361,7 +364,7 @@ class TestMarkdownParsing:
         ),
     )
     def test_code_parsing(self, code, expected):
-        assert MarkdownDocument.from_string(code).blocks == expected
+        assert MarkdownDocument.from_string(code, settings=test_settings).blocks == expected
 
     @pytest.mark.parametrize(
         'code_line, expected',
@@ -386,7 +389,7 @@ class TestMarkdownParsing:
         ),
     )
     def test_code_line_parsing(self, code_line, expected):
-        assert MarkdownDocument.from_string(code_line).blocks == expected
+        assert MarkdownDocument.from_string(code_line, settings=test_settings).blocks == expected
 
     @pytest.mark.parametrize(
         'ordered_list, expected',
@@ -493,7 +496,9 @@ class TestMarkdownParsing:
         ),
     )
     def test_ordered_list_parsing(self, ordered_list, expected):
-        assert MarkdownDocument.from_string(ordered_list).blocks == expected
+        assert (
+            MarkdownDocument.from_string(ordered_list, settings=test_settings).blocks == expected
+        )
 
     @pytest.mark.parametrize(
         'unordered_list, expected',
@@ -620,7 +625,9 @@ class TestMarkdownParsing:
         ),
     )
     def test_unordered_list_parsing(self, unordered_list, expected):
-        assert MarkdownDocument.from_string(unordered_list).blocks == expected
+        assert (
+            MarkdownDocument.from_string(unordered_list, settings=test_settings).blocks == expected
+        )
 
     @pytest.mark.parametrize(
         'quote, expected',
@@ -748,7 +755,7 @@ class TestMarkdownParsing:
         ),
     )
     def test_quote_parsing(self, quote, expected):
-        assert MarkdownDocument.from_string(quote).blocks == expected
+        assert MarkdownDocument.from_string(quote, settings=test_settings).blocks == expected
 
     @pytest.mark.parametrize(
         'text, expected',
@@ -768,7 +775,7 @@ class TestMarkdownParsing:
         ),
     )
     def test_inline_html(self, text, expected):
-        assert MarkdownDocument.from_string(text).blocks == expected
+        assert MarkdownDocument.from_string(text, settings=test_settings).blocks == expected
 
     @pytest.mark.parametrize(
         'text, expected',
@@ -783,4 +790,4 @@ class TestMarkdownParsing:
         ),
     )
     def test_html_code(self, text, expected):
-        assert MarkdownDocument.from_string(text).blocks == expected
+        assert MarkdownDocument.from_string(text, settings=test_settings).blocks == expected

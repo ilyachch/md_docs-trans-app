@@ -1,11 +1,16 @@
 import abc
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Protocol
 
 if TYPE_CHECKING:
-    from settings import Settings
+    from settings import SettingsProtocol
 
 
-class BaseTranslator(metaclass=abc.ABCMeta):
+class BaseTranslatorProtocol(Protocol):
+    def translate(self, *, text: str) -> str:
+        ...
+
+
+class BaseTranslator(BaseTranslatorProtocol, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def __init__(self, settings: 'Settings') -> None:
         ...

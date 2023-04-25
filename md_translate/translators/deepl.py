@@ -1,10 +1,10 @@
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.remote.webelement import WebElement
 
-from ._selenium_base import TranslationProvider
+from ._selenium_base import SeleniumBaseTranslator
 
 
-class DeeplTranslateProvider(TranslationProvider):
+class DeeplTranslateProvider(SeleniumBaseTranslator):
     HOST = 'https://www.deepl.com/translator/'
 
     TRANSLATION_TIMEOUT = 30

@@ -7,10 +7,10 @@ import mistune
 
 from md_translate.document.blocks import BaseBlock, NewlineBlock
 from md_translate.document.parser import TypedParser
-from md_translate.translators import BaseTranslator
+from translators import BaseTranslatorProtocol
 
 if TYPE_CHECKING:
-    from md_translate.settings import Settings
+    from md_translate.settings import SettingsProtocol
 
 logger = logging.getLogger(__name__)
 
@@ -20,8 +20,8 @@ class MarkdownDocument:
 
     def __init__(
         self,
-        settings: 'Settings',
         *,
+        settings: 'Settings',
         source: Optional[Path] = None,
         blocks: Optional[list[BaseBlock]] = None,
     ) -> None:
@@ -31,21 +31,16 @@ class MarkdownDocument:
 
     def write(
         self,
-        *,
-        new_file: bool = False,
-        translated: bool = True,
-        save_temp_on_complete: bool = False,
     ) -> None:
         if not self.source:  # pragma: no cover
             raise ValueError('Only documents with source can be written')
-        file_to_write = self.source if not new_file else self.__get_new_file_path(self.source)
-        if translated:
-            file_to_write.write_text('\n'.join([self._TRANSLATED_MARK, self.render_translated()]))
-            if not save_temp_on_complete:
-                temp_file = self.__get_dump_file_path(self.source)
-                temp_file.unlink(missing_ok=True)
-        else:
-            file_to_write.write_text(self.render())
+        file_to_write = (
+            self.source if not self._settings.new_file else self.__get_new_file_path(self.source)
+        )
+        file_to_write.write_text('\n'.join([self._TRANSLATED_MARK, self.render_translated()]))
+        if not self._settings.save_temp_on_complete:
+            temp_file = self.__get_dump_file_path(self.source)
+            temp_file.unlink(missing_ok=True)
 
     def render(self) -> str:
         return '\n\n'.join(map(str, self.blocks)) + '\n'
@@ -64,7 +59,7 @@ class MarkdownDocument:
                     rendered_blocks.append(str(block))
         return '\n\n'.join(rendered_blocks)
 
-    def translate(self, translator: BaseTranslator) -> None:
+    def translate(self, translator: BaseTranslatorProtocol) -> None:
         blocks_to_translate = [block for block in self.blocks if block.should_be_translated]
         logger.info('Found %s blocks to translate', len(blocks_to_translate))
         for number, block in enumerate(blocks_to_translate, start=1):
@@ -74,12 +69,12 @@ class MarkdownDocument:
             logger.info('Translated block %s of %s', number, len(blocks_to_translate))
             logger.debug(f'Translated block: {block}')
 
-    def should_be_translated(self, new_file: bool = False, overwrite: bool = False) -> bool:
+    def should_be_translated(self) -> bool:
         if not self.source:
             return False
-        if overwrite:
+        if self._settings.overwrite:
             return True
-        if new_file:
+        if self._settings.new_file:
             target_file = self.__get_new_file_path(self.source)
             if not target_file.exists():
                 return True
@@ -89,26 +84,19 @@ class MarkdownDocument:
             return self._TRANSLATED_MARK not in self.source.read_text()
 
     @classmethod
-    def from_file(
-        cls,
-        settings: 'Settings',
-        path: Union[str, Path],
-    ) -> 'MarkdownDocument':
+    def from_file(cls, path: Union[str, Path], settings: 'Settings') -> 'MarkdownDocument':
         target_file = cls.__get_file_path(path)
         if not settings.ignore_cache:
             try:
-                return cls.restore(settings, source=target_file)
+                return cls.restore(source=target_file, settings=settings)
             except FileNotFoundError:
                 logger.info('Cache file not found. Loading from source')
         file_content = target_file.read_text()
-        return cls(settings, blocks=cls.__parse_blocks(file_content), source=target_file)
+        return cls(settings=settings, blocks=cls.__parse_blocks(file_content), source=target_file)
 
     @classmethod
-    def from_string(cls, settings: 'Settings', text: str) -> 'MarkdownDocument':
-        return cls(
-            settings,
-            blocks=cls.__parse_blocks(text),
-        )
+    def from_string(cls, text: str, settings: 'Settings') -> 'MarkdownDocument':
+        return cls(blocks=cls.__parse_blocks(text), settings=settings)
 
     def cache(self) -> None:
         if not self.source:
@@ -117,11 +105,11 @@ class MarkdownDocument:
         dump_file.write_text(self._dump_data())
 
     @classmethod
-    def restore(cls, settings: 'Settings', source: Path) -> 'MarkdownDocument':
+    def restore(cls, source: Path, settings: 'Settings') -> 'MarkdownDocument':
         dump_file = cls.__get_dump_file_path(source)
         if not dump_file.exists():
             raise FileNotFoundError('Temp file not found: %s', str(dump_file))
-        return cls(settings, blocks=cls._load_data(dump_file.read_text()), source=source)
+        return cls(blocks=cls._load_data(dump_file.read_text()), source=source, settings=settings)
 
     def _dump_data(self) -> str:
         blocks_dump = [block.dump() for block in self.blocks]

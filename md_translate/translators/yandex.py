@@ -1,10 +1,10 @@
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.remote.webelement import WebElement
 
-from ._selenium_base import TranslationProvider
+from ._selenium_base import SeleniumBaseTranslator
 
 
-class YandexTranslateProvider(TranslationProvider):
+class YandexTranslateProvider(SeleniumBaseTranslator):
     HOST = 'https://translate.yandex.com/'
 
     COOKIES_ACCEPT_BTN_TEXT = 'Accept'

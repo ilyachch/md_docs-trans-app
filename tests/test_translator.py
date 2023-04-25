@@ -1,10 +1,10 @@
 import pytest
 
 from md_translate.translators import (
-    YandexTranslateProvider,
-    GoogleTranslateProvider,
     BingTranslateProvider,
     DeeplTranslateProvider,
+    GoogleTranslateProvider,
+    YandexTranslateProvider,
 )
 
 
@@ -20,8 +20,6 @@ class TestTranslator:
         ],
     )
     def test_translate(self, translator, source_text, expected):
-        translator = translator(
-            from_language='en', to_language='ru'
-        )
+        translator = translator(from_language='en', to_language='ru')
         with translator as translator_:
             assert translator_.translate(text=source_text) == expected

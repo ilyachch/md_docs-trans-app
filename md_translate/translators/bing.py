@@ -1,10 +1,10 @@
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.remote.webelement import WebElement
 
-from ._selenium_base import TranslationProvider
+from ._selenium_base import SeleniumBaseTranslator
 
 
-class BingTranslateProvider(TranslationProvider):
+class BingTranslateProvider(SeleniumBaseTranslator):
     HOST = 'https://www.bing.com/translator/'
 
     def get_url(self) -> str:
