@@ -44,7 +44,7 @@ class BlocksRegistry:
     def __init__(self) -> None:
         self._registry: dict[str, Type[BaseBlock]] = {}
 
-    def get(self, block_type_name: str) -> Type[BaseBlock] | None:
+    def get(self, block_type_name: str) -> Optional[Type[BaseBlock]]:
         return self._registry.get(block_type_name)
 
     def register(self, block_type: Type[T]) -> Type[T]:
@@ -103,7 +103,7 @@ class EmphasisTextBlock(Container[BaseBlock]):
 @blocks_registry.register
 class LinkBlock(Container[BaseBlock]):
     url: str
-    title: str | None = None
+    title: Optional[str] = None
 
     def __str__(self) -> str:
         title = f' "{self.title}"' if self.title else ''
@@ -114,7 +114,7 @@ class LinkBlock(Container[BaseBlock]):
 class ImageBlock(BaseBlock):
     url: str
     alt: str = pydantic.Field(default=str)
-    title: str | None = None
+    title: Optional[str] = None
 
     def __str__(self) -> str:
         title = f' "{self.title}"' if self.title else ''
@@ -149,7 +149,7 @@ class CodeSpanBlock(BaseBlock):
 class CodeBlock(BaseBlock):
     TRANSLATABLE = False
     code: str
-    language: str | None = None
+    language: Optional[str] = None
 
     @pydantic.validator('code', pre=True)
     def strip_code(cls, code: str) -> str:
@@ -186,7 +186,7 @@ class ListItemBlock(NestedContainer[BaseBlock]):
 class ListBlock(Container[ListItemBlock]):
     ordered: bool = False
     level: int
-    start: int | None = None
+    start: Optional[int] = None
 
     _MARKS: ClassVar[list[str]] = ['*', '-', '+']
 
@@ -198,7 +198,6 @@ class ListBlock(Container[ListItemBlock]):
                 rendered_children.append(f'{i}. {child}')
         else:
             for child in self.children:
-                # indent = ' ' * (child.level - 1) * 4
                 mark = self._MARKS[(child.level - 1) % len(self._MARKS)]
                 rendered_children.append(f'{mark} {child}')
 
