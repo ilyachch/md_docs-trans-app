@@ -11,6 +11,11 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+
+from webdriver_manager.chrome import ChromeDriverManager
 
 from md_translate.translators.randomizer.randomizer import Randomizer
 from translators._base_translator import BaseTranslator
@@ -40,10 +45,9 @@ class SeleniumBaseTranslator(BaseTranslator):
     PAGE_LOAD_TIMEOUT = 10
     TRANSLATION_TIMEOUT = 10
 
-    def __init__(self, settings: 'Settings') -> None:
-        self._seetings = settings
+    def __init__(self, settings: 'SettingsProtocol') -> None:
+        self._settings = settings
         self._session = requests.Session()
-        self._webdriver_path = settings.webdriver
         self._host = self.__get_host(settings.service_host)
         self.from_language = settings.from_lang
         self.to_language = settings.to_lang
@@ -57,13 +61,7 @@ class SeleniumBaseTranslator(BaseTranslator):
 
     def __enter__(self) -> 'BaseTranslator':
         options = self.randomizer.make_options()
-        if self._webdriver_path:
-            self._driver = webdriver.Chrome(
-                executable_path=str(self._webdriver_path), options=options
-            )
-        else:
-            self._driver = webdriver.Chrome(options=options)
-
+        self._driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         return self
 
     def __exit__(self, *args: Any, **kwargs: Any) -> None:

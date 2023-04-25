@@ -21,7 +21,7 @@ class MarkdownDocument:
     def __init__(
         self,
         *,
-        settings: 'Settings',
+        settings: 'SettingsProtocol',
         source: Optional[Path] = None,
         blocks: Optional[list[BaseBlock]] = None,
     ) -> None:

@@ -52,7 +52,6 @@ class TestSettings:
         assert settings.service is GoogleTranslateProvider
         assert settings.service_host is None
         assert settings.processes == 1
-        assert settings.webdriver is None
         assert settings.new_file is False
         assert settings.ignore_cache == False
         assert settings.save_temp_on_complete == False

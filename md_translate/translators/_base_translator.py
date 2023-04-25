@@ -12,7 +12,7 @@ class BaseTranslatorProtocol(Protocol):
 
 class BaseTranslator(BaseTranslatorProtocol, metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def __init__(self, settings: 'Settings') -> None:
+    def __init__(self, settings: 'SettingsProtocol') -> None:
         ...
 
     @abc.abstractmethod

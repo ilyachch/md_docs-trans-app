@@ -10,7 +10,6 @@ class SettingsTest(SettingsProtocol):
     service = None
     service_host = None
     processes = 1
-    webdriver = None
     new_file = False
     ignore_cache = False
     save_temp_on_complete = False

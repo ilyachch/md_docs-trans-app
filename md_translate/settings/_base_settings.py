@@ -1,5 +1,7 @@
+import enum
+import json
 from pathlib import Path
-from typing import Protocol, Union, Type, Optional, Any
+from typing import Any, Optional, Protocol, Type, Union
 
 from translators import BaseTranslator
 
@@ -11,13 +13,29 @@ class SettingsProtocol(Protocol):
     service: Type[BaseTranslator]
     service_host: Optional[str]
     processes: int
-    webdriver: Optional[Path]
     new_file: bool
     ignore_cache: bool
     save_temp_on_complete: bool
     overwrite: bool
     verbose: int
     drop_original: bool
+
+
+class SettingsJsonEncoder(json.JSONEncoder):
+    IGNORED_ATTRIBUTES = ['_instance']
+
+    def default(self, o: Any) -> Any:
+        if isinstance(o, enum.Enum):
+            return o.name
+        if isinstance(o, Path):
+            return str(o)
+        if isinstance(o, Settings):
+            return {
+                key[1:]: value
+                for key, value in o.__dict__.items()
+                if key.startswith('_') and key not in self.IGNORED_ATTRIBUTES
+            }
+        return super().default(o)
 
 
 class Settings(SettingsProtocol):
@@ -27,6 +45,18 @@ class Settings(SettingsProtocol):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
+
+    def update_from_config(self, file_path: Optional[Path]) -> None:
+        if file_path is None:
+            file_path = Path('$HOME/.config/md_translate/config.json').expanduser()
+        if not file_path.exists():
+            return
+        file_data = json.loads(file_path.read_text())
+        for option_name, value in file_data.items():
+            self.set_option(option_name, value)
+
+    def dump(self) -> None:
+        print(json.dumps(self, indent=4, cls=SettingsJsonEncoder))
 
     def set_option(self, option_name: str, value: Any) -> None:
         setattr(self, f'_{option_name}', value)
@@ -54,10 +84,6 @@ class Settings(SettingsProtocol):
     @property
     def processes(self) -> int:
         return getattr(self, '_processes', 1)
-
-    @property
-    def webdriver(self) -> Optional[Path]:
-        return getattr(self, '_webdriver', None)
 
     @property
     def new_file(self) -> bool:

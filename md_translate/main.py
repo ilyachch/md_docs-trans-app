@@ -49,13 +49,6 @@ from md_translate.translators import Translator
     default=1,
 )
 @click.option(
-    '-W',
-    '--webdriver',
-    type=click.Path(exists=True, path_type=Path),
-    help='Path to webdriver',
-    envvar='WEBDRIVER_PATH',
-)
-@click.option(
     '-N',
     '--new-file',
     is_flag=True,
@@ -91,11 +84,28 @@ from md_translate.translators import Translator
     '--verbose',
     count=True,
 )
+@click.option(
+    '--config',
+    type=click.Path(exists=False, path_type=Path),
+    help='Path to config file',
+)
+@click.option(
+    '--dump-config',
+    is_flag=True,
+    help='Dump config to stdout',
+)
 def main(
     **kwargs: Any,
 ) -> None:
+    dump_config = kwargs.pop('dump_config')
+    settings.update_from_config(kwargs.pop('config'))
+
     for key, value in kwargs.items():
         settings.set_option(key, value)
+
+    if dump_config:
+        settings.dump()
+        exit(0)
 
     exit_code = Application(settings).run()
 

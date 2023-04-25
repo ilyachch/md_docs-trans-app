@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class Application:
-    def __init__(self, settings: 'Settings'):
+    def __init__(self, settings: 'SettingsProtocol'):
         self._settings = settings
         self._logger = logging.getLogger(__name__)
 
