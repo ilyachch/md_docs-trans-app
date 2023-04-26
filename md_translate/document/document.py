@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional, Union
 
@@ -17,6 +18,10 @@ logger = logging.getLogger(__name__)
 
 class MarkdownDocument:
     _TRANSLATED_MARK = '<!-- TRANSLATED by md-translate -->'
+    _CLEARING_RULES = [
+        (re.compile(r'\n{3,}'), '\n\n'),
+        (re.compile(r'\n{2,}$'), '\n'),
+    ]
 
     def __init__(
         self,
@@ -43,7 +48,8 @@ class MarkdownDocument:
             temp_file.unlink(missing_ok=True)
 
     def render(self) -> str:
-        return '\n\n'.join(map(str, self.blocks)) + '\n'
+        prerendered = '\n\n'.join(map(str, self.blocks)) + '\n'
+        return self.__clear_rendered(prerendered)
 
     def render_translated(self) -> str:
         rendered_blocks = []
@@ -57,7 +63,8 @@ class MarkdownDocument:
                     rendered_blocks.append(block.translated_data)
                 else:
                     rendered_blocks.append(str(block))
-        return '\n\n'.join(rendered_blocks)
+        prerendered = '\n\n'.join(rendered_blocks)
+        return self.__clear_rendered(prerendered)
 
     def translate(self, translator: BaseTranslatorProtocol) -> None:
         blocks_to_translate = [block for block in self.blocks if block.should_be_translated]
@@ -84,7 +91,7 @@ class MarkdownDocument:
             return self._TRANSLATED_MARK not in self.source.read_text()
 
     @classmethod
-    def from_file(cls, path: Union[str, Path], settings: 'Settings') -> 'MarkdownDocument':
+    def from_file(cls, path: Union[str, Path], settings: 'SettingsProtocol') -> 'MarkdownDocument':
         target_file = cls.__get_file_path(path)
         if not settings.ignore_cache:
             try:
@@ -95,7 +102,7 @@ class MarkdownDocument:
         return cls(settings=settings, blocks=cls.__parse_blocks(file_content), source=target_file)
 
     @classmethod
-    def from_string(cls, text: str, settings: 'Settings') -> 'MarkdownDocument':
+    def from_string(cls, text: str, settings: 'SettingsProtocol') -> 'MarkdownDocument':
         return cls(blocks=cls.__parse_blocks(text), settings=settings)
 
     def cache(self) -> None:
@@ -105,7 +112,7 @@ class MarkdownDocument:
         dump_file.write_text(self._dump_data())
 
     @classmethod
-    def restore(cls, source: Path, settings: 'Settings') -> 'MarkdownDocument':
+    def restore(cls, source: Path, settings: 'SettingsProtocol') -> 'MarkdownDocument':
         dump_file = cls.__get_dump_file_path(source)
         if not dump_file.exists():
             raise FileNotFoundError('Temp file not found: %s', str(dump_file))
@@ -118,6 +125,11 @@ class MarkdownDocument:
             'blocks': blocks_dump,
         }
         return json.dumps(clean_data)
+
+    def __clear_rendered(self, string) -> str:
+        for pattern, replacement in self._CLEARING_RULES:
+            string = pattern.sub(replacement, string)
+        return string
 
     @staticmethod
     def _load_data(cache_data: str) -> list[BaseBlock]:

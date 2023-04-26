@@ -49,6 +49,14 @@ class Application:
             logging.basicConfig(level=logging.INFO)
         elif self._settings.verbose >= 4:
             logging.basicConfig(level=logging.DEBUG)
+        LOGGER_NAMES_TO_DISABLE = [
+            'selenium',
+            'urllib3',
+            'WDM',
+        ]
+        for logger_name in LOGGER_NAMES_TO_DISABLE:
+            logging.getLogger(logger_name).setLevel(logging.CRITICAL)
+
 
     def _get_files_to_process(self) -> list[Path]:
         path = self._settings.path

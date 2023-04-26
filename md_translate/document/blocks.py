@@ -1,4 +1,4 @@
-from typing import Any, ClassVar, Generic, Optional, Type, TypeVar, cast
+from typing import Any, ClassVar, Generic, Optional, Type, TypeVar, cast, Union
 
 import pydantic
 
@@ -97,7 +97,7 @@ class StrongTextBlock(Container[BaseBlock]):
 @blocks_registry.register
 class EmphasisTextBlock(Container[BaseBlock]):
     def __str__(self) -> str:
-        return f'*{super().__str__()}*'
+        return f'_{super().__str__()}_'
 
 
 @blocks_registry.register
@@ -142,7 +142,10 @@ class CodeSpanBlock(BaseBlock):
     code: str
 
     def __str__(self) -> str:
-        return f'`{self.code}`'
+        if '`' in self.code:
+            return f'``{self.code}``'
+        else:
+            return f'`{self.code}`'
 
 
 @blocks_registry.register
@@ -201,7 +204,7 @@ class ListBlock(Container[ListItemBlock]):
                 mark = self._MARKS[(child.level - 1) % len(self._MARKS)]
                 rendered_children.append(f'{mark} {child}')
 
-        return '\n'.join(rendered_children)
+        return '\n'.join(rendered_children) + '\n'
 
 
 @blocks_registry.register

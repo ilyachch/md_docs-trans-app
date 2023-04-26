@@ -22,7 +22,7 @@ NEW_LINE = 'This is the first line.  \nAnd this is the second line.'
 
 BOLD_TEXT = 'I just love **bold text**.'
 
-ITALIC_TEXT = "Italicized text is the *cat's meow*."
+ITALIC_TEXT = "Italicized text is the _cat's meow_."
 
 QUOTE = '> Dorothy followed her through many of the beautiful rooms in her castle.'
 
@@ -39,7 +39,7 @@ LIST_INSIDE_QUOTE = r'''> #### The quarterly results look great!
 > * Revenue was off the chart.
 > * Profits were higher than ever.
 >
-> *Everything* is going according to **plan**.'''
+> _Everything_ is going according to **plan**.'''
 
 LIST = '''1. First item
 2. Second item
