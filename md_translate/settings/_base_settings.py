@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from typing import Any, Optional, Protocol, Type, Union
 
-from translators import BaseTranslator
+from md_translate.translators import BaseTranslator
 
 
 class SettingsProtocol(Protocol):

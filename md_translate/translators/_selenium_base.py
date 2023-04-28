@@ -14,8 +14,8 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 
+from md_translate.translators._base_translator import BaseTranslator
 from md_translate.translators.randomizer.randomizer import Randomizer
-from translators._base_translator import BaseTranslator
 
 if TYPE_CHECKING:
     from md_translate.settings import SettingsProtocol

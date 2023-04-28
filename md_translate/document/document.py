@@ -8,7 +8,7 @@ import mistune
 
 from md_translate.document.blocks import BaseBlock, NewlineBlock
 from md_translate.document.parser import TypedParser
-from translators import BaseTranslatorProtocol
+from md_translate.translators import BaseTranslatorProtocol
 
 if TYPE_CHECKING:
     from md_translate.settings import SettingsProtocol
