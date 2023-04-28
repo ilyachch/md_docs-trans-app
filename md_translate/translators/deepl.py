@@ -10,7 +10,7 @@ class DeeplTranslateProvider(SeleniumBaseTranslator):
     TRANSLATION_TIMEOUT = 30
 
     def get_url(self) -> str:
-        return f'{self._host}l/{self.from_language}/{self.to_language}/'
+        return f'{self.HOST}l/{self.from_language}/{self.to_language}/'
 
     def get_input_element(self) -> WebElement:
         return self._driver.find_element(

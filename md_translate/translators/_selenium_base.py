@@ -8,13 +8,10 @@ from typing import TYPE_CHECKING, Any, Optional
 import requests
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-
 from webdriver_manager.chrome import ChromeDriverManager
 
 from md_translate.translators.randomizer.randomizer import Randomizer
@@ -48,20 +45,15 @@ class SeleniumBaseTranslator(BaseTranslator):
     def __init__(self, settings: 'SettingsProtocol') -> None:
         self._settings = settings
         self._session = requests.Session()
-        self._host = self.__get_host(settings.service_host)
         self.from_language = settings.from_lang
         self.to_language = settings.to_lang
         self.randomizer = Randomizer()
 
-    def __get_host(self, host: Optional[str] = None) -> str:
-        host = host or self.HOST
-        if host is None:
-            raise ValueError('Host is not defined')
-        return host
-
     def __enter__(self) -> 'BaseTranslator':
         options = self.randomizer.make_options()
-        self._driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        self._driver = webdriver.Chrome(
+            service=Service(ChromeDriverManager().install()), options=options
+        )
         return self
 
     def __exit__(self, *args: Any, **kwargs: Any) -> None:

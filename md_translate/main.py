@@ -37,11 +37,6 @@ from md_translate.translators import Translator
     required=True,
 )
 @click.option(
-    '--service-host',
-    type=click.STRING,
-    help='Translating service host override',
-)
-@click.option(
     '-X',
     '--processes',
     type=click.INT,
@@ -86,29 +81,24 @@ from md_translate.translators import Translator
 )
 @click.option(
     '--config',
-    type=click.Path(exists=False, path_type=Path),
+    type=click.Path(exists=True, path_type=Path),
     help='Path to config file',
 )
 @click.option(
     '--dump-config',
     is_flag=True,
-    help='Dump config to stdout',
+    help='Dump config',
 )
 def main(
     **kwargs: Any,
 ) -> None:
-    dump_config = kwargs.pop('dump_config')
+    dump_config = kwargs.pop('dump_config', False)
     settings.update_from_config(kwargs.pop('config'))
-
     for key, value in kwargs.items():
         settings.set_option(key, value)
-
     if dump_config:
         settings.dump()
-        exit(0)
-
     exit_code = Application(settings).run()
-
     exit(exit_code)
 
 

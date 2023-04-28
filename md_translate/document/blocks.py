@@ -1,4 +1,4 @@
-from typing import Any, ClassVar, Generic, Optional, Type, TypeVar, cast, Union
+from typing import Any, ClassVar, Generic, Optional, Type, TypeVar, Union, cast
 
 import pydantic
 

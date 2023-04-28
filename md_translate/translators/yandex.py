@@ -13,7 +13,7 @@ class YandexTranslateProvider(SeleniumBaseTranslator):
         params = {
             'lang': f'{self.from_language}-{self.to_language}',
         }
-        return f'{self._host}?{self.build_params(params)}'
+        return f'{self.HOST}?{self.build_params(params)}'
 
     def get_input_element(self) -> WebElement:
         return self._driver.find_element(by=self.WEBDRIVER_BY.CLASS_NAME, value='textinput')

@@ -50,7 +50,6 @@ class TestSettings:
         assert settings.from_lang == 'en'
         assert settings.to_lang == 'ru'
         assert settings.service is GoogleTranslateProvider
-        assert settings.service_host is None
         assert settings.processes == 1
         assert settings.new_file is False
         assert settings.ignore_cache == False

@@ -21,6 +21,7 @@ class MarkdownDocument:
     _CLEARING_RULES = [
         (re.compile(r'\n{3,}'), '\n\n'),
         (re.compile(r'\n{2,}$'), '\n'),
+        (re.compile(r'(?<=[\w\.,]) {2,}(?=\w)'), ' '),
     ]
 
     def __init__(

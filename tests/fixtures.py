@@ -8,7 +8,6 @@ class SettingsTest(SettingsProtocol):
     from_lang = None
     to_lang = None
     service = None
-    service_host = None
     processes = 1
     new_file = False
     ignore_cache = False

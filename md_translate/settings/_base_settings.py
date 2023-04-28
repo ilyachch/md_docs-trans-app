@@ -11,7 +11,6 @@ class SettingsProtocol(Protocol):
     from_lang: str
     to_lang: str
     service: Type[BaseTranslator]
-    service_host: Optional[str]
     processes: int
     new_file: bool
     ignore_cache: bool
@@ -76,10 +75,6 @@ class Settings(SettingsProtocol):
     @property
     def service(self) -> Type[BaseTranslator]:
         return getattr(self, '_service').value
-
-    @property
-    def service_host(self) -> Optional[str]:
-        return getattr(self, '_service_host', None)
 
     @property
     def processes(self) -> int:
