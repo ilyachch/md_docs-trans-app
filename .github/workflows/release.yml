@@ -55,9 +55,11 @@ jobs:
           installer-parallel: true
       - name: Installing dependencies
         run: poetry install
-      - name: Getting package clear version
-        id: get_clear_version
-        run: echo "clear_version=$(poetry version -s)" >> $GITHUB_OUTPUT
+      - name: Getting package version
+        id: get_version
+        run: echo "::set-output name=clear_version::$(poetry version -s)"
+      - name: Build package
+        run: poetry build
       - name: Get asset name
         id: get_asset_name
         run: echo "name=asset_name=$(ls dist | grep gz)" >> $GITHUB_OUTPUT
@@ -86,3 +88,9 @@ jobs:
           asset_path: dist/${{ steps.get_asset_name.outputs.asset_name }}
           asset_name: ${{ steps.get_asset_name.outputs.asset_name }}
           asset_content_type: application/tar+gzip
+      - name: Upload Release assets to workflow artifacts
+        if: ${{ inputs.dry-run }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.get_asset_name.outputs.asset_name }}
+          path: dist/${{ steps.get_asset_name.outputs.asset_name }}
