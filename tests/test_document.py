@@ -47,8 +47,8 @@ def test_document(tmp_path):
 
 
 @pytest.fixture()
-def test_document_with_cache(test_document, settings):
-    document = MarkdownDocument.from_file(test_document, settings=settings)
+def test_document_with_cache(test_document, test_settings):
+    document = MarkdownDocument.from_file(test_document, settings=test_settings)
     document.cache()
     try:
         yield test_document
@@ -66,12 +66,12 @@ class TestMarkdownDocument:
             ('tests/assets/not_existing_document.md', pytest.raises(FileNotFoundError)),
         ],
     )
-    def test_loading(self, file_path, expected_result, settings):
+    def test_loading(self, file_path, expected_result, test_settings):
         with expected_result:
-            MarkdownDocument.from_file(file_path, settings=settings)
+            MarkdownDocument.from_file(file_path, settings=test_settings)
 
-    def test_dump(self, settings):
-        document = MarkdownDocument.from_file('tests/assets/simple_document.md', settings=settings)
+    def test_dump(self, test_settings):
+        document = MarkdownDocument.from_file('tests/assets/simple_document.md', settings=test_settings)
         assert json.loads(document._dump_data()) == {
             'blocks': [
                 {
@@ -88,7 +88,7 @@ class TestMarkdownDocument:
             'source': 'tests/assets/simple_document.md',
         }
 
-    def test_load(self, settings):
+    def test_load(self, test_settings):
         document_dump = json.dumps(
             {
                 'blocks': [
@@ -107,18 +107,18 @@ class TestMarkdownDocument:
             }
         )
         document = MarkdownDocument(
-            blocks=MarkdownDocument._load_data(document_dump), settings=settings
+            blocks=MarkdownDocument._load_data(document_dump), settings=test_settings
         )
         assert document.render() == Path('tests/assets/simple_document.md').read_text()
 
-    def test_cache(self, test_document, settings):
-        document = MarkdownDocument.from_file(test_document, settings=settings)
+    def test_cache(self, test_document, test_settings):
+        document = MarkdownDocument.from_file(test_document, settings=test_settings)
         document.cache()
         assert (test_document.parent / f'{test_document.name}.tmp').exists()
 
-    def test_restore(self, test_document_with_cache, settings):
-        document = MarkdownDocument.from_file(test_document_with_cache, settings=settings)
-        document_restored = MarkdownDocument.restore(test_document_with_cache, settings=settings)
+    def test_restore(self, test_document_with_cache, test_settings):
+        document = MarkdownDocument.from_file(test_document_with_cache, settings=test_settings)
+        document_restored = MarkdownDocument.restore(test_document_with_cache, settings=test_settings)
         assert document_restored.blocks == document.blocks
 
     @pytest.mark.parametrize(
@@ -151,18 +151,18 @@ class TestMarkdownDocument:
             ),
         ],
     )
-    def test_should_be_translated(self, document_path, params, expected_result, settings):
-        document = MarkdownDocument.from_file(document_path, settings=settings)
-        for k, v in params.items():
-            setattr(settings, k, v)
+    def test_should_be_translated(self, document_path, params, expected_result, test_settings):
+        for key, value in params.items():
+            setattr(test_settings, key, value)
+        document = MarkdownDocument.from_file(document_path, settings=test_settings)
         assert document.should_be_translated() == expected_result
 
-    def test_should_be_translated_from_string(self, settings):
-        document = MarkdownDocument.from_string(TEST_DOCUMENT, settings=settings)
+    def test_should_be_translated_from_string(self, test_settings):
+        document = MarkdownDocument.from_string(TEST_DOCUMENT, settings=test_settings)
         assert document.should_be_translated() is False
 
-    def test_translate(self, test_document, settings):
-        document = MarkdownDocument.from_file(test_document, settings=settings)
+    def test_translate(self, test_document, test_settings):
+        document = MarkdownDocument.from_file(test_document, settings=test_settings)
         document.translate(MockTranslator())  # type: ignore
         assert document.render_translated() == (
             "# Test document\n\n"
@@ -172,21 +172,21 @@ class TestMarkdownDocument:
         )
         assert Path(test_document.parent / f'{test_document.name}.tmp').exists()
 
-    def test_write(self, test_document, settings):
-        document = MarkdownDocument.from_file(test_document, settings=settings)
+    def test_write(self, test_document, test_settings):
+        document = MarkdownDocument.from_file(test_document, settings=test_settings)
         document.translate(MockTranslator())
         document.write()
         assert test_document.read_text() == TEST_DOCUMENT_TRANSLATED
 
-    def test_write_translated(self, test_document, settings):
-        document = MarkdownDocument.from_file(test_document, settings=settings)
+    def test_write_translated(self, test_document, test_settings):
+        document = MarkdownDocument.from_file(test_document, settings=test_settings)
         document.translate(MockTranslator())
         document.write()
         assert test_document.read_text() == TEST_DOCUMENT_TRANSLATED
 
-    def test_write_new_file(self, test_document, settings):
-        settings.new_file = True
-        document = MarkdownDocument.from_file(test_document, settings=settings)
+    def test_write_new_file(self, test_document, test_settings):
+        test_settings.new_file = True
+        document = MarkdownDocument.from_file(test_document, settings=test_settings)
         document.translate(MockTranslator())
         document.write()
         new_file = test_document.parent / f'{test_document.stem}_translated{test_document.suffix}'

@@ -1,3 +1,4 @@
+from copy import copy
 from pathlib import Path
 from typing import cast
 from unittest.mock import patch
@@ -7,21 +8,29 @@ from click import Command
 from click.testing import CliRunner
 
 import md_translate.main as md_translate_main
-from md_translate.settings import settings
+from md_translate.settings import Settings
 from md_translate.translators.google import GoogleTranslateProvider
 
 
 class FakeApplication:
-    def __init__(self, settings_obj):
-        self._settings = settings_obj
+    _SETTINGS: Settings
+    def __init__(self):
+        self._settings = self._SETTINGS
 
     def run(self) -> int:
         return 0
 
+    @classmethod
+    def with_fake_settings(cls, settings):
+        cls_ = copy(cls)
+        cls_._SETTINGS = settings
+        return cls_
+
 
 @pytest.fixture
-def fake_application():
-    with patch.object(md_translate_main, 'Application', FakeApplication):
+def fake_application(test_settings):
+    FakeApp = FakeApplication.with_fake_settings(test_settings)
+    with patch.object(md_translate_main, 'Application', FakeApp):
         yield
 
 
@@ -46,13 +55,13 @@ class TestSettings:
             cast(Command, md_translate_main.main),
             ['-F', 'en', '-T', 'ru', '-P', 'google', 'tests'],
         )
-        assert settings.path == Path('tests')
-        assert settings.from_lang == 'en'
-        assert settings.to_lang == 'ru'
-        assert settings.service is GoogleTranslateProvider
-        assert settings.processes == 1
-        assert settings.new_file is False
-        assert settings.ignore_cache == False
-        assert settings.save_temp_on_complete == False
-        assert settings.overwrite == False
-        assert settings.verbose == 0
+        assert fake_application._settings.path == Path('tests')
+        assert fake_application._settings.from_lang == 'en'
+        assert fake_application._settings.to_lang == 'ru'
+        assert fake_application._settings.service is GoogleTranslateProvider
+        assert fake_application._settings.processes == 1
+        assert fake_application._settings.new_file is False
+        assert fake_application._settings.ignore_cache == False
+        assert fake_application._settings.save_temp_on_complete == False
+        assert fake_application._settings.overwrite == False
+        assert fake_application._settings.verbose == 0

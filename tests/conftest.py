@@ -1,1 +1,1 @@
-from fixtures import settings  # noqa: F401
+from fixtures import test_settings  # noqa: F401

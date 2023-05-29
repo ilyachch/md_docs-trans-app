@@ -113,6 +113,6 @@ MARKDOWN_DOCUMENTS = [
     ],
     ids=[name for _, name in MARKDOWN_DOCUMENTS] + ['ALL'],
 )
-def test_rendering(document, _, settings):
-    md_document = MarkdownDocument.from_string(document, settings=settings)
+def test_rendering(document, _, test_settings):
+    md_document = MarkdownDocument.from_string(document, settings=test_settings)
     assert md_document.render() == document + '\n'

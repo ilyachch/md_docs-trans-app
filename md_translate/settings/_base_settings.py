@@ -1,105 +1,128 @@
-import enum
 import json
 from pathlib import Path
-from typing import Any, Optional, Protocol, Type, Union
+from typing import Any, ClassVar, Optional, Type, Union
 
-from md_translate.translators import BaseTranslator
+import click
+from pydantic import BaseModel, validator
+
+from md_translate.translators import BaseTranslator, Translator
+from settings._settings_to_cli import SettingsToCliField
 
 
-class SettingsProtocol(Protocol):
+class Settings(BaseModel):
     path: Union[Path, list[Path]]
-    from_lang: str
-    to_lang: str
-    service: Type[BaseTranslator]
-    processes: int
-    new_file: bool
-    ignore_cache: bool
-    save_temp_on_complete: bool
-    overwrite: bool
-    verbose: int
-    drop_original: bool
+    from_lang: str = SettingsToCliField(
+        click_option_name=['-F', '--from-lang'],
+        click_option_type=click.STRING,
+        click_option_help='Source language code',
+        click_option_required=True,
+    )
+    to_lang: str = SettingsToCliField(
+        click_option_name=['-T', '--to-lang'],
+        click_option_type=click.STRING,
+        click_option_help='Target language code',
+        click_option_required=True,
+    )
+    service: Type[BaseTranslator] = SettingsToCliField(
+        click_option_name=['-P', '--service'],
+        click_option_type=click.Choice(Translator.__members__),  # type: ignore
+        click_option_callback=lambda ctx, param, value: Translator[value],
+        click_option_help='Translating service',
+        click_option_required=True,
+    )
+    processes: int = SettingsToCliField(
+        1,
+        click_option_name=['-X', '--processes'],
+        click_option_type=click.INT,
+        click_option_help='Number of processes to use',
+        click_option_default=1,
+    )
+    new_file: bool = SettingsToCliField(
+        False,
+        click_option_name=['-N', '--new-file'],
+        click_option_type=click.BOOL,
+        click_option_is_flag=True,
+        click_option_help='Create new file with translated text',
+        click_option_default=False,
+    )
+    ignore_cache: bool = SettingsToCliField(
+        False,
+        click_option_name=['-I', '--ignore-cache'],
+        click_option_is_flag=True,
+        click_option_help='Ignore cache',
+    )
+    save_temp_on_complete: bool = SettingsToCliField(
+        False,
+        click_option_name=['-S', '--save-temp-on-complete'],
+        click_option_is_flag=True,
+        click_option_help='Save temporary files on complete',
+    )
+    overwrite: bool = SettingsToCliField(
+        False,
+        click_option_name=['-O', '--overwrite'],
+        click_option_is_flag=True,
+        click_option_help='Overwrite original files',
+    )
+    verbose: int = SettingsToCliField(
+        0,
+        click_option_name=['-V', '--verbose'],
+        click_option_count=True,
+        click_option_help='Verbosity level',
+    )
+    drop_original: bool = SettingsToCliField(
+        False,
+        click_option_name=['-D', '--drop-original'],
+        click_option_is_flag=True,
+        click_option_help='Drop original files',
+    )
 
+    DEFAULT_CONFIG_FILE_NAME: ClassVar[Path] = Path(
+        '~/.config/md_translate/settings.json'
+    ).expanduser()
 
-class SettingsJsonEncoder(json.JSONEncoder):
-    IGNORED_ATTRIBUTES = ['_instance']
+    class Config:
+        use_enum_values = True
+        exclude = ['path']
 
-    def default(self, o: Any) -> Any:
-        if isinstance(o, enum.Enum):
-            return o.name
-        if isinstance(o, Path):
-            return str(o)
-        if isinstance(o, Settings):
-            return {
-                key[1:]: value
-                for key, value in o.__dict__.items()
-                if key.startswith('_') and key not in self.IGNORED_ATTRIBUTES
-            }
-        return super().default(o)
+    @validator('service', pre=True)
+    def validate_service(
+        cls,
+        value: str,
+    ) -> Type[BaseTranslator]:
+        if not isinstance(value, str):
+            raise TypeError('service must be a string')
+        try:
+            return Translator(value).value
+        except KeyError:
+            raise ValueError(f'Invalid service name: {value}')
 
+    @classmethod
+    def initiate(
+        cls,
+        *,
+        click_params: dict[str, Any],
+        config_file_path: Optional[Path] = None,
+    ) -> 'Settings':
+        default_params = cls.__get_params_from_config_file(config_file_path)
+        params = {**default_params, **click_params}
+        return cls(**params)
 
-class Settings(SettingsProtocol):
-    _instance = None
-
-    def __new__(cls, *args: Any, **kwargs: Any) -> 'Settings':
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-        return cls._instance
-
-    def update_from_config(self, file_path: Optional[Path]) -> None:
-        if file_path is None:
-            file_path = Path('$HOME/.config/md_translate/config.json').expanduser()
-        if not file_path.exists():
-            return
-        file_data = json.loads(file_path.read_text())
+    @classmethod
+    def __get_params_from_config_file(
+        cls,
+        config_file_path: Optional[Path] = None,
+    ) -> dict[str, Any]:
+        params = {}
+        if config_file_path is None:
+            config_file_path = cls.DEFAULT_CONFIG_FILE_NAME
+        if not config_file_path.exists():
+            return {}
+        file_data = json.loads(config_file_path.read_text())
         for option_name, value in file_data.items():
-            self.set_option(option_name, value)
+            if option_name not in cls.__fields__:
+                raise ValueError(f'Unknown option: {option_name}')
+            params[option_name] = value
+        return params
 
-    def dump(self) -> None:
-        print(json.dumps(self, indent=4, cls=SettingsJsonEncoder))
-
-    def set_option(self, option_name: str, value: Any) -> None:
-        setattr(self, f'_{option_name}', value)
-
-    @property
-    def path(self) -> Union[Path, list[Path]]:
-        return getattr(self, '_path')
-
-    @property
-    def from_lang(self) -> str:
-        return getattr(self, '_from_lang')
-
-    @property
-    def to_lang(self) -> str:
-        return getattr(self, '_to_lang')
-
-    @property
-    def service(self) -> Type[BaseTranslator]:
-        return getattr(self, '_service').value
-
-    @property
-    def processes(self) -> int:
-        return getattr(self, '_processes', 1)
-
-    @property
-    def new_file(self) -> bool:
-        return getattr(self, '_new_file', False)
-
-    @property
-    def ignore_cache(self) -> bool:
-        return getattr(self, '_ignore_cache', False)
-
-    @property
-    def save_temp_on_complete(self) -> bool:
-        return getattr(self, '_save_temp_on_complete', False)
-
-    @property
-    def overwrite(self) -> bool:
-        return getattr(self, '_overwrite', False)
-
-    @property
-    def verbose(self) -> int:
-        return getattr(self, '_verbose', 0)
-
-    @property
-    def drop_original(self) -> bool:
-        return getattr(self, '_drop_original', False)
+    def dump_settings(self) -> None:
+        print(self.json(indent=4))

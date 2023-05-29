@@ -1,26 +1,31 @@
+from pathlib import Path
+from typing import Union, Type, Optional
+
 import pytest
 
-from md_translate.settings import SettingsProtocol
+from settings import Settings
+from translators import BaseTranslator
 
 
-class SettingsTest(SettingsProtocol):
-    path = None
-    from_lang = None
-    to_lang = None
-    service = None
-    processes = 1
-    new_file = False
-    ignore_cache = False
-    save_temp_on_complete = False
-    overwrite = False
-    verbose = False
-    drop_original = False
-
-    def __init__(self, **kwargs):
-        for k, v in kwargs.items():
-            setattr(self, k, v)
+class SettingsTest:
+    path: Optional[Union[Path, list[Path]]] = None
+    from_lang: Optional[str] = None
+    to_lang: Optional[str] = None
+    service: Optional[Type[BaseTranslator]] = None
+    processes: int = 1
+    new_file: bool = False
+    ignore_cache: bool = False
+    save_temp_on_complete: bool = False
+    overwrite: bool = False
+    verbose: int = 0
+    drop_original: bool = False
 
 
 @pytest.fixture
-def settings():
+def test_settings():
     return SettingsTest()
+
+
+@pytest.fixture
+def test_settings_raw():
+    return SettingsTest

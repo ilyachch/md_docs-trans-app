@@ -22,9 +22,7 @@ from md_translate.document.blocks import (
     TextBlock,
 )
 from md_translate.document.document import MarkdownDocument
-from md_translate.settings import Settings
 
-test_settings = Settings()
 
 
 def _params_shortener(*params, id_name) -> Generator[Tuple[str, ...], None, None]:
@@ -63,7 +61,7 @@ class TestMarkdownParsing:
             id_name='heading',
         ),
     )
-    def test_header_parsing(self, text, expected):
+    def test_header_parsing(self, text, expected, test_settings):
         doc = MarkdownDocument.from_string(text, settings=test_settings)
         assert doc.blocks == expected
         assert (
@@ -105,7 +103,7 @@ class TestMarkdownParsing:
             id_name='paragraph',
         ),
     )
-    def test_paragraph_parsing(self, text, expected):
+    def test_paragraph_parsing(self, text, expected, test_settings):
         doc = MarkdownDocument.from_string(text, settings=test_settings)
         assert doc.blocks == expected
         assert (
@@ -130,7 +128,7 @@ class TestMarkdownParsing:
             id_name='line_break',
         ),
     )
-    def test_line_break_parsing(self, text, expected):
+    def test_line_break_parsing(self, text, expected, test_settings):
         doc = MarkdownDocument.from_string(text, settings=test_settings)
         assert doc.blocks == expected
         assert (
@@ -179,7 +177,7 @@ class TestMarkdownParsing:
             id_name='bold',
         ),
     )
-    def test_bold_parsing(self, text, expected):
+    def test_bold_parsing(self, text, expected, test_settings):
         doc = MarkdownDocument.from_string(text, settings=test_settings)
         assert doc.blocks == expected
         assert (
@@ -250,7 +248,7 @@ class TestMarkdownParsing:
             id_name='italic',
         ),
     )
-    def test_italic_parsing(self, text, expected):
+    def test_italic_parsing(self, text, expected, test_settings):
         doc = MarkdownDocument.from_string(text, settings=test_settings)
         assert doc.blocks == expected
         assert (
@@ -295,7 +293,7 @@ class TestMarkdownParsing:
             id_name='link',
         ),
     )
-    def test_link_parsing(self, text, expected):
+    def test_link_parsing(self, text, expected, test_settings):
         doc = MarkdownDocument.from_string(text, settings=test_settings)
         assert doc.blocks == expected
         assert (
@@ -335,7 +333,7 @@ class TestMarkdownParsing:
             id_name='image',
         ),
     )
-    def test_images_parsing(self, text, expected):
+    def test_images_parsing(self, text, expected, test_settings):
         doc = MarkdownDocument.from_string(text, settings=test_settings)
         assert doc.blocks == expected
         assert (
@@ -366,7 +364,7 @@ class TestMarkdownParsing:
             id_name='separator',
         ),
     )
-    def test_separator_parsing(self, text, expected):
+    def test_separator_parsing(self, text, expected, test_settings):
         doc = MarkdownDocument.from_string(text, settings=test_settings)
         assert doc.blocks == expected
         assert (
@@ -395,7 +393,7 @@ class TestMarkdownParsing:
             id_name='code',
         ),
     )
-    def test_code_parsing(self, text, expected):
+    def test_code_parsing(self, text, expected, test_settings):
         doc = MarkdownDocument.from_string(text, settings=test_settings)
         assert doc.blocks == expected
         assert (
@@ -424,7 +422,7 @@ class TestMarkdownParsing:
             id_name='code_line',
         ),
     )
-    def test_code_line_parsing(self, text, expected):
+    def test_code_line_parsing(self, text, expected, test_settings):
         doc = MarkdownDocument.from_string(text, settings=test_settings)
         assert doc.blocks == expected
         assert (
@@ -535,7 +533,7 @@ class TestMarkdownParsing:
             id_name='ordered_list',
         ),
     )
-    def test_ordered_list_parsing(self, text, expected):
+    def test_ordered_list_parsing(self, text, expected, test_settings):
         doc = MarkdownDocument.from_string(text, settings=test_settings)
         assert doc.blocks == expected
         assert (
@@ -707,7 +705,7 @@ class TestMarkdownParsing:
             id_name='unordered_list',
         ),
     )
-    def test_unordered_list_parsing(self, text, expected):
+    def test_unordered_list_parsing(self, text, expected, test_settings):
         doc = MarkdownDocument.from_string(text, settings=test_settings)
         assert doc.blocks == expected
         assert (
@@ -839,7 +837,7 @@ class TestMarkdownParsing:
             id_name='quote',
         ),
     )
-    def test_quote_parsing(self, text, expected):
+    def test_quote_parsing(self, text, expected, test_settings):
         doc = MarkdownDocument.from_string(text, settings=test_settings)
         assert doc.blocks == expected
         assert (
@@ -863,7 +861,7 @@ class TestMarkdownParsing:
             id_name='inline_html',
         ),
     )
-    def test_inline_html(self, text, expected):
+    def test_inline_html(self, text, expected, test_settings):
         doc = MarkdownDocument.from_string(text, settings=test_settings)
         assert doc.blocks == expected
         assert (
@@ -882,7 +880,7 @@ class TestMarkdownParsing:
             id_name='html_code',
         ),
     )
-    def test_html_code(self, text, expected):
+    def test_html_code(self, text, expected, test_settings):
         doc = MarkdownDocument.from_string(text, settings=test_settings)
         assert doc.blocks == expected
         assert (
