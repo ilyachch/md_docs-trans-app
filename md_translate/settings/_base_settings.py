@@ -82,7 +82,6 @@ class Settings(BaseModel):
 
     class Config:
         use_enum_values = True
-        exclude = ['path']
         arbitrary_types_allowed = True
 
     @property
@@ -130,4 +129,4 @@ class Settings(BaseModel):
         return not_default_params
 
     def dump_settings(self) -> None:
-        print(self.json(indent=4))
+        print(self.json(indent=4, exclude={'path', 'from_lang', 'to_lang', 'service'}))

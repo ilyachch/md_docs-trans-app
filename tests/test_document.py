@@ -24,6 +24,11 @@ class MockTranslator:
 TEST_DOCUMENT = '''# Test document
 
 This is a test document.
+
+```
+def foo() -> bool:
+    return True
+```
 '''
 
 TEST_DOCUMENT_TRANSLATED = '''<!-- TRANSLATED by md-translate -->
@@ -33,7 +38,12 @@ TEST_DOCUMENT_TRANSLATED = '''<!-- TRANSLATED by md-translate -->
 
 This is a test document.
 
-This is a test document.. translated'''
+This is a test document.. translated
+
+```
+def foo() -> bool:
+    return True
+```'''
 
 
 @pytest.fixture()
@@ -175,14 +185,29 @@ class TestMarkdownDocument:
         document.translate(MockTranslator())  # type: ignore
         if drop_original:
             assert document.render_translated() == (
-                '# Test document. translated\n\nThis is a test document.. translated'
+                '# Test document. translated\n'
+                '\n'
+                'This is a test document.. translated\n'
+                '\n'
+                '```\n'
+                'def foo() -> bool:\n'
+                '    return True\n'
+                '```'
             )
         else:
             assert document.render_translated() == (
-                "# Test document\n\n"
-                "# Test document. translated\n\n"
-                "This is a test document.\n\n"
-                "This is a test document.. translated"
+                '# Test document\n'
+                '\n'
+                '# Test document. translated\n'
+                '\n'
+                'This is a test document.\n'
+                '\n'
+                'This is a test document.. translated\n'
+                '\n'
+                '```\n'
+                'def foo() -> bool:\n'
+                '    return True\n'
+                '```'
             )
         assert Path(test_document.parent / f'{test_document.name}.tmp').exists()
 

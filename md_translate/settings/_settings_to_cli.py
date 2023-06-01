@@ -50,7 +50,7 @@ def build_cli_options_from_settings(settings: Type['Settings']) -> list[click.Op
     for option_name, option in settings.__fields__.items():
         click_option_info = cast(ClickFieldInfoExtra, option.field_info.extra)
         if option_name.startswith('_') or not click_option_info:
-            continue
+            continue  # pragma: no cover
         options.append(
             click.Option(
                 click_option_info['click_option_name'],

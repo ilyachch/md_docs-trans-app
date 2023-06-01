@@ -1,5 +1,6 @@
+import json
 from pathlib import Path
-
+from contextlib import nullcontext as does_not_raise
 import click
 import pytest
 from pydantic import BaseModel, ValidationError
@@ -108,3 +109,79 @@ def test_settings_initiate_with_unknown_option_in_click_params():
         Settings.initiate(
             click_params={'path': Path('.'), 'unknown_option': 'value'}, config_file_path=None
         )
+
+
+@pytest.mark.parametrize(
+    "config_data, raises",
+    [
+        (
+            {
+                "processes": 1,
+                "new_file": False,
+                "ignore_cache": False,
+                "save_temp_on_complete": False,
+                "overwrite": False,
+                "verbose": 0,
+                "drop_original": False,
+                "unknown_option": "value",
+            },
+            pytest.raises(ValueError),
+        ),
+        (
+            {
+                "processes": 1,
+                "new_file": False,
+                "ignore_cache": False,
+                "save_temp_on_complete": False,
+                "overwrite": False,
+                "verbose": 0,
+                "drop_original": False,
+            },
+            does_not_raise(),
+        ),
+    ],
+)
+def test_settings_initiate_with_unknown_option_in_config_file(config_data, raises, tmp_path):
+    config_file = tmp_path / "config.json"
+    with open(config_file, "w") as f:
+        json.dump(config_data, f)
+
+    with raises:
+        Settings.initiate(
+            click_params={
+                "path": ".",
+                "from_lang": "en",
+                "to_lang": "ru",
+                "service": Translator.google,
+            },
+            config_file_path=config_file,
+        )
+
+
+def test_dump_settings(capsys):
+    settings = Settings(
+        path=Path('.'),
+        from_lang='en',
+        to_lang='ru',
+        service=Translator.google,
+        processes=1,
+        new_file=False,
+        ignore_cache=False,
+        save_temp_on_complete=False,
+        overwrite=False,
+        verbose=0,
+        drop_original=False,
+    )
+    settings.dump_settings()
+    captured = capsys.readouterr()
+    assert captured.out == (
+        '{\n'
+        '    "processes": 1,\n'
+        '    "new_file": false,\n'
+        '    "ignore_cache": false,\n'
+        '    "save_temp_on_complete": false,\n'
+        '    "overwrite": false,\n'
+        '    "verbose": 0,\n'
+        '    "drop_original": false\n'
+        '}\n'
+    )
