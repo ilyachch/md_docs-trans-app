@@ -24,7 +24,6 @@ from md_translate.document.blocks import (
 from md_translate.document.document import MarkdownDocument
 
 
-
 def _params_shortener(*params, id_name) -> Generator[Tuple[str, ...], None, None]:
     for num, param in enumerate(params):
         yield pytest.param(*param, id=f'{id_name}_{num}')

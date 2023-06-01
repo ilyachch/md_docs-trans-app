@@ -71,7 +71,9 @@ class TestMarkdownDocument:
             MarkdownDocument.from_file(file_path, settings=test_settings)
 
     def test_dump(self, test_settings):
-        document = MarkdownDocument.from_file('tests/assets/simple_document.md', settings=test_settings)
+        document = MarkdownDocument.from_file(
+            'tests/assets/simple_document.md', settings=test_settings
+        )
         assert json.loads(document._dump_data()) == {
             'blocks': [
                 {
@@ -118,7 +120,9 @@ class TestMarkdownDocument:
 
     def test_restore(self, test_document_with_cache, test_settings):
         document = MarkdownDocument.from_file(test_document_with_cache, settings=test_settings)
-        document_restored = MarkdownDocument.restore(test_document_with_cache, settings=test_settings)
+        document_restored = MarkdownDocument.restore(
+            test_document_with_cache, settings=test_settings
+        )
         assert document_restored.blocks == document.blocks
 
     @pytest.mark.parametrize(
@@ -161,15 +165,25 @@ class TestMarkdownDocument:
         document = MarkdownDocument.from_string(TEST_DOCUMENT, settings=test_settings)
         assert document.should_be_translated() is False
 
-    def test_translate(self, test_document, test_settings):
+    @pytest.mark.parametrize(
+        'drop_original',
+        [True, False],
+    )
+    def test_translate(self, test_document, drop_original, test_settings):
+        test_settings.drop_original = drop_original
         document = MarkdownDocument.from_file(test_document, settings=test_settings)
         document.translate(MockTranslator())  # type: ignore
-        assert document.render_translated() == (
-            "# Test document\n\n"
-            "# Test document. translated\n\n"
-            "This is a test document.\n\n"
-            "This is a test document.. translated"
-        )
+        if drop_original:
+            assert document.render() == (
+                '# Test document. translated\n\n' 'This is a test document.. translated'
+            )
+        else:
+            assert document.render_translated() == (
+                "# Test document\n\n"
+                "# Test document. translated\n\n"
+                "This is a test document.\n\n"
+                "This is a test document.. translated"
+            )
         assert Path(test_document.parent / f'{test_document.name}.tmp').exists()
 
     def test_write(self, test_document, test_settings):
