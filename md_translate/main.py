@@ -5,7 +5,6 @@ import click
 
 from md_translate.application import Application
 from md_translate.settings import Settings, wrap_command_with_options
-from md_translate.translators import Translator
 
 
 @click.command()
@@ -16,11 +15,11 @@ from md_translate.translators import Translator
 )
 @wrap_command_with_options(Settings)
 def main(
-    **kwargs: Any,
+    **cli_arguments: Any,
 ) -> None:
-    dump_config = kwargs.pop('dump_config', False)
-    # cli_params = get_not_default_params()
-    settings = Settings.initiate(click_params=cli_params, config_file_path=kwargs.pop('config'))
+    dump_config = cli_arguments.pop('dump_config', False)
+    config_file = cli_arguments.pop('config')
+    settings = Settings.initiate(click_params=cli_arguments, config_file_path=config_file)
     if dump_config:
         settings.dump_settings()
     exit_code = Application(settings).run()

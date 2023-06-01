@@ -84,7 +84,7 @@ class TypedParser(BaseRenderer):
         if not isinstance(base_children, list):
             base_children = [base_children]  # type: ignore  # pragma: no cover
         nested_children: List[blocks.BaseBlock] = list(children[1:]) if len(children) > 1 else []
-        flattened_children = []
+        flattened_children: list[blocks.BaseBlock] = []
         for child in nested_children:
             if isinstance(child, list):
                 flattened_children.extend(child)

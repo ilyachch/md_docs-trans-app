@@ -18,7 +18,7 @@ from md_translate.translators._base_translator import BaseTranslator
 from md_translate.translators.randomizer.randomizer import Randomizer
 
 if TYPE_CHECKING:
-    from md_translate.settings import SettingsProtocol
+    from md_translate.settings import Settings
 
 current_dir = pathlib.Path(__file__).parent.absolute()
 logger = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ class SeleniumBaseTranslator(BaseTranslator):
     PAGE_LOAD_TIMEOUT = 10
     TRANSLATION_TIMEOUT = 10
 
-    def __init__(self, settings: 'SettingsProtocol') -> None:
+    def __init__(self, settings: 'Settings') -> None:
         self._settings = settings
         self._session = requests.Session()
         self.from_language = settings.from_lang
@@ -51,7 +51,7 @@ class SeleniumBaseTranslator(BaseTranslator):
 
     def __enter__(self) -> 'BaseTranslator':
         options = self.randomizer.make_options()
-        self._driver = webdriver.Chrome(
+        self._driver = webdriver.Chrome(  # type: ignore
             service=Service(ChromeDriverManager().install()), options=options
         )
         return self

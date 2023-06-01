@@ -8,11 +8,11 @@ import click
 from md_translate.document import MarkdownDocument
 
 if TYPE_CHECKING:
-    from md_translate.settings import SettingsProtocol
+    from md_translate.settings import Settings
 
 
 class Application:
-    def __init__(self, settings: 'SettingsProtocol'):
+    def __init__(self, settings: 'Settings'):
         self._settings = settings
         self._logger = logging.getLogger(__name__)
 
@@ -39,16 +39,15 @@ class Application:
             )
 
     def _set_logging_level(self) -> None:
-        if self._settings.verbose == 0:
-            logging.basicConfig(level=logging.CRITICAL)
-        elif self._settings.verbose == 1:
-            logging.basicConfig(level=logging.ERROR)
-        elif self._settings.verbose == 2:
-            logging.basicConfig(level=logging.WARNING)
-        elif self._settings.verbose == 3:
-            logging.basicConfig(level=logging.INFO)
-        elif self._settings.verbose >= 4:
-            logging.basicConfig(level=logging.DEBUG)
+        level_int_to_name = {
+            0: logging.CRITICAL,
+            1: logging.ERROR,
+            2: logging.WARNING,
+            3: logging.INFO,
+            4: logging.DEBUG,
+        }
+        logging_level = level_int_to_name.get(self._settings.verbose, logging.DEBUG)
+        logging.basicConfig(level=logging_level)
         LOGGER_NAMES_TO_DISABLE = [
             'selenium',
             'urllib3',

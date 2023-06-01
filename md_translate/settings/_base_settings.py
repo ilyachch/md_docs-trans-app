@@ -103,8 +103,9 @@ class Settings(BaseModel):
         click_params: dict[str, Any],
         config_file_path: Optional[Path] = None,
     ) -> 'Settings':
-        default_params = cls.__get_params_from_config_file(config_file_path)
-        params = {**default_params, **click_params}
+        not_default_params = cls.__get_not_default_params(click_params)
+        params_from_config_file = cls.__get_params_from_config_file(config_file_path)
+        params = {**params_from_config_file, **not_default_params}
         return cls(**params)
 
     @classmethod
@@ -123,6 +124,16 @@ class Settings(BaseModel):
                 raise ValueError(f'Unknown option: {option_name}')
             params[option_name] = value
         return params
+
+    @classmethod
+    def __get_not_default_params(cls, params: dict[str, Any]) -> dict[str, Any]:
+        not_default_params = {}
+        for option_name, value in params.items():
+            if option_name not in cls.__fields__:
+                raise ValueError(f'Unknown option: {option_name}')
+            if value != cls.__fields__[option_name].default:
+                not_default_params[option_name] = value
+        return not_default_params
 
     def dump_settings(self) -> None:
         print(self.json(indent=4))

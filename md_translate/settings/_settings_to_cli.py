@@ -20,7 +20,7 @@ class ClickFieldInfoExtra(TypedDict):
 
 
 def SettingsToCliField(  # noqa: N802
-    *args,
+    *args: Any,
     click_option_name: list[str],
     click_option_type: Optional[click.ParamType] = None,
     click_option_help: str = '',
@@ -29,7 +29,7 @@ def SettingsToCliField(  # noqa: N802
     click_option_is_flag: bool = False,
     click_option_default: Any = None,
     click_option_count: bool = False,
-    **kwargs,
+    **kwargs: Any,
 ) -> Any:
     return Field(
         *args,
@@ -53,14 +53,14 @@ def build_cli_options_from_settings(settings: Type['Settings']) -> list[click.Op
             continue
         options.append(
             click.Option(
-                *click_option_info['click_option_name'],
+                click_option_info['click_option_name'],
                 type=click_option_info['click_option_type'],
-                required=click_option_info['click_option_required'],
-                help=click_option_info['click_option_help'],
-                callback=click_option_info['click_option_callback'],
-                is_flag=click_option_info['click_option_is_flag'],
+                required=cast(bool, click_option_info['click_option_required']),
+                help=cast(str, click_option_info['click_option_help']),
+                callback=cast(Callable, click_option_info['click_option_callback']),
+                is_flag=cast(bool, click_option_info['click_option_is_flag']),
                 default=click_option_info['click_option_default'],
-                count=click_option_info['click_option_count'],
+                count=cast(bool, click_option_info['click_option_count']),
             )
         )
     return options
