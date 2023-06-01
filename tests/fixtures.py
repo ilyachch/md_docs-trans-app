@@ -3,7 +3,7 @@ from typing import Union, Type, Optional
 
 import pytest
 
-from translators import BaseTranslator
+from md_translate.translators import BaseTranslator
 
 
 class SettingsTest:
