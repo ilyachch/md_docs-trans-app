@@ -100,6 +100,7 @@ def test_settings_instantiate():
     assert settings.from_lang == 'en'
     assert settings.to_lang == 'ru'
     assert settings.service == GoogleTranslateProvider
+    assert settings.service_provider == GoogleTranslateProvider
 
 
 def test_settings_initiate_with_unknown_option_in_click_params():

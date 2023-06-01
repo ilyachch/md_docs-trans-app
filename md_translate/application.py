@@ -96,7 +96,7 @@ class Application:
         return source_files
 
     def process_file(self, file_to_process: Path) -> None:
-        translation_provider = self._settings.service(self._settings)
+        translation_provider = self._settings.service_provider(self._settings)
         self._logger.info('Processing file: %s', file_to_process)
         try:
             document = MarkdownDocument.from_file(

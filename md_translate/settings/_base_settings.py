@@ -1,12 +1,12 @@
 import json
 from pathlib import Path
-from typing import Any, ClassVar, Optional, Type, Union
+from typing import Any, ClassVar, Optional, Type, Union, cast
 
 import click
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
-from md_translate.translators import BaseTranslator, Translator
 from md_translate.settings._settings_to_cli import SettingsToCliField
+from md_translate.translators import BaseTranslator, Translator
 
 
 class Settings(BaseModel):
@@ -83,16 +83,11 @@ class Settings(BaseModel):
     class Config:
         use_enum_values = True
         exclude = ['path']
+        arbitrary_types_allowed = True
 
-    @validator('service', pre=True)
-    def validate_service(
-        cls,
-        value: str,
-    ) -> Type[BaseTranslator]:
-        try:
-            return Translator(value).value
-        except KeyError:
-            raise ValueError(f'Invalid service name: {value}')
+    @property
+    def service_provider(self) -> Type[BaseTranslator]:
+        return cast(Type[BaseTranslator], self.service)
 
     @classmethod
     def initiate(

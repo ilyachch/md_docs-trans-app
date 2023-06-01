@@ -174,8 +174,8 @@ class TestMarkdownDocument:
         document = MarkdownDocument.from_file(test_document, settings=test_settings)
         document.translate(MockTranslator())  # type: ignore
         if drop_original:
-            assert document.render() == (
-                '# Test document. translated\n\n' 'This is a test document.. translated'
+            assert document.render_translated() == (
+                '# Test document. translated\n\nThis is a test document.. translated'
             )
         else:
             assert document.render_translated() == (
