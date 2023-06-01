@@ -3,7 +3,6 @@ from typing import Union, Type, Optional
 
 import pytest
 
-from settings import Settings
 from translators import BaseTranslator
 
 
