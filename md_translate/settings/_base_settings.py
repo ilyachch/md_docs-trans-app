@@ -23,7 +23,7 @@ class Settings(BaseModel):
         click_option_help='Target language code',
         click_option_required=True,
     )
-    service: Type[BaseTranslator] = SettingsToCliField(
+    service: Translator = SettingsToCliField(
         click_option_name=['-P', '--service'],
         click_option_type=click.Choice(Translator.__members__),  # type: ignore
         click_option_callback=lambda ctx, param, value: Translator[value],
@@ -65,7 +65,7 @@ class Settings(BaseModel):
     )
     verbose: int = SettingsToCliField(
         0,
-        click_option_name=['-V', '--verbose'],
+        click_option_name=['-v', '--verbose'],
         click_option_count=True,
         click_option_help='Verbosity level',
     )
@@ -89,8 +89,6 @@ class Settings(BaseModel):
         cls,
         value: str,
     ) -> Type[BaseTranslator]:
-        if not isinstance(value, str):
-            raise TypeError('service must be a string')
         try:
             return Translator(value).value
         except KeyError:
@@ -106,7 +104,8 @@ class Settings(BaseModel):
         not_default_params = cls.__get_not_default_params(click_params)
         params_from_config_file = cls.__get_params_from_config_file(config_file_path)
         params = {**params_from_config_file, **not_default_params}
-        return cls(**params)
+        clear_params = {k: v for k, v in params.items() if v is not None}
+        return cls(**clear_params)
 
     @classmethod
     def __get_params_from_config_file(

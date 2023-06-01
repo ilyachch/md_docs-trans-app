@@ -18,7 +18,7 @@ def main(
     **cli_arguments: Any,
 ) -> None:
     dump_config = cli_arguments.pop('dump_config', False)
-    config_file = cli_arguments.pop('config')
+    config_file = cli_arguments.pop('config', None)
     settings = Settings.initiate(click_params=cli_arguments, config_file_path=config_file)
     if dump_config:
         settings.dump_settings()
