@@ -6,7 +6,7 @@ import click
 from pydantic import BaseModel, validator
 
 from md_translate.translators import BaseTranslator, Translator
-from settings._settings_to_cli import SettingsToCliField
+from md_translate.settings._settings_to_cli import SettingsToCliField
 
 
 class Settings(BaseModel):
