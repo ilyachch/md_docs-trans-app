@@ -19,8 +19,8 @@ jobs:
     uses: ./.github/workflows/linting.yml
     name: Linting
     with:
-      system: [ "ubuntu-20.04", "ubuntu-22.04" ]
-      python-version: [ "3.10", "3.11" ]
+      system: "ubuntu-22.04"
+      python-version: "3.10"
   test:
     uses: ./.github/workflows/testing.yml
     name: Testing
@@ -29,6 +29,9 @@ jobs:
       matrix:
         system: [ "ubuntu-20.04", "ubuntu-22.04" ]
         python-version: [ "3.10", "3.11" ]
+    with:
+      system: ${{ matrix.system }}
+      python-version: ${{ matrix.python-version }}
   release:
     name: Release
     runs-on: ubuntu-latest
