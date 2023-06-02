@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "md_translate"
-version = "3.0.0"
+version = "3.0.1"
 description = "CLI tool to translate markdown files"
 authors = ["Ilya Chichak <ilyachch@gmail.com>"]
 license = "MIT License"
@@ -33,7 +33,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-requests = "^2.24.0"
 selenium = "^4.5.0"
 mistune = "^2.0.4"
 pydantic = "^1.10.2"

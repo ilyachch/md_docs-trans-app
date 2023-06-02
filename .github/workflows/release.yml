@@ -51,8 +51,6 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
-      - name: Installing dependencies
-        run: poetry install
       - name: Getting package version
         id: get_version
         run: echo "::set-output name=clear_version::$(poetry version -s)"
