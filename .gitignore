@@ -1,4 +1,8 @@
 TRANSLATE_API_KEY
+md_translate/translators/bin
+!md_translate/translators/bin/.gitkeep
+.bin
+.tool-versions
 
 # IDE`s
 .vscode

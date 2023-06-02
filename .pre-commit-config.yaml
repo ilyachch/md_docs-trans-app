@@ -1,0 +1,42 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: local
+
+    hooks:
+      - id: check-black
+        name: check black
+        language: python
+        types: [python]
+        files: ^md_translate\/.*\.py$
+        exclude: .*\/(tests)\/.*\.py$
+        require_serial: true
+        entry: make check_black
+
+      - id: check-isort
+        name: check isort
+        language: python
+        types: [python]
+        files: ^md_translate\/.*\.py$
+        exclude: .*\/(tests)\/.*\.py$
+        require_serial: true
+        entry: make check_isort
+
+      - id: check-mypy
+        name: check mypy
+        language: python
+        types: [python]
+        files: ^md_translate\/.*\.py$
+        exclude: .*\/(tests)\/.*\.py$
+        require_serial: true
+        entry: make check_mypy
+
+      - id: check-flake8
+        name: check flake8
+        language: python
+        types: [python]
+        files: ^md_translate\/.*\.py$
+        exclude: .*\/(tests)\/.*\.py$
+        require_serial: true
+        entry: make check_flake8
+

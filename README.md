@@ -1,54 +1,99 @@
-[![codecov](https://codecov.io/gh/ilyachch/md_docs-trans-app/branch/master/graph/badge.svg)](https://codecov.io/gh/ilyachch/md_docs-trans-app)
-# MD Translate
+# Markdown Docs Translator
 
-CLI tool to translate `.md` files from English to Russian and back.
+![Python](https://img.shields.io/badge/python-v3.10+-blue.svg)
+![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)
 
-Can use Yandex Translation API and Google Cloud translation.
+Markdown Docs Translator is an automated translator for markdown documents, built with Python. The tool supports multiple translation services and provides a variety of options to customize the translation process.
+
+## Features
+
+- Support for multiple translation services (Yandex, Google, Bing, Deepl).
+- Multithreading for faster translations.
+- Options to overwrite original files, drop original files, or create a new file with translated text.
+- Caching for faster repeat translations.
+- Verbosity level control.
 
 ## Installation
 
-Install project:
+### From PyPI (highly recommended to use pipx):
 
 ```bash
-$ pip install md-translate
+pipx install md-translate
 ```
 
-## Settings file
+### Git:
 
-You can store your default settings in `.json` file.
-
-Settings file content example:
-```.json
-{
-  "source_lang": "ru",
-  "target_lang": "en",
-  "service_name": "Google",
-}
+```bash
+git clone https://github.com/ilyachch/md_docs-trans-app.git
+cd md_docs-trans-app
+pip install .
 ```
-
-If you set config file, you should specify it with `-c CONFIG_PATH` argument!
 
 ## Usage
 
+### Example:
+
 ```bash
-$ md-translate [-h] [-c CONFIG_PATH]
-               [-s {Yandex,Google}] [-S] [-T]
-               [path]
+md-translate path_to_file_or_folder -F source_lang -T target_lang -P service [OPTIONS]
 ```
 
-If you set config file, you can override any of settings by arguments
+Where:
 
-### Positional arguments:
-* `path` Path to folder to process. If not set, uses current folder
+- `path_to_file_or_folder` is the path to the markdown file or folder containing markdown files to translate.
+- `source_lang` is the language code of the source document.
+- `target_lang` is the language code for the translation.
+- `service` is the translating service to use (yandex, google, bing, deepl).
+- `OPTIONS` are additional options that can be specified as listed below.
 
-### Optional arguments:
-* `-h, --help`, show this help message and exit
-* `-c CONFIG_PATH, --config_path CONFIG_PATH`, Path to config_file
-* `-s {Yandex,Google,Bing,Deepl}, --service_name {Yandex,Google,Bing,Deepl}`, Translating service
-* `-S SOURCE_LANG, --source_lang SOURCE_LANG`, Source language code
-* `-T TARGET_LANG, --target_lang TARGET_LANG`, Target language code
+### Options
 
-### Translation services:
-Now used `Yandex`, `Google`, `Bing`, `Deepl`
+| Option                        | Description                          |
+| ----------------------------- | ------------------------------------ |
+| `-F, --from-lang TEXT`        | Source language code \[required\]    |
+| `-T, --to-lang TEXT`          | Target language code \[required\]    |
+| `-P, --service`               | Translating service \[required\]     |
+| `-X, --processes INTEGER`     | Number of processes to use           |
+| `-N, --new-file`              | Create new file with translated text |
+| `-I, --ignore-cache`          | Ignore cache                         |
+| `-S, --save-temp-on-complete` | Save temporary files on complete     |
+| `-O, --overwrite`             | Overwrite original files             |
+| `-V, --verbose`               | Verbosity level                      |
+| `-D, --drop-original`         | Drop original files                  |
+| `--help`                      | Show help message and exit           |
 
-Some of them can be not working, try it and find the most suitable for you
+Currently supported services are:
+
+- `Yandex`
+- `Google`
+- `Bing`
+- `Deepl`
+
+### Configuring with a Configuration File
+
+Options for the application can be defined through a configuration file as well. This file should be named `settings.json` and is typically located at `~/.config/md_translate`.
+
+If you choose to use a non-default location for the config file, you can specify its path using the `--config` or `-C` option.
+
+This configuration file can encompass all CLI options with the exception of `path`, `from_lang`, `to_lang`, and `service`. These particular options need to be stated directly in the CLI.
+
+The configuration file should be a valid JSON file and adhere to the following structure:
+
+```json
+{
+    "processes": 4,
+    "new_file": true,
+    "ignore_cache": false,
+    "save_temp_on_complete": false,
+    "overwrite": false,
+    "verbose": 1,
+    "drop_original": false
+}
+```
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)

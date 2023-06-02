@@ -1,89 +1,83 @@
 name: Release
-
 on:
   push:
     branches:
       - master
     paths:
-      - '**.py'
-
+      - '**/*.py'
+      - 'pyproject.toml'
+      - 'poetry.lock'
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: 'Dry run'
+        required: false
+        default: false
+        type: boolean
 jobs:
+  lint:
+    uses: ./.github/workflows/linting.yml
+    name: Linting
+    with:
+      system: [ "ubuntu-20.04", "ubuntu-22.04" ]
+      python-version: [ "3.10", "3.11" ]
+  test:
+    uses: ./.github/workflows/testing.yml
+    name: Testing
+    strategy:
+      fail-fast: false
+      matrix:
+        system: [ "ubuntu-20.04", "ubuntu-22.04" ]
+        python-version: [ "3.10", "3.11" ]
   release:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     name: Release
     runs-on: ubuntu-latest
+    needs: [lint, test]
+    permissions:
+      contents: write
     steps:
       - name: Getting code
-        uses: actions/checkout@master
+        uses: actions/checkout@v3.1.0
       - name: Getting Python
-        uses: actions/setup-python@master
-      - name: Cache pip
-        uses: actions/cache@v2
+        uses: actions/setup-python@v4
         with:
-          path: .venv
-          key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-      - name: Getting Poetry
-        uses: dschep/install-poetry-action@v1.3
-      - name: Config Poetry
-        run: |
-          poetry config virtualenvs.create true
-          poetry config virtualenvs.in-project true
+          python-version: "3.10"
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
       - name: Installing dependencies
         run: poetry install
-      - name: Running tests
-        run: make coverage
-      - name: Running coverage check
-        run: make coverage_cmd_report
-      - name: Running codestyle checks
-        run: make check_black
-      - name: Running types checks
-        run: make check_mypy
-      - name: Running imports check
-        run: make check_imports
-
-      - name: Generate coverage report
-        run: make coverage_xml_report
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
-
       - name: Getting package version
         id: get_version
-        run: echo "::set-output name=version::$(poetry version)"
+        run: echo "::set-output name=clear_version::$(poetry version -s)"
+      - name: Build package
+        run: poetry build
 
-      - name: Getting package clear version
-        id: get_clear_version
-        run: echo "::set-output name=clear_version::$(poetry version | cut -d ' ' -f 2)"
-
-      - name: Make release and publish
-        run: make release USERNAME=${{ secrets.PYPI_USERNAME }} TOKEN=${{ secrets.PYPI_TOKEN }}
-
-      - name: Get asset name
-        id: get_asset_name
-        run: echo "::set-output name=assert_name::$(ls dist | grep gz)"
+      - name: Upload Release assets to workflow artifacts
+        if: ${{ inputs.dry-run }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist/
+      - name: Publish to PyPI (dry-run)
+        if: ${{ inputs.dry-run }}
+        run: poetry publish --username ${{ secrets.PYPI_USERNAME }} --password ${{ secrets.PYPI_TOKEN }} --dry-run
 
       - name: Create Release
+        if: ${{ !inputs.dry-run }}
         id: create_release
-        uses: actions/create-release@latest
+        uses: ncipollo/release-action@v1.12.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.get_clear_version.outputs.clear_version }}
-          release_name: ${{ steps.get_version.outputs.version }}
+          artifacts: "dist/*"
+          commit: ${{ github.sha }}
           draft: false
-          prerelease: false
-
-      - name: Upload Release assets
-        id: upload_gz
-        uses: actions/upload-release-asset@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/${{ steps.get_asset_name.outputs.assert_name }}
-          asset_name: ${{ steps.get_asset_name.outputs.assert_name }}
-          asset_content_type: application/tar+gzip
+          name: ${{ steps.get_version.outputs.clear_version }}
+          tag: ${{ steps.get_version.outputs.clear_version }}
+      - name: Publish to PyPI
+        if: ${{ !inputs.dry-run }}
+        run: poetry publish --username ${{ secrets.PYPI_USERNAME }} --password ${{ secrets.PYPI_TOKEN }}

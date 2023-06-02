@@ -1,0 +1,52 @@
+name: Lint
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        description: 'Python version to use'
+        required: false
+        type: string
+        default: "3.10"
+      system:
+        description: 'System to run on'
+        required: false
+        type: string
+        default: "ubuntu-20.04"
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.system }}-${{ inputs.python-version }}
+  cancel-in-progress: true
+jobs:
+  validate:
+    name: Validate
+    runs-on: ${{ inputs.system }}
+    strategy:
+      fail-fast: false
+      matrix:
+        command: [ "make check_mypy", "make check_isort", "make check_flake8" ]
+    steps:
+      - name: Getting code
+        uses: actions/checkout@v3
+      - name: Getting Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.python-version }}
+      - name: Load cached poetry
+        uses: actions/cache@v3
+        with:
+          path: ~/.local
+          key: ${{ runner.os }}-poetry-${{ steps.setup-python.outputs.python-version }}
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}-${{ steps.setup-python.outputs.python-version }}
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      - name: Installing dependencies
+        run: poetry install
+      - name: Running types checks
+        run: ${{ matrix.command }}
