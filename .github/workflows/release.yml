@@ -71,9 +71,7 @@ jobs:
           path: dist/
       - name: Publish to PyPI (dry-run)
         if: ${{ inputs.dry-run }}
-        run: poetry publish --dry-run
-        env:
-          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
+        run: poetry publish --username ${{ secrets.PYPI_USERNAME }} --password ${{ secrets.PYPI_TOKEN }} --dry-run
 
       - name: Create Release
         if: ${{ !inputs.dry-run }}
@@ -89,6 +87,4 @@ jobs:
           tag: ${{ steps.get_version.outputs.clear_version }}
       - name: Publish to PyPI
         if: ${{ !inputs.dry-run }}
-        run: poetry publish
-        env:
-          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
+        run: poetry publish --username ${{ secrets.PYPI_USERNAME }} --password ${{ secrets.PYPI_TOKEN }}
