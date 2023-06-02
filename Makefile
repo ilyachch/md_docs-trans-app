@@ -36,27 +36,6 @@ tests: .PHONY
 							  --cov-report=html:.coverage_html \
 							  --cov-fail-under=80
 
-# Releasing
-major_release: bump_major_release commit_version
-minor_release: bump_minor_release commit_version
-patch_release: bump_patch_release commit_version
-
-commit_version:
-	@git commit -a -m "`poetry version`"
-
-bump_major_release:
-	@poetry version major
-
-bump_minor_release:
-	@poetry version minor
-
-bump_patch_release:
-	@poetry version patch
-
-release:
-	@poetry build
-	@poetry publish -u $(USERNAME) -p $(TOKEN)
-
 # Other
 clean:
 	@rm -rf dist
