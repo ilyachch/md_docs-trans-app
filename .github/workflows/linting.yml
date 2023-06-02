@@ -11,7 +11,7 @@ on:
         description: 'System to run on'
         required: false
         type: string
-        default: ubuntu-20.04
+        default: "ubuntu-20.04"
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.system }}-${{ inputs.python-version }}
   cancel-in-progress: true
