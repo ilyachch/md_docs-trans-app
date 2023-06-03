@@ -60,7 +60,7 @@ jobs:
       - name: Get latest released version
         run: echo ::set-output name=version::$(git describe --tags --abbrev=0)
         id: get_latest_version
-      - name: Cancel current run if version is not changed
+      - name: Check if should be released
         run: |
           if [[ "${{ steps.get_version.outputs.version }}" != "${{ steps.get_latest_version.outputs.version }}" ]]; then
             echo "::set-output name=should_be_released::true"
