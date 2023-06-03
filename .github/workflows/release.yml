@@ -69,6 +69,7 @@ jobs:
           fi
 
       - name: Build package
+        if: ${{ steps.release.outputs.should_be_released == 'true' }}
         run: poetry build
 
       - name: Upload Release assets to workflow artifacts
