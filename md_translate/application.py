@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 import click
 
 from md_translate.document import MarkdownDocument
+from md_translate.exceptions import NoMdFilesFound
 
 if TYPE_CHECKING:
     from md_translate.settings import Settings
@@ -80,6 +81,9 @@ class Application:
             if '_translated' not in file_to_process.name
         ]
 
+        if not source_files:
+            raise NoMdFilesFound('No markdown files found to process')
+
         common_path_part = Path(
             *(
                 part
@@ -105,7 +109,7 @@ class Application:
             )
         except Exception as e:
             self._logger.error('Error processing file: %s', file_to_process)
-            self._logger.error(e)
+            self._logger.exception(e)
             return
         if not document.should_be_translated():
             self._logger.info('Skipping file: %s. Already translated', file_to_process.name)

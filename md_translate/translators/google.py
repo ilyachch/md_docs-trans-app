@@ -1,6 +1,8 @@
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.remote.webelement import WebElement
 
+from md_translate.exceptions import safe_run
+
 from ._selenium_base import SeleniumBaseTranslator
 
 
@@ -24,12 +26,10 @@ class GoogleTranslateProvider(SeleniumBaseTranslator):
             by=self.WEBDRIVER_BY.XPATH, value='//div[@aria-live="polite"]'
         ).find_element(by=self.WEBDRIVER_BY.CSS_SELECTOR, value=f'span[lang="{self.to_language}"]')
 
+    @safe_run(NoSuchElementException, default_return_value=False)
     def check_for_translation(self) -> bool:
-        try:
-            element = self.get_output_element()
-            return element.text != ''
-        except NoSuchElementException:
-            return False
+        element = self.get_output_element()
+        return element.text != ''
 
     def accept_cookies(self) -> None:
         if 'consent.google.com' in self._driver.current_url:

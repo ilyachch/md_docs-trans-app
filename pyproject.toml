@@ -67,7 +67,10 @@ line_length = 99
 src_paths = ["md_translate"]
 
 [tool.pytest.ini_options]
-addopts = """"""
+addopts = "-m 'not web'"
+markers = [
+    "web: mark test as web test",
+]
 
 [tool.coverage.run]
 source = [

@@ -2,17 +2,17 @@ import abc
 from typing import TYPE_CHECKING, Any, Protocol
 
 if TYPE_CHECKING:
-    from settings import SettingsProtocol
+    from md_translate.settings import Settings
 
 
-class BaseTranslatorProtocol(Protocol):
+class BaseTranslatorProtocol(Protocol):  # pragma: no cover
     def translate(self, *, text: str) -> str:
         ...
 
 
-class BaseTranslator(BaseTranslatorProtocol, metaclass=abc.ABCMeta):
+class BaseTranslator(BaseTranslatorProtocol, metaclass=abc.ABCMeta):  # pragma: no cover
     @abc.abstractmethod
-    def __init__(self, settings: 'SettingsProtocol') -> None:
+    def __init__(self, settings: 'Settings') -> None:
         ...
 
     @abc.abstractmethod

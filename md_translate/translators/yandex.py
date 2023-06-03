@@ -1,6 +1,8 @@
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.remote.webelement import WebElement
 
+from md_translate.exceptions import safe_run
+
 from ._selenium_base import SeleniumBaseTranslator
 
 
@@ -21,15 +23,13 @@ class YandexTranslateProvider(SeleniumBaseTranslator):
     def get_output_element(self) -> WebElement:
         return self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='translation')
 
+    @safe_run(NoSuchElementException, default_return_value=False)
     def check_for_translation(self) -> bool:
-        try:
-            container = self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='textbox2')
-            if 'fetching' in container.get_attribute('class'):
-                return False
-            element = self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='translation')
-            return element.text != ''
-        except NoSuchElementException:
+        container = self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='textbox2')
+        if 'fetching' in container.get_attribute('class'):
             return False
+        element = self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='translation')
+        return element.text != ''
 
     def accept_cookies(self) -> None:
         self.click_cookies_accept('Accept')
