@@ -41,6 +41,8 @@ jobs:
     steps:
       - name: Getting code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Getting Python
         uses: actions/setup-python@v4
         with:
