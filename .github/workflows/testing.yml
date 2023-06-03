@@ -47,7 +47,7 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
-          version: 1.4
+          version: 1.4.2
 
       - name: Installing dependencies
         run: poetry install
