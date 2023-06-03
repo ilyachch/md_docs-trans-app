@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 import click
 
 from md_translate.document import MarkdownDocument
-from md_translate.exceptions import NoMdFilesFound
+from md_translate.exceptions import NoMdFilesFound, NoTargetFileFound
 
 if TYPE_CHECKING:
     from md_translate.settings import Settings
@@ -58,23 +58,7 @@ class Application:
             logging.getLogger(logger_name).setLevel(logging.CRITICAL)
 
     def _get_files_to_process(self) -> list[Path]:
-        path = self._settings.path
-
-        if not isinstance(path, list):
-            path = [path]
-        files_to_process = []
-        for path_to_process in path:
-            if not path_to_process.exists():
-                raise click.ClickException(f'Path not found: {path_to_process}')
-            if path_to_process.is_file():
-                self._logger.debug('Found file: %s', path_to_process)
-                files_to_process.append(path_to_process)
-            else:
-                found_files = path_to_process.glob('**/*.md')
-                for found_file in found_files:
-                    self._logger.debug('Found file: %s', found_file)
-                    files_to_process.append(found_file)
-
+        files_to_process = self._aggregate_files_to_process()
         source_files = [
             file_to_process
             for file_to_process in files_to_process
@@ -98,6 +82,22 @@ class Application:
             ', '.join([str(f.relative_to(common_path_part)) for f in source_files]),
         )
         return source_files
+
+    def _aggregate_files_to_process(self) -> list[Path]:
+        paths = self._settings.path
+        files_to_process = []
+        for path_to_process in paths:
+            if not path_to_process.exists():
+                raise NoTargetFileFound(f'Path not found: {path_to_process}')
+            if path_to_process.is_file():
+                self._logger.debug('Found file: %s', path_to_process)
+                files_to_process.append(path_to_process)
+            else:
+                found_files = path_to_process.glob('**/*.md')
+                for found_file in found_files:
+                    self._logger.debug('Found file: %s', found_file)
+                    files_to_process.append(found_file)
+        return files_to_process
 
     def process_file(self, file_to_process: Path) -> None:
         translation_provider = self._settings.service_provider(self._settings)

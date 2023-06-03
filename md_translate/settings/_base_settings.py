@@ -3,14 +3,14 @@ from pathlib import Path
 from typing import Any, ClassVar, Optional, Type, Union, cast
 
 import click
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 from md_translate.settings._settings_to_cli import SettingsToCliField
 from md_translate.translators import BaseTranslator, Translator
 
 
 class Settings(BaseModel):
-    path: Union[Path, list[Path]]
+    path: list[Path]
     from_lang: str = SettingsToCliField(
         click_option_name=['-F', '--from-lang'],
         click_option_type=click.STRING,
@@ -106,6 +106,14 @@ class Settings(BaseModel):
     class Config:
         use_enum_values = True
         arbitrary_types_allowed = True
+
+    @validator('path', pre=True)
+    def path_to_list(cls, value: Union[Path, list[Path]]) -> list[Path]:
+        if isinstance(value, Path):
+            return [value]
+        if isinstance(value, str):
+            return [Path(value)]
+        return value
 
     @property
     def service_provider(self) -> Type[BaseTranslator]:

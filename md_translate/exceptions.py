@@ -1,23 +1,39 @@
-from typing import Type
+from typing import Any, Callable, Type
 
 import click
 
 
-class MdTranslateException(Exception):  # pragma: no cover
+class MdTranslateException(click.ClickException):  # pragma: no cover
     pass
 
 
-class NoMdFilesFound(MdTranslateException, click.ClickException):  # pragma: no cover
+class NoMdFilesFound(
+    FileNotFoundError,
+    click.ClickException,
+):  # pragma: no cover
     pass
 
 
-class NoCacheFileFound(MdTranslateException, click.ClickException):  # pragma: no cover
+class NoTargetFileFound(
+    FileNotFoundError,
+    MdTranslateException,
+):  # pragma: no cover
     pass
 
 
-def safe_run(exception_to_catch: Type[Exception], default_return_value=None):
-    def decorator(func):
-        def wrapper(*args, **kwargs):
+class NoCacheFileFound(
+    FileNotFoundError,
+    MdTranslateException,
+):  # pragma: no cover
+    pass
+
+
+DecoratedFunction = Callable[..., Any]
+
+
+def safe_run(exception_to_catch: Type[Exception], default_return_value: Any = None) -> Callable:
+    def decorator(func: DecoratedFunction) -> DecoratedFunction:
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
             try:
                 return func(*args, **kwargs)
             except exception_to_catch:
