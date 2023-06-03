@@ -53,7 +53,7 @@ jobs:
           installer-parallel: true
 
       - name: Cancel current run if version is not changed
-        if: $(git describe --tags --abbrev=0) == $(poetry version -s)
+        if: ${{ $(git describe --tags --abbrev=0) == $(poetry version -s) }}
         run: exit 78
 
       - name: Build package
