@@ -57,9 +57,9 @@ jobs:
       - name: Check if should be released
         run: |
           if [[ $(poetry version -s) = $(git describe --tags --abbrev=0) ]]; then
-            echo should_be_released=true >> $GITHUB_STATE
+            echo should_be_released=1 >> $GITHUB_ENV
           else
-            echo should_be_released=false >> $GITHUB_STATE
+            echo should_be_released=0 >> $GITHUB_ENV
           fi
 
       - name: check variables
