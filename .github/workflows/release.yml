@@ -40,7 +40,9 @@ jobs:
       contents: write
     steps:
       - name: Getting code
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Getting Python
         uses: actions/setup-python@v4
         with:
@@ -51,26 +53,37 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
-      - name: Installing dependencies
-        run: poetry install
-      - name: Getting package version
+
+      - name: Get current package version
+        run: echo ::set-output name=version::$(poetry version -s)
         id: get_version
-        run: echo "::set-output name=clear_version::$(poetry version -s)"
+      - name: Get latest released version
+        run: echo ::set-output name=version::$(git describe --tags --abbrev=0)
+        id: get_latest_version
+      - name: Check if should be released
+        run: |
+          if [[ "${{ steps.get_version.outputs.version }}" != "${{ steps.get_latest_version.outputs.version }}" ]]; then
+            echo "::set-output name=should_be_released::true"
+          else
+            echo "::set-output name=should_be_released::false"
+          fi
+
       - name: Build package
+        if: ${{ steps.release.outputs.should_be_released == 'true' }}
         run: poetry build
 
       - name: Upload Release assets to workflow artifacts
-        if: ${{ inputs.dry-run }}
+        if: ${{ inputs.dry-run && steps.release.outputs.should_be_released == 'true' }}
         uses: actions/upload-artifact@v3
         with:
           name: dist
           path: dist/
       - name: Publish to PyPI (dry-run)
-        if: ${{ inputs.dry-run }}
+        if: ${{ inputs.dry-run && steps.release.outputs.should_be_released == 'true' }}
         run: poetry publish --username ${{ secrets.PYPI_USERNAME }} --password ${{ secrets.PYPI_TOKEN }} --dry-run
 
       - name: Create Release
-        if: ${{ !inputs.dry-run }}
+        if: ${{ !inputs.dry-run && steps.release.outputs.should_be_released == 'true' }}
         id: create_release
         uses: ncipollo/release-action@v1.12.0
         env:
@@ -79,8 +92,8 @@ jobs:
           artifacts: "dist/*"
           commit: ${{ github.sha }}
           draft: false
-          name: ${{ steps.get_version.outputs.clear_version }}
-          tag: ${{ steps.get_version.outputs.clear_version }}
+          name: $(poetry version)
+          tag: $(poetry version -s)
       - name: Publish to PyPI
-        if: ${{ !inputs.dry-run }}
+        if: ${{ !inputs.dry-run && steps.release.outputs.should_be_released == 'true' }}
         run: poetry publish --username ${{ secrets.PYPI_USERNAME }} --password ${{ secrets.PYPI_TOKEN }}

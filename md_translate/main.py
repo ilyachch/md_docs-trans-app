@@ -22,8 +22,7 @@ def main(
     settings = Settings.initiate(click_params=cli_arguments, config_file_path=config_file)
     if dump_config:
         settings.dump_settings()
-    exit_code = Application(settings).run()
-    exit(exit_code)
+    exit(Application(settings).run())
 
 
 if __name__ == "__main__":
