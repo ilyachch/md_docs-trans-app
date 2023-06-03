@@ -61,24 +61,28 @@ jobs:
         run: echo ::set-output name=version::$(git describe --tags --abbrev=0)
         id: get_latest_version
       - name: Cancel current run if version is not changed
-        if: ${{ steps.get_version.outputs.version == steps.get_latest_version.outputs.version }}
-        run: exit 78
+        run: |
+          if [[ "${{ steps.get_version.outputs.version }}" != "${{ steps.get_latest_version.outputs.version }}" ]]; then
+            echo "::set-output name=should_be_released::true"
+          else
+            echo "::set-output name=should_be_released::false"
+          fi
 
       - name: Build package
         run: poetry build
 
       - name: Upload Release assets to workflow artifacts
-        if: ${{ inputs.dry-run }}
+        if: ${{ inputs.dry-run && steps.release.outputs.should_be_released == 'true' }}
         uses: actions/upload-artifact@v3
         with:
           name: dist
           path: dist/
       - name: Publish to PyPI (dry-run)
-        if: ${{ inputs.dry-run }}
+        if: ${{ inputs.dry-run && steps.release.outputs.should_be_released == 'true' }}
         run: poetry publish --username ${{ secrets.PYPI_USERNAME }} --password ${{ secrets.PYPI_TOKEN }} --dry-run
 
       - name: Create Release
-        if: ${{ !inputs.dry-run }}
+        if: ${{ !inputs.dry-run && steps.release.outputs.should_be_released == 'true' }}
         id: create_release
         uses: ncipollo/release-action@v1.12.0
         env:
@@ -90,5 +94,5 @@ jobs:
           name: $(poetry version)
           tag: $(poetry version -s)
       - name: Publish to PyPI
-        if: ${{ !inputs.dry-run }}
+        if: ${{ !inputs.dry-run && steps.release.outputs.should_be_released == 'true' }}
         run: poetry publish --username ${{ secrets.PYPI_USERNAME }} --password ${{ secrets.PYPI_TOKEN }}
