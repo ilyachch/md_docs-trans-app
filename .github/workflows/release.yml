@@ -51,11 +51,11 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
-      - name: Installing dependencies
-        run: poetry install
-      - name: Getting package version
-        id: get_version
-        run: echo "::set-output name=clear_version::$(poetry version -s)"
+
+      - name: Cancel current run if version is not changed
+        if: $(git describe --tags --abbrev=0) == $(poetry version -s)
+        run: exit 78
+
       - name: Build package
         run: poetry build
 
@@ -79,8 +79,8 @@ jobs:
           artifacts: "dist/*"
           commit: ${{ github.sha }}
           draft: false
-          name: ${{ steps.get_version.outputs.clear_version }}
-          tag: ${{ steps.get_version.outputs.clear_version }}
+          name: $(poetry version)
+          tag: $(poetry version -s)
       - name: Publish to PyPI
         if: ${{ !inputs.dry-run }}
         run: poetry publish --username ${{ secrets.PYPI_USERNAME }} --password ${{ secrets.PYPI_TOKEN }}
