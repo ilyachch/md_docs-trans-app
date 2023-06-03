@@ -52,8 +52,14 @@ jobs:
           virtualenvs-in-project: true
           installer-parallel: true
 
+      - name: Get current package version
+        run: echo ::set-output name=version::$(poetry version -s)
+        id: get_version
+      - name: Get latest released version
+        run: echo ::set-output name=version::$(git describe --tags --abbrev=0)
+        id: get_latest_version
       - name: Cancel current run if version is not changed
-        if: ${{ $(git describe --tags --abbrev=0) == $(poetry version -s) }}
+        if: ${{ steps.get_version.outputs.version == steps.get_latest_version.outputs.version }}
         run: exit 78
 
       - name: Build package
