@@ -54,8 +54,10 @@ jobs:
           virtualenvs-in-project: true
           installer-parallel: true
 
-      - name: Check if should be released
+      - name: Initiate Release
         run: |
+          echo release_name=$(poetry version) >> $GITHUB_ENV
+          echo release_tag=$(poetry version -s) >> $GITHUB_ENV
           if [[ $(poetry version -s) = $(git describe --tags --abbrev=0) ]]; then
             echo should_be_released=0 >> $GITHUB_ENV
           else
@@ -86,8 +88,8 @@ jobs:
           artifacts: "dist/*"
           commit: ${{ github.sha }}
           draft: false
-          name: $(poetry version)
-          tag: $(poetry version -s)
+          name: ${{ env.release_name }}
+          tag: ${{ env.release_tag }}
       - name: Publish to PyPI
         if: ${{ !inputs.dry-run && env.should_be_released == 1 }}
         run: poetry publish --username ${{ secrets.PYPI_USERNAME }} --password ${{ secrets.PYPI_TOKEN }}
