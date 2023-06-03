@@ -64,7 +64,7 @@ jobs:
 
       - name: check variables
         run: |
-          cat $GITHUB_STATE
+          echo ${{ env.should_be_released }}
 
       - name: Build package
         if: ${{ steps.release.outputs.should_be_released == 'true' }}
