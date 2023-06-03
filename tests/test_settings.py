@@ -174,14 +174,12 @@ def test_dump_settings(capsys):
     )
     settings.dump_settings()
     captured = capsys.readouterr()
-    assert captured.out == (
-        '{\n'
-        '    "processes": 1,\n'
-        '    "new_file": false,\n'
-        '    "ignore_cache": false,\n'
-        '    "save_temp_on_complete": false,\n'
-        '    "overwrite": false,\n'
-        '    "verbose": 0,\n'
-        '    "drop_original": false\n'
-        '}\n'
-    )
+    assert json.loads(captured.out) == {
+        "processes": 1,
+        "new_file": False,
+        "ignore_cache": False,
+        "save_temp_on_complete": False,
+        "overwrite": False,
+        "verbose": 0,
+        "drop_original": False,
+    }

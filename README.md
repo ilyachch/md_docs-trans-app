@@ -3,7 +3,7 @@
 ![Python](https://img.shields.io/badge/python-v3.10+-blue.svg)
 ![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)
 
-Markdown Docs Translator is an automated translator for markdown documents, built with Python. The tool supports multiple translation services and provides a variety of options to customize the translation process.
+Markdown Docs Translator is an automated translator for Markdown documents, built with Python. The tool supports multiple translation services and provides a variety of options to customize the translation process.
 
 ## Features
 
@@ -47,34 +47,19 @@ Where:
 
 ### Options
 
-  -F, --from-lang TEXT            Source language code  [required]
-  -T, --to-lang TEXT              Target language code  [required]
-  -P, --service [yandex|google|bing|deepl]
-                                  Translating service  [required]
-  -X, --processes INTEGER         Number of processes to use. Will be applied to each file separately
-  -N, --new-file                  Create a new file with translated text (original file will remain unchanged). The new file will be created in the same directory as the original file with a "_translated" suffix
-  -I, --ignore-cache              Ignore cache files. If cache exists, it will be overwritten
-  -S, --save-temp-on-complete     Save cache files upon completion. If not set, they will be deleted
-  -O, --overwrite                 Already translated files will be overwritten. Otherwise, these files will be skipped
-  -v, --verbose                   Verbosity level
-  -D, --drop-original             Remove original lines from translated file. These lines will be replaced with translated ones
-  --config FILE                   Path to config file
-  --help                          Show this message and exit.
-
-
-| Option                        | Description                                                                                                                                                                       |
-| ----------------------------- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `-F, --from-lang TEXT`        | Source language code \[required\]                                                                                                                                                 |
-| `-T, --to-lang TEXT`          | Target language code \[required\]                                                                                                                                                 |
-| `-P, --service`               | Translating service \[required\]                                                                                                                                                  |
-| `-X, --processes INTEGER`     | Number of processes to use. Will be applied to each file separately                                                                                                               |
-| `-N, --new-file`              | Create a new file with translated text (original file will remain unchanged). The new file will be created in the same directory as the original file with a "_translated" suffix |
-| `-I, --ignore-cache`          | Ignore cache files. If cache exists, it will be overwritten                                                                                                                                                                      |
-| `-S, --save-temp-on-complete` | Save cache files upon completion. If not set, they will be deleted                                                                                                                                                  |
-| `-O, --overwrite`             | Already translated files will be overwritten. Otherwise, these files will be skipped                                                                                                                                                          |
-| `-D, --drop-original`         | Remove original lines from translated file. These lines will be replaced with translated ones                                                                                                                                                               |
-| `-V, --verbose`               | Verbosity level                                                                                                                                                                   |
-| `--help`                      | Show help message and exit                                                                                                                                                        |
+| Option                        | Description                                                                                                                                                                        |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-F, --from-lang TEXT`        | Source language code \[required\]                                                                                                                                                  |
+| `-T, --to-lang TEXT`          | Target language code \[required\]                                                                                                                                                  |
+| `-P, --service`               | Translating service \[required\]                                                                                                                                                   |
+| `-X, --processes INTEGER`     | Number of processes to use. Will be applied to each file separately                                                                                                                |
+| `-N, --new-file`              | Create a new file with translated text (original file will remain unchanged). The new file will be created in the same directory as the original file with a "\_translated" suffix |
+| `-I, --ignore-cache`          | Ignore cache files. If cache exists, it will be overwritten                                                                                                                        |
+| `-S, --save-temp-on-complete` | Save cache files upon completion. If not set, they will be deleted                                                                                                                 |
+| `-O, --overwrite`             | Already translated files will be overwritten. Otherwise, these files will be skipped                                                                                               |
+| `-D, --drop-original`         | Remove original lines from translated file. These lines will be replaced with translated ones                                                                                      |
+| `-V, --verbose`               | Verbosity level                                                                                                                                                                    |
+| `--help`                      | Show help message and exit                                                                                                                                                         |
 
 Currently supported services are:
 
@@ -89,7 +74,7 @@ Options for the application can be defined through a configuration file as well.
 
 If you choose to use a non-default location for the config file, you can specify its path using the `--config` or `-C` option.
 
-This configuration file can encompass all CLI options with the exception of `path`, `from_lang`, `to_lang`, and `service`. These particular options need to be stated directly in the CLI.
+This configuration file can encompass all CLI options except `path`, `from_lang`, `to_lang`, `service` and `config_file_path`. These particular options need to be stated directly in the CLI.
 
 The configuration file should be a valid JSON file and adhere to the following structure:
 
