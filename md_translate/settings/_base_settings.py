@@ -155,7 +155,7 @@ class Settings(BaseModel):
         for option_name, value in params.items():
             if option_name not in cls.__fields__:
                 raise ValueError(f'Unknown option: {option_name}')
-            if value != cls.__fields__[option_name].default:
+            if value != cls.__fields__[option_name].default and value is not None:
                 not_default_params[option_name] = value
         return not_default_params
 
