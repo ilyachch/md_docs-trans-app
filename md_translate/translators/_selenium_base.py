@@ -52,7 +52,7 @@ class SeleniumBaseTranslator(BaseTranslator):
     def __enter__(self) -> 'BaseTranslator':
         options = self.randomizer.make_options()
         self._driver = webdriver.Chrome(  # type: ignore
-            service=ChromeService(ChromeDriverManager(version='latest').install()), options=options
+            service=ChromeService(ChromeDriverManager().install()), options=options
         )
         return self
 
