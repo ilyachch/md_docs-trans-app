@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, Optional
 import requests
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
@@ -52,7 +52,7 @@ class SeleniumBaseTranslator(BaseTranslator):
     def __enter__(self) -> 'BaseTranslator':
         options = self.randomizer.make_options()
         self._driver = webdriver.Chrome(  # type: ignore
-            service=Service(ChromeDriverManager().install()), options=options
+            service=ChromeService(ChromeDriverManager(version='latest').install()), options=options
         )
         return self
 
