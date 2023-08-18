@@ -15,6 +15,8 @@ Markdown Docs Translator is an automated translator for Markdown documents, buil
 
 ## Installation
 
+> **Note:** Chrome browser is required to be installed on your system.
+
 ### From PyPI (highly recommended to use pipx):
 
 ```bash
@@ -47,19 +49,19 @@ Where:
 
 ### Options
 
-| Option                        | Description                                                                                                                                                                        |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `-F, --from-lang TEXT`        | Source language code \[required\]                                                                                                                                                  |
-| `-T, --to-lang TEXT`          | Target language code \[required\]                                                                                                                                                  |
-| `-P, --service`               | Translating service \[required\]                                                                                                                                                   |
-| `-X, --processes INTEGER`     | Number of processes to use. Will be applied to each file separately                                                                                                                |
+| Option                        | Description                                                                                                                                                                       |
+|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `-F, --from-lang TEXT`        | Source language code \[required\]                                                                                                                                                 |
+| `-T, --to-lang TEXT`          | Target language code \[required\]                                                                                                                                                 |
+| `-P, --service`               | Translating service \[required\]                                                                                                                                                  |
+| `-X, --processes INTEGER`     | Number of processes to use. Each file is translated in separate process.                                                                                                          |
 | `-N, --new-file`              | Create a new file with translated text (original file will remain unchanged). The new file will be created in the same directory as the original file with a "\_translated" suffix |
-| `-I, --ignore-cache`          | Ignore cache files. If cache exists, it will be overwritten                                                                                                                        |
-| `-S, --save-temp-on-complete` | Save cache files upon completion. If not set, they will be deleted                                                                                                                 |
-| `-O, --overwrite`             | Already translated files will be overwritten. Otherwise, these files will be skipped                                                                                               |
-| `-D, --drop-original`         | Remove original lines from translated file. These lines will be replaced with translated ones                                                                                      |
-| `-V, --verbose`               | Verbosity level                                                                                                                                                                    |
-| `--help`                      | Show help message and exit                                                                                                                                                         |
+| `-I, --ignore-cache`          | Ignore cache files. If cache exists, it will be overwritten                                                                                                                       |
+| `-S, --save-temp-on-complete` | Save cache files upon completion. If not set, they will be deleted                                                                                                                |
+| `-O, --overwrite`             | Already translated files will be overwritten. Otherwise, these files will be skipped                                                                                              |
+| `-D, --drop-original`         | Remove original lines from translated file. These lines will be replaced with translated ones. Otherwise translated lines will be appended after originals                         |
+| `-v, --verbose`               | Verbosity level                                                                                                                                                                   |
+| `--help`                      | Show help message and exit                                                                                                                                                        |
 
 Currently supported services are:
 
