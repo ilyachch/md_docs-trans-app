@@ -17,7 +17,7 @@ class DeeplTranslateProvider(SeleniumBaseTranslator):
     def get_input_element(self) -> WebElement:
         return self._driver.find_element(
             by=self.WEBDRIVER_BY.CSS_SELECTOR,
-            value='[data-testid="translator-source-input"]',
+            value='div[aria-labelledby="translation-source-heading"]',
         )
 
     def get_output_element(self) -> WebElement:
@@ -28,8 +28,8 @@ class DeeplTranslateProvider(SeleniumBaseTranslator):
 
     @safe_run(NoSuchElementException, default_return_value=False)
     def check_for_translation(self) -> bool:
-        container = self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='dl_translator')
-        return 'lmt--active_translation_request' not in container.get_attribute('class')
+        element = self.get_output_element()
+        return element.text != ''
 
     def accept_cookies(self) -> None:
         self.click_cookies_accept('Accept')
@@ -37,7 +37,8 @@ class DeeplTranslateProvider(SeleniumBaseTranslator):
     @safe_run(NoSuchElementException, default_return_value=None)
     def click_cookies_accept(self, btn_text: str) -> None:
         cookies_accept_button = self._driver.find_element(
-            by=self.WEBDRIVER_BY.CLASS_NAME, value='dl_cookieBanner--buttonAll'
+            by=self.WEBDRIVER_BY.CSS_SELECTOR,
+            value='[data-testid="cookie-banner-strict-accept-all"]',
         )
         if cookies_accept_button:
             cookies_accept_button.click()
