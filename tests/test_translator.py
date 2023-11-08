@@ -7,12 +7,13 @@ from md_translate.translators import (
     YandexTranslateProvider,
 )
 
+
 class MockSettings:
     from_lang = 'en'
     to_lang = 'ru'
 
 
-@pytest.mark.web
+@pytest.mark.web  # run it with `pytest -m web`
 class TestTranslator:
     @pytest.mark.parametrize(
         'translator, source_text, expected',
@@ -24,6 +25,6 @@ class TestTranslator:
         ],
     )
     def test_translate(self, translator, source_text, expected):
-        translator = translator(MockSettings())
+        translator = translator(MockSettings())  # type: ignore
         with translator as translator_:
             assert translator_.translate(text=source_text) == expected
