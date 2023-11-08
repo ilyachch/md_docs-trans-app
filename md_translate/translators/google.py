@@ -23,8 +23,8 @@ class GoogleTranslateProvider(SeleniumBaseTranslator):
 
     def get_output_element(self) -> WebElement:
         return self._driver.find_element(
-            by=self.WEBDRIVER_BY.XPATH, value='//div[@aria-live="polite"]'
-        ).find_element(by=self.WEBDRIVER_BY.CSS_SELECTOR, value=f'span[lang="{self.to_language}"]')
+            by=self.WEBDRIVER_BY.CSS_SELECTOR, value=f'span[lang="{self.to_language}"]'
+        )
 
     @safe_run(NoSuchElementException, default_return_value=False)
     def check_for_translation(self) -> bool:
