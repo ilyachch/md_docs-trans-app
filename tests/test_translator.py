@@ -1,3 +1,5 @@
+from os import environ
+
 import pytest
 
 from md_translate.translators import (
@@ -5,6 +7,7 @@ from md_translate.translators import (
     DeeplTranslateProvider,
     GoogleTranslateProvider,
     YandexTranslateProvider,
+    DeeplAPITranslateProvider,
 )
 
 
@@ -22,9 +25,12 @@ class TestTranslator:
             (GoogleTranslateProvider, 'Hello world', 'Привет, мир'),
             (BingTranslateProvider, 'Hello world', 'Всем привет'),
             (DeeplTranslateProvider, 'Hello world', 'Здравствуй мир'),
+            (DeeplAPITranslateProvider, 'Hello world', 'Здравствуй мир'),
         ],
     )
     def test_translate(self, translator, source_text, expected):
-        translator = translator(MockSettings())  # type: ignore
+        settings = MockSettings()
+        settings.deepl_api_key = environ.get('DEEPL_API_KEY')
+        translator = translator(settings)  # type: ignore
         with translator as translator_:
             assert translator_.translate(text=source_text) == expected
