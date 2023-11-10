@@ -10,6 +10,7 @@ Markdown Docs Translator is an automated translator for Markdown documents, buil
 - Support for multiple translation services (Yandex, Google, Bing, Deepl).
 - Multithreading for faster translations.
 - Options to overwrite original files, drop original files, or create a new file with translated text.
+- Continuing translation in case of an error or interruption.
 - Caching for faster repeat translations.
 - Verbosity level control.
 
@@ -49,19 +50,20 @@ Where:
 
 ### Options
 
-| Option                        | Description                                                                                                                                                                       |
-|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `-F, --from-lang TEXT`        | Source language code \[required\]                                                                                                                                                 |
-| `-T, --to-lang TEXT`          | Target language code \[required\]                                                                                                                                                 |
-| `-P, --service`               | Translating service \[required\]                                                                                                                                                  |
-| `-X, --processes INTEGER`     | Number of processes to use. Each file is translated in separate process.                                                                                                          |
+| Option                        | Description                                                                                                                                                                        |
+|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `-F, --from-lang TEXT`        | Source language code \[required\]                                                                                                                                                  |
+| `-T, --to-lang TEXT`          | Target language code \[required\]                                                                                                                                                  |
+| `-P, --service`               | Translating service \[required\]                                                                                                                                                   |
+| `-X, --processes INTEGER`     | Number of processes to use. Each file is translated in separate process.                                                                                                           |
 | `-N, --new-file`              | Create a new file with translated text (original file will remain unchanged). The new file will be created in the same directory as the original file with a "\_translated" suffix |
-| `-I, --ignore-cache`          | Ignore cache files. If cache exists, it will be overwritten                                                                                                                       |
-| `-S, --save-temp-on-complete` | Save cache files upon completion. If not set, they will be deleted                                                                                                                |
-| `-O, --overwrite`             | Already translated files will be overwritten. Otherwise, these files will be skipped                                                                                              |
+| `-I, --ignore-cache`          | Ignore cache files. If cache exists, it will be overwritten                                                                                                                        |
+| `-S, --save-temp-on-complete` | Save cache files upon completion. If not set, they will be deleted                                                                                                                 |
+| `-O, --overwrite`             | Already translated files will be overwritten. Otherwise, these files will be skipped                                                                                               |
 | `-D, --drop-original`         | Remove original lines from translated file. These lines will be replaced with translated ones. Otherwise translated lines will be appended after originals                         |
-| `-v, --verbose`               | Verbosity level                                                                                                                                                                   |
-| `--help`                      | Show help message and exit                                                                                                                                                        |
+| `--deepl-api-key`             | Deepl API key. Required by `deepl_api` translation provider.                                                                                                                       |
+| `-v, --verbose`               | Verbosity level                                                                                                                                                                    |
+| `--help`                      | Show help message and exit                                                                                                                                                         |
 
 Currently supported services are:
 
@@ -69,7 +71,8 @@ Currently supported services are:
 - `Google`
 - `Bing`
 - `Deepl`
-- 'LibreTranslate'
+- `LibreTranslate`
+- `DeepL API`
 
 ### Configuring with a Configuration File
 
