@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any
 
 import requests
 
-from translators import BaseTranslator
+from md_translate.translators import BaseTranslator
 
 if TYPE_CHECKING:
     from md_translate.settings import Settings
