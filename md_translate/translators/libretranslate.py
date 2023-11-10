@@ -44,8 +44,9 @@ class LibreTranslateTranslateProvider(SeleniumBaseTranslator):
     def wait_for_page_load(self) -> None:
         def wait_for(driver: Any) -> bool:
             document_ready = driver.execute_script('return document.readyState') == 'complete'
-            controls_loaded = len(driver.find_elements(by=self.WEBDRIVER_BY.ID, value='textarea1')) > 0
+            controls_loaded = (
+                len(driver.find_elements(by=self.WEBDRIVER_BY.ID, value='textarea1')) > 0
+            )
             return document_ready and controls_loaded
 
         self.WEBDRIVER_WAIT(self._driver, self.PAGE_LOAD_TIMEOUT).until(wait_for)
-
