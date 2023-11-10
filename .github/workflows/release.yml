@@ -6,7 +6,6 @@ on:
     paths:
       - '**/*.py'
       - 'pyproject.toml'
-      - 'poetry.lock'
   workflow_dispatch:
     inputs:
       dry-run:
