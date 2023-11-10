@@ -69,6 +69,7 @@ Currently supported services are:
 - `Google`
 - `Bing`
 - `Deepl`
+- 'LibreTranslate'
 
 ### Configuring with a Configuration File
 

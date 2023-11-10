@@ -7,6 +7,7 @@ from md_translate.translators import (
     DeeplTranslateProvider,
     GoogleTranslateProvider,
     YandexTranslateProvider,
+    LibreTranslateTranslateProvider,
     DeeplAPITranslateProvider,
 )
 
@@ -25,6 +26,7 @@ class TestTranslator:
             (GoogleTranslateProvider, 'Hello world', 'Привет, мир'),
             (BingTranslateProvider, 'Hello world', 'Всем привет'),
             (DeeplTranslateProvider, 'Hello world', 'Здравствуй мир'),
+            (LibreTranslateTranslateProvider, 'Hello world', 'Привет мир'),
             (DeeplAPITranslateProvider, 'Hello world', 'Здравствуй мир'),
         ],
     )
