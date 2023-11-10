@@ -182,4 +182,5 @@ def test_dump_settings(capsys):
         "overwrite": False,
         "verbose": 0,
         "drop_original": False,
+        "deepl_api_key": None,
     }

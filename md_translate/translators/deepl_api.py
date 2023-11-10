@@ -1,6 +1,6 @@
 import requests
 
-from translators._api_base import APIBaseTranslator
+from ._api_base import APIBaseTranslator
 
 
 class DeeplAPITranslateProvider(APIBaseTranslator):
