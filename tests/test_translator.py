@@ -5,6 +5,7 @@ from md_translate.translators import (
     DeeplTranslateProvider,
     GoogleTranslateProvider,
     YandexTranslateProvider,
+    LibreTranslateTranslateProvider,
 )
 
 
@@ -22,6 +23,7 @@ class TestTranslator:
             (GoogleTranslateProvider, 'Hello world', 'Привет, мир'),
             (BingTranslateProvider, 'Hello world', 'Всем привет'),
             (DeeplTranslateProvider, 'Hello world', 'Здравствуй мир'),
+            (LibreTranslateTranslateProvider, 'Hello world', 'Привет мир'),
         ],
     )
     def test_translate(self, translator, source_text, expected):
