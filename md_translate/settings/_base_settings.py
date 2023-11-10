@@ -90,6 +90,12 @@ class Settings(BaseModel):
         click_option_type=click.Path(exists=True, dir_okay=False),
         click_option_help='Path to config file',
     )
+    deepl_api_key: Optional[str] = SettingsToCliField(
+        None,
+        click_option_name=['--deepl-api-key'],
+        click_option_type=click.STRING,
+        click_option_help='DeepL API key',
+    )
 
     NOT_IN_SETTINGS_FIELDS: ClassVar[list[str]] = [
         'path',
