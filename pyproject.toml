@@ -41,7 +41,7 @@ webdriver-manager = "^4.0.0"
 
 [tool.poetry.group.dev.dependencies]
 types-selenium = "^3.141.9"
-black = "^22.10.0"
+black = ">=22.10,<25.0"
 coverage = "^6.5.0"
 mypy = "^0.982"
 isort = "^5.10.1"
