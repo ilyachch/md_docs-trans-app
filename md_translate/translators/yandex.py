@@ -1,6 +1,6 @@
 import time
 
-from selenium.common.exceptions import ElementNotInteractableException, NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.remote.webelement import WebElement
 
 from md_translate.exceptions import safe_run
