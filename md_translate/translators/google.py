@@ -33,8 +33,7 @@ class GoogleTranslateProvider(SeleniumBaseTranslator):
 
     def accept_cookies(self) -> None:
         if 'consent.google.com' in self._driver.current_url:
-            buttons = self._driver.find_elements(by=self.WEBDRIVER_BY.TAG_NAME, value='button')
-            buttons[1].click()
+            self.click_cookies_accept('Accept all')
 
     def check_for_antispam(self) -> bool:
         try:
