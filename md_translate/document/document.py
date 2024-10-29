@@ -68,14 +68,10 @@ class MarkdownDocument:
         return self.__clear_rendered(prerendered)
 
     def translate(self, translator: BaseTranslatorProtocol) -> None:
-        blocks_to_translate = [block for block in self.blocks if block.should_be_translated]
-        logger.info('Found %s blocks to translate', len(blocks_to_translate))
-        for number, block in enumerate(blocks_to_translate, start=1):
-            translated_data = translator.translate(text=str(block))
-            block.translated_data = translated_data
+        for block in self.blocks:
+            block.translate(translator)
             self.cache()
-            logger.info('Translated block %s of %s', number, len(blocks_to_translate))
-            logger.debug(f'Translated block: {block}')
+            logger.info('Processed block: %s', block)
 
     def should_be_translated(self) -> bool:
         if not self.source:
