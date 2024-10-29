@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, Optional
 import requests
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
@@ -41,6 +42,7 @@ class SeleniumBaseTranslator(BaseTranslator):
     ANTISPAM_TIMEOUT = 60 * 60  # 1 hour
     PAGE_LOAD_TIMEOUT = 10
     TRANSLATION_TIMEOUT = 10
+    IMPLICIT_WAIT = 3
 
     def __init__(self, settings: 'Settings') -> None:
         self._settings = settings
@@ -54,6 +56,7 @@ class SeleniumBaseTranslator(BaseTranslator):
         self._driver = webdriver.Chrome(  # type: ignore
             service=ChromeService(ChromeDriverManager().install()), options=options
         )
+        self._driver.implicitly_wait(self.IMPLICIT_WAIT)
         return self
 
     def __exit__(self, *args: Any, **kwargs: Any) -> None:
@@ -65,7 +68,13 @@ class SeleniumBaseTranslator(BaseTranslator):
         if self.check_for_antispam():
             self.wait_for_antispam()
         input_element = self.get_input_element()
-        input_element.send_keys(text)
+
+        action = ActionChains(self._driver)
+        action.move_to_element(input_element)
+        action.click()
+        action.send_keys(text)
+        action.perform()
+
         try:
             self.wait_for_translation()
         except AntiSpamException:
@@ -87,32 +96,26 @@ class SeleniumBaseTranslator(BaseTranslator):
         self.wait_for_page_load()
 
     @abc.abstractmethod
-    def get_url(self) -> str:
-        ...
+    def get_url(self) -> str: ...
 
     @abc.abstractmethod
-    def check_for_antispam(self) -> bool:
-        ...
+    def check_for_antispam(self) -> bool: ...
 
     @abc.abstractmethod
-    def accept_cookies(self) -> None:
-        ...
+    def accept_cookies(self) -> None: ...
 
     @abc.abstractmethod
-    def get_input_element(self) -> WebElement:
-        ...
+    def get_input_element(self) -> WebElement: ...
 
     @abc.abstractmethod
-    def get_output_element(self) -> WebElement:
-        ...
+    def get_output_element(self) -> WebElement: ...
 
     @staticmethod
     def get_translated_data(output_element: WebElement) -> str:
         return output_element.text
 
     @abc.abstractmethod
-    def check_for_translation(self) -> bool:
-        ...
+    def check_for_translation(self) -> bool: ...
 
     def wait_for_page_load(self) -> None:
         def wait_for(driver: Any) -> bool:

@@ -1,3 +1,5 @@
+import time
+
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.remote.webelement import WebElement
 
@@ -18,21 +20,28 @@ class YandexTranslateProvider(SeleniumBaseTranslator):
         return f'{self.HOST}?{self.build_params(params)}'
 
     def get_input_element(self) -> WebElement:
-        return self._driver.find_element(by=self.WEBDRIVER_BY.CLASS_NAME, value='textinput')
+        return self._driver.find_element(
+            by=self.WEBDRIVER_BY.CSS_SELECTOR,
+            value='.fakearea-container',
+        )
 
     def get_output_element(self) -> WebElement:
-        return self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='translation')
+        return self._driver.find_element(
+            by=self.WEBDRIVER_BY.CSS_SELECTOR, value='#dstTextField p'
+        )
 
     @safe_run(NoSuchElementException, default_return_value=False)
     def check_for_translation(self) -> bool:
-        container = self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='textbox2')
-        if 'fetching' in container.get_attribute('class'):
-            return False
-        element = self._driver.find_element(by=self.WEBDRIVER_BY.ID, value='translation')
+        element = self.get_output_element()
         return element.text != ''
 
+    @staticmethod
+    def get_translated_data(output_element: WebElement) -> str:
+        time.sleep(1)
+        return output_element.text
+
     def accept_cookies(self) -> None:
-        self.click_cookies_accept('Accept')
+        self.click_cookies_accept('Allow all')
 
     def check_for_antispam(self) -> bool:
         try:

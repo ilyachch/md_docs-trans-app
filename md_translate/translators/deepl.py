@@ -17,13 +17,13 @@ class DeeplTranslateProvider(SeleniumBaseTranslator):
     def get_input_element(self) -> WebElement:
         return self._driver.find_element(
             by=self.WEBDRIVER_BY.CSS_SELECTOR,
-            value='div[aria-labelledby="translation-source-heading"]',
+            value='d-textarea[name="source"]',
         )
 
     def get_output_element(self) -> WebElement:
         return self._driver.find_element(
             by=self.WEBDRIVER_BY.CSS_SELECTOR,
-            value='[data-testid="translator-target-input"]',
+            value='d-textarea[name="target"]',
         )
 
     @safe_run(NoSuchElementException, default_return_value=False)
