@@ -1,6 +1,9 @@
-from typing import Any, ClassVar, Generic, Optional, Type, TypeVar, cast
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, Optional, Type, TypeVar, cast
 
 import pydantic
+
+if TYPE_CHECKING:
+    from translators import BaseTranslatorProtocol
 
 
 class BaseBlock(pydantic.BaseModel):
@@ -14,6 +17,12 @@ class BaseBlock(pydantic.BaseModel):
 
     def __str__(self) -> str:
         raise NotImplementedError(self.__class__.__name__)
+
+    def translate(self, translator: 'BaseTranslatorProtocol') -> None:
+        if not self.should_be_translated:
+            return
+        translated_data = translator.translate(text=str(self))
+        self.translated_data = translated_data
 
     def dump(self) -> dict:
         data = self.dict(exclude_unset=True)
