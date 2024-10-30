@@ -26,9 +26,9 @@ jobs:
         id: check_files
         run: |
           if grep -qE '(^md_translate/.*\.py$)' changed_files.txt; then
-            echo "::set-output name=run_version_check::true"
+            echo "run_version_check=true" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=run_version_check::false"
+            echo "run_version_check=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Get current version from main branch
@@ -37,14 +37,14 @@ jobs:
         run: |
           git checkout origin/master -- pyproject.toml
           MAIN_VERSION=$(poetry version -s)
-          echo "::set-output name=main_version::$MAIN_VERSION"
+          echo "main_version=$MAIN_VERSION" >> $GITHUB_OUTPUT
 
       - name: Get version in PR
         if: steps.check_files.outputs.run_version_check == 'true'
         id: get_pr_version
         run: |
           PR_VERSION=$(poetry version -s)
-          echo "::set-output name=pr_version::$PR_VERSION"
+          echo "pr_version=$PR_VERSION" >> $GITHUB_OUTPUT
 
       - name: Check version update
         if: steps.check_files.outputs.run_version_check == 'true' && steps.get_main_version.outputs.main_version == steps.get_pr_version.outputs.pr_version
