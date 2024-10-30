@@ -7,6 +7,9 @@ on:
       - 'pyproject.toml'
       - 'poetry.lock'
 jobs:
+  version-check:
+    uses: ./.github/workflows/new-version-check.yml
+    name: Check Version on Python Changes
   lint:
     uses: ./.github/workflows/linting.yml
     name: Linting
