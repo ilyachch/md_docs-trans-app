@@ -885,3 +885,4 @@ class TestMarkdownParsing:
         assert (
             MarkdownDocument.from_string(doc.render(), settings=test_settings).blocks == doc.blocks
         )
+
