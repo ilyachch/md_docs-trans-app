@@ -15,22 +15,43 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
 
-      - name: Get current version from main branch
-        id: get_main_version
+      - name: Get list of changed files
+        id: changes
         run: |
           git fetch origin master
+          git diff --name-only origin/master > changed_files.txt
+          cat changed_files.txt
+
+      - name: Check if relevant files were modified
+        id: check_files
+        run: |
+          if grep -qE '(^md_translate/.*\.py$)' changed_files.txt; then
+            echo "::set-output name=run_version_check::true"
+          else
+            echo "::set-output name=run_version_check::false"
+          fi
+
+      - name: Get current version from main branch
+        if: steps.check_files.outputs.run_version_check == 'true'
+        id: get_main_version
+        run: |
           git checkout origin/master -- pyproject.toml
           MAIN_VERSION=$(poetry version -s)
           echo "::set-output name=main_version::$MAIN_VERSION"
 
       - name: Get version in PR
+        if: steps.check_files.outputs.run_version_check == 'true'
         id: get_pr_version
         run: |
           PR_VERSION=$(poetry version -s)
           echo "::set-output name=pr_version::$PR_VERSION"
 
       - name: Check version update
-        if: steps.get_main_version.outputs.main_version == steps.get_pr_version.outputs.pr_version
+        if: steps.check_files.outputs.run_version_check == 'true' && steps.get_main_version.outputs.main_version == steps.get_pr_version.outputs.pr_version
         run: |
           echo "Version in pyproject.toml was not updated even though Python files were changed."
           exit 1
+
+      - name: Skip version check
+        if: steps.check_files.outputs.run_version_check == 'false'
+        run: echo "No relevant files changed. Skipping version check."
