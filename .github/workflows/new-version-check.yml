@@ -18,8 +18,8 @@ jobs:
       - name: Get current version from main branch
         id: get_main_version
         run: |
-          git fetch origin main
-          git checkout origin/main -- pyproject.toml
+          git fetch origin master
+          git checkout origin/master -- pyproject.toml
           MAIN_VERSION=$(poetry version -s)
           echo "::set-output name=main_version::$MAIN_VERSION"
 
