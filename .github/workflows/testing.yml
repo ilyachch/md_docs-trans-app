@@ -26,18 +26,18 @@ jobs:
     runs-on: ${{ inputs.system }}
     steps:
       - name: Getting code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Getting Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ inputs.python-version }}
       - name: Load cached poetry
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.local
           key: ${{ runner.os }}-poetry-${{ steps.setup-python.outputs.python-version }}
       - name: Cache pip
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .venv
           key: ${{ runner.os }}-pip-${{ hashFiles('poetry.lock') }}-${{ steps.setup-python.outputs.python-version }}

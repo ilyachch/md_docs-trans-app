@@ -39,11 +39,11 @@ jobs:
       contents: write
     steps:
       - name: Getting code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Getting Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
       - name: Install Poetry
@@ -69,7 +69,7 @@ jobs:
 
       - name: Upload Release assets to workflow artifacts
         if: ${{ inputs.dry-run && env.should_be_released == 1 }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/
