@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, Optional, Type, TypeVar, cast
 
-import pydantic
+import pydantic.v1 as pydantic
 
 if TYPE_CHECKING:
     from translators import BaseTranslatorProtocol

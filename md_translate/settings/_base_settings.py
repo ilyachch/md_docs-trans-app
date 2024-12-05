@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any, ClassVar, Optional, Type, Union, cast
 
 import click
-from pydantic import BaseModel, validator
+from pydantic.v1 import BaseModel, validator
 
 from md_translate.settings._settings_to_cli import SettingsToCliField
 from md_translate.translators import BaseTranslator, Translator

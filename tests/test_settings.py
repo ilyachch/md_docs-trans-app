@@ -3,7 +3,7 @@ from pathlib import Path
 from contextlib import nullcontext as does_not_raise
 import click
 import pytest
-from pydantic import BaseModel, ValidationError
+from pydantic.v1 import BaseModel, ValidationError
 
 from md_translate.settings import Settings
 from md_translate.settings._settings_to_cli import (
